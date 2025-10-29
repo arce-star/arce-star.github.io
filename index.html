@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的个人小站</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: #333;
+            background-color: #f4f4f4;
+        }
+        .container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            border-bottom: 3px solid #3498db;
+            padding-bottom: 10px;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        .button {
+            display: inline-block;
+            background: #3498db;
+            color: white;
+            padding: 10px 20px;
+            margin: 10px 5px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .button:hover {
+            background: #2980b9;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👋 嘿，欢迎来到我的空间！</h1>
+        <p>这是我的第一个GitHub Pages网站，一切才刚刚开始！</p>
+        <p>在这里，我将会记录我的学习、项目和想法。</p>
+        
+        <h2>关于我</h2>
+        <p>我是一名正在探索技术世界的开发者。</p>
+
+        <h2>我的链接</h2>
+        <p>
+            <a class="button" href="https://github.com/你的用户名" target="_blank">我的GitHub</a>
+            <a class="button" href="https://fighting41love.github.io" target="_blank">灵感来源</a>
+        </p>
+    </div>
+
+    <script>
+        // 简单的交互：显示当前年份
+        document.addEventListener('DOMContentLoaded', function() {
+            const year = new Date().getFullYear();
+            const footer = document.createElement('footer');
+            footer.style.textAlign = 'center';
+            footer.style.marginTop = '30px';
+            footer.style.color: '#7f8c8d';
+            footer.innerHTML = `<p>© ${year} 我的个人主页 | 由 GitHub Pages 驱动</p>`;
+            document.body.appendChild(footer);
+        });
+    </script>
+</body>
+</html>

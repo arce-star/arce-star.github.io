@@ -3,77 +3,328 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>我的个人小站</title>
-    <link rel="icon" href="favicon.ico">
+    <title>严亦乐 - 个人学术主页</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             line-height: 1.6;
             color: #333;
-            background-color: #f4f4f4;
+            background-color: #f8f9fa;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
         }
-        .container {
-            background: white;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eaeaea;
         }
+        
         h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
             color: #2c3e50;
-            border-bottom: 3px solid #3498db;
-            padding-bottom: 10px;
         }
-        a {
+        
+        .contact-info {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 15px;
+        }
+        
+        .contact-info a {
             color: #3498db;
             text-decoration: none;
         }
-        a:hover {
+        
+        .contact-info a:hover {
             text-decoration: underline;
         }
-        .button {
+        
+        section {
+            margin-bottom: 40px;
+            background: white;
+            padding: 25px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+        }
+        
+        h2 {
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            color: #2c3e50;
+            border-left: 4px solid #3498db;
+            padding-left: 10px;
+        }
+        
+        h3 {
+            font-size: 1.4rem;
+            margin: 20px 0 10px;
+            color: #34495e;
+        }
+        
+        .education-item, .research-item, .project-item {
+            margin-bottom: 25px;
+        }
+        
+        .education-item h3, .research-item h3, .project-item h3 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .date {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            font-weight: normal;
+        }
+        
+        ul {
+            padding-left: 20px;
+            margin-bottom: 15px;
+        }
+        
+        li {
+            margin-bottom: 8px;
+        }
+        
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .skill-category {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+        }
+        
+        .awards-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 15px;
+        }
+        
+        .award-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 6px;
+            border-left: 3px solid #3498db;
+        }
+        
+        .project-links {
+            margin-top: 10px;
+        }
+        
+        .project-links a {
             display: inline-block;
             background: #3498db;
             color: white;
-            padding: 10px 20px;
-            margin: 10px 5px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        .button:hover {
-            background: #2980b9;
+            padding: 6px 12px;
+            margin-right: 10px;
+            border-radius: 4px;
             text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .project-links a:hover {
+            background: #2980b9;
+        }
+        
+        footer {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 20px;
+            border-top: 1px solid #eaeaea;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .contact-info {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            section {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>👋 嘿，欢迎来到我的空间！</h1>
-        <p>这是我的第一个GitHub Pages网站，一切才刚刚开始！</p>
-        <p>在这里，我将会记录我的学习、项目和想法。</p>
+    <header>
+        <h1>严亦乐</h1>
+        <div class="contact-info">
+            <a href="mailto:yan040217@mail.ustc.edu.cn">yan040217@mail.ustc.edu.cn</a>
+            <span>153-4917-9230</span>
+            <span>中国科学技术大学 应用物理学</span>
+        </div>
+    </header>
+
+    <section id="education">
+        <h2>教育背景</h2>
+        <div class="education-item">
+            <h3>中国科学技术大学 <span class="date">2022.09 - 2026.06</span></h3>
+            <p>应用物理学 | GPA: 3.14/4.3 | 排名: 180/290</p>
+            <p>主修课程：热学 A [90]，力学 A [90]，电磁学 A [95]，理论力学 A [92]，计算机程序设计 A [95]</p>
+            <p>英语水平：CET-4 [616]，CET-6 [573]</p>
+        </div>
+    </section>
+
+    <section id="research">
+        <h2>科研经历</h2>
         
-        <h2>关于我</h2>
-        <p>我是一名正在探索技术世界的开发者。</p>
+        <div class="research-item">
+            <h3>基于大模型在伦理困境中的决策研究其伦理倾向性 <span class="date">2024.10 至今</span></h3>
+            <ul>
+                <li>提出整个项目的 idea，并在导师的把关后自主开展相关实验</li>
+                <li>项目参与大学生研究计划 [A-]，大学生创新计划 [即将答辩]</li>
+                <li>项目获得第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组复赛第二名</li>
+                <li>相关研究分为四个子方向，部分成果已投稿至ICWSM-2025、EMNLP-2025和ACM TIST期刊</li>
+            </ul>
+            <div class="project-links">
+                <a href="#project1">查看项目详情</a>
+            </div>
+        </div>
+        
+        <div class="research-item">
+            <h3>基于傅里叶变换光谱验证维恩位移定律 <span class="date">2023.07 - 2023.12</span></h3>
+            <ul>
+                <li>主要负责光路搭建、数据处理、算法创新及代码实现</li>
+                <li>项目获第九届全国大学生物理实验室竞赛 (创新) 命题类三等奖</li>
+                <li>成果发表于《物理实验》期刊第 44 卷第 8 期 (第二作者)</li>
+            </ul>
+            <div class="project-links">
+                <a href="#project2">查看项目详情</a>
+            </div>
+        </div>
+        
+        <div class="research-item">
+            <h3>对法拉第波的相关研究 <span class="date">2022.12 - 2023.04</span></h3>
+            <ul>
+                <li>独立完成题目分解、实验设计、装置搭建、数据处理、理论分析全过程</li>
+                <li>项目获得第五届安徽省大学生物理学术竞赛 (CUPT) 省级一等奖 (第四名)</li>
+            </ul>
+            <div class="project-links">
+                <a href="#project3">查看项目详情</a>
+            </div>
+        </div>
+        
+        <div class="research-item">
+            <h3>参与量子信息实验室王双老师课题组 <span class="date">2023.09 - 2024.03</span></h3>
+            <ul>
+                <li>独立完成光纤中光传播受色散和非线性效应影响的 MATLAB 模拟工作</li>
+                <li>相关成果总结为光学小论文《基于 MATLAB 对光脉冲在光纤中的传输特性研究》</li>
+            </ul>
+            <div class="project-links">
+                <a href="#project4">查看项目详情</a>
+            </div>
+        </div>
+    </section>
 
-        <h2>我的链接</h2>
-        <p>
-            <a class="button" href="https://github.com/arce-star" target="_blank">我的GitHub</a>
-        </p>
-    </div>
+    <section id="projects">
+        <h2>项目详情</h2>
+        
+        <div class="project-item" id="project1">
+            <h3>基于大模型在伦理困境中的决策研究其伦理倾向性</h3>
+            <p>本研究聚焦于大语言模型在伦理困境中的决策倾向性，通过构建四个典型伦理困境，系统分析了不同模型对单因素和双因素争议性特征的偏好与歧视性表现。研究发现，模型在保护性场景中倾向于选择特定特征，而在伤害性场景中则表现出对某些特征的排斥性。</p>
+            <p>本研究提出了一种基于反思与换位思考的 PERC 框架，实验表明该框架能有效降低模型的伦理歧视性。同时，通过大量人格测试和人格赋予实验，揭示了模型在人格特质影响下的伦理决策变化。</p>
+            <p><strong>关键词：</strong>大语言模型，伦理困境，倾向性分析，PERC 框架，人格特质</p>
+        </div>
+        
+        <div class="project-item" id="project2">
+            <h3>基于傅里叶变换光谱验证维恩位移定律</h3>
+            <p>在红外波段对黑体辐射规律中的维恩位移定律进行了验证。通过搭建的傅里叶变换红外光谱仪测得一系列温度下黑体的红外辐射谱，验证了辐射峰值波长与温度倒数之间的正比例关系。</p>
+            <p>实验还探索了包括动镜移动速度校准等装置优化的方法，并采用傅里叶变换算法处理实验数据。测得比例系数为 2.812×10⁻³ m·K，与标准值的偏差为 3%。</p>
+            <p><strong>关键词：</strong>维恩位移定律，黑体辐射，傅里叶变换红外光谱</p>
+        </div>
+        
+        <div class="project-item" id="project3">
+            <h3>对法拉第波的相关研究</h3>
+            <p>研究漂浮在粘度更高的液体中的粘度较低的液滴在垂直振荡状态下产生的波浪状图案现象。通过理论分析和实验验证，得到了控制参数 α = ρRω²A²/σ，该参数决定了液滴从圆形到拉长产生稳定波浪状图案到破碎的变化。</p>
+            <p>实验表明，当α远小于1时，液滴呈圆盘状；当α接近1时，液滴伸长产生条形波浪状图案；当α远大于1时，液滴破碎。</p>
+        </div>
+        
+        <div class="project-item" id="project4">
+            <h3>基于 MATLAB 对光脉冲在光纤中的传输特性研究</h3>
+            <p>针对基于 MATLAB 对光脉冲在光纤中的传输特性展开研究，从麦克斯韦方程组出发，推导出不含增益部分的非线性薛定谔方程，并基于 MATLAB 使用分步傅里叶方法对光脉冲（高斯光、双光孤子）的传输进行模拟。</p>
+            <p>研究了光纤色散和非线性效应对光脉冲传输的影响，模拟了不同参数条件下光脉冲的传输特性。</p>
+            <p><strong>关键词：</strong>光脉冲，光纤，MATLAB，分步傅里叶方法</p>
+        </div>
+    </section>
 
-    <script>
-        // 简单的交互：显示当前年份
-        document.addEventListener('DOMContentLoaded', function() {
-            const year = new Date().getFullYear();
-            const footer = document.createElement('footer');
-            footer.style.textAlign = 'center';
-            footer.style.marginTop = '30px';
-            footer.style.color: '#7f8c8d';
-            footer.innerHTML = `<p>© ${year} 我的个人主页 | 由 GitHub Pages 驱动</p>`;
-            document.body.appendChild(footer);
-        });
-    </script>
+    <section id="awards">
+        <h2>竞赛奖项</h2>
+        <div class="awards-list">
+            <div class="award-item">第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组复赛第二名</div>
+            <div class="award-item">第九届全国大学生物理实验室竞赛 (创新) 命题类 国家级三等奖</div>
+            <div class="award-item">第五届安徽省大学生物理学术竞赛 (CUPT) 省级一等奖</div>
+            <div class="award-item">2023年优秀学生奖学金 银奖</div>
+            <div class="award-item">2022年优秀学生奖学金 银奖</div>
+            <div class="award-item">第38届全国中学生物理竞赛 省级一等奖</div>
+            <div class="award-item">2021年全国中学生数学奥林匹克竞赛预赛 省级一等奖</div>
+            <div class="award-item">第37届全国中学生物理竞赛 省级二等奖</div>
+        </div>
+    </section>
+
+    <section id="skills">
+        <h2>技能专长</h2>
+        <div class="skills-grid">
+            <div class="skill-category">
+                <h3>计算机技能</h3>
+                <ul>
+                    <li>MATLAB: 有丰富外包项目经验及物理模拟经验</li>
+                    <li>Python: 有大研大创两年的项目应用经验及基本科研绘图能力</li>
+                    <li>LaTex: 有4篇计算机外文会议论文撰写经验</li>
+                    <li>Origin: 在大物实验和外包项目中有一定应用经历</li>
+                </ul>
+            </div>
+            
+            <div class="skill-category">
+                <h3>身体素质</h3>
+                <ul>
+                    <li>体测成绩：两年体测成绩均达到84分</li>
+                    <li>运动会：110米跨栏获得金牌、第七名, 100接力铜牌</li>
+                    <li>科考拉练：随队完成庐江、龙须山、龙井河拉练</li>
+                </ul>
+            </div>
+            
+            <div class="skill-category">
+                <h3>思辨能力</h3>
+                <ul>
+                    <li>担任一年地环辩论队副领队</li>
+                    <li>大二组织地环辩论队招生选拔全流程工作</li>
+                    <li>带队参加校辩论赛拿到四强</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p>© 2024 严亦乐 | 最后更新: 2024年12月</p>
+        <p>本网站使用HTML和CSS构建，托管于GitHub Pages</p>
+    </footer>
 </body>
 </html>

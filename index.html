@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>严亦乐 - 个人学术主页</title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔬</text></svg>">
+    <title>严亦乐 - 主页</title>
     <style>
         * {
             margin: 0;
@@ -13,318 +12,430 @@
         }
         
         body {
-            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             line-height: 1.6;
             color: #333;
-            background-color: #f8f9fa;
-            max-width: 1200px;
-            margin: 0 auto;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
             padding: 20px;
         }
         
-        header {
+        .container {
             text-align: center;
-            margin-bottom: 40px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eaeaea;
+            max-width: 800px;
+            width: 100%;
+        }
+        
+        .logo {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            color: #666;
         }
         
         h1 {
             font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #2c3e50;
+            margin-bottom: 50px;
+            color: #222;
+            font-weight: 400;
         }
         
-        .contact-info {
+        .nav-links {
             display: flex;
             justify-content: center;
+            gap: 30px;
             flex-wrap: wrap;
-            gap: 20px;
-            margin-top: 15px;
-        }
-        
-        .contact-info a {
-            color: #3498db;
-            text-decoration: none;
-        }
-        
-        .contact-info a:hover {
-            text-decoration: underline;
-        }
-        
-        section {
             margin-bottom: 40px;
-            background: white;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
         
-        h2 {
-            font-size: 1.8rem;
-            margin-bottom: 20px;
-            color: #2c3e50;
-            border-left: 4px solid #3498db;
-            padding-left: 10px;
-        }
-        
-        h3 {
-            font-size: 1.4rem;
-            margin: 20px 0 10px;
-            color: #34495e;
-        }
-        
-        .education-item, .research-item, .project-item {
-            margin-bottom: 25px;
-        }
-        
-        .education-item h3, .research-item h3, .project-item h3 {
+        .nav-link {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
             align-items: center;
-            flex-wrap: wrap;
+            text-decoration: none;
+            color: #333;
+            transition: transform 0.3s, color 0.3s;
+            padding: 20px;
+            border-radius: 10px;
+            width: 150px;
         }
         
-        .date {
-            font-size: 0.9rem;
-            color: #7f8c8d;
-            font-weight: normal;
+        .nav-link:hover {
+            transform: translateY(-5px);
+            color: #3498db;
         }
         
-        ul {
-            padding-left: 20px;
+        .nav-icon {
+            font-size: 3rem;
             margin-bottom: 15px;
+            width: 80px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background-color: #f8f9fa;
+            transition: background-color 0.3s;
         }
         
-        li {
-            margin-bottom: 8px;
+        .nav-link:hover .nav-icon {
+            background-color: #e3f2fd;
         }
         
+        .nav-text {
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+        
+        .back-home {
+            display: inline-block;
+            margin-top: 30px;
+            padding: 10px 20px;
+            background-color: #f8f9fa;
+            color: #333;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+        
+        .back-home:hover {
+            background-color: #e9ecef;
+        }
+        
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #888;
+            font-size: 0.9rem;
+        }
+        
+        /* 页面样式 */
+        .page {
+            display: none;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page.active {
+            display: block;
+        }
+        
+        .page-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .page-title {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        
+        .page-content {
+            text-align: left;
+        }
+        
+        /* 阅读页面样式 */
+        .reading-list {
+            list-style: none;
+        }
+        
+        .reading-item {
+            margin-bottom: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            transition: transform 0.3s;
+        }
+        
+        .reading-item:hover {
+            transform: translateX(5px);
+        }
+        
+        .reading-title {
+            font-size: 1.3rem;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        
+        .reading-meta {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 10px;
+        }
+        
+        .reading-description {
+            color: #555;
+            line-height: 1.6;
+        }
+        
+        /* 小技能页面样式 */
         .skills-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
         }
         
-        .skill-category {
+        .skill-card {
             background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-        }
-        
-        .awards-list {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-            gap: 15px;
-        }
-        
-        .award-item {
-            background: #f8f9fa;
-            padding: 15px;
-            border-radius: 6px;
-            border-left: 3px solid #3498db;
-        }
-        
-        .project-links {
-            margin-top: 10px;
-        }
-        
-        .project-links a {
-            display: inline-block;
-            background: #3498db;
-            color: white;
-            padding: 6px 12px;
-            margin-right: 10px;
-            border-radius: 4px;
-            text-decoration: none;
-            font-size: 0.9rem;
-        }
-        
-        .project-links a:hover {
-            background: #2980b9;
-        }
-        
-        footer {
+            padding: 25px;
+            border-radius: 8px;
             text-align: center;
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #eaeaea;
-            color: #7f8c8d;
-            font-size: 0.9rem;
+            transition: transform 0.3s;
+        }
+        
+        .skill-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .skill-icon {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+        
+        .skill-name {
+            font-size: 1.2rem;
+            margin-bottom: 10px;
+            color: #222;
+        }
+        
+        .skill-description {
+            color: #666;
+            line-height: 1.5;
+        }
+        
+        /* 拾贝页面样式 */
+        .collection-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+        }
+        
+        .collection-item {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            transition: transform 0.3s;
+        }
+        
+        .collection-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .collection-icon {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #e74c3c;
+        }
+        
+        .collection-title {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+            color: #222;
         }
         
         @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            
             h1 {
                 font-size: 2rem;
+                margin-bottom: 40px;
             }
             
-            .contact-info {
-                flex-direction: column;
-                gap: 10px;
+            .nav-links {
+                gap: 20px;
             }
             
-            section {
+            .nav-link {
+                width: 130px;
                 padding: 15px;
+            }
+            
+            .nav-icon {
+                font-size: 2.5rem;
+                width: 70px;
+                height: 70px;
+            }
+            
+            .skills-grid, .collection-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .nav-links {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .nav-link {
+                width: 200px;
             }
         }
     </style>
 </head>
 <body>
-    <header>
-        <h1>严亦乐</h1>
-        <div class="contact-info">
-            <a href="mailto:yan040217@mail.ustc.edu.cn">yan040217@mail.ustc.edu.cn</a>
-            <span>153-4917-9230</span>
-            <span>中国科学技术大学 应用物理学</span>
-        </div>
-    </header>
-
-    <section id="education">
-        <h2>教育背景</h2>
-        <div class="education-item">
-            <h3>中国科学技术大学 <span class="date">2022.09 - 2026.06</span></h3>
-            <p>应用物理学 | GPA: 3.14/4.3 | 排名: 180/290</p>
-            <p>主修课程：热学 A [90]，力学 A [90]，电磁学 A [95]，理论力学 A [92]，计算机程序设计 A [95]</p>
-            <p>英语水平：CET-4 [616]，CET-6 [573]</p>
-        </div>
-    </section>
-
-    <section id="research">
-        <h2>科研经历</h2>
-        
-        <div class="research-item">
-            <h3>基于大模型在伦理困境中的决策研究其伦理倾向性 <span class="date">2024.10 至今</span></h3>
-            <ul>
-                <li>提出整个项目的 idea，并在导师的把关后自主开展相关实验</li>
-                <li>项目参与大学生研究计划 [A-]，大学生创新计划 [即将答辩]</li>
-                <li>项目获得第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组复赛第二名</li>
-                <li>相关研究分为四个子方向，部分成果已投稿至ICWSM-2025、EMNLP-2025和ACM TIST期刊</li>
-            </ul>
-            <div class="project-links">
-                <a href="#project1">查看项目详情</a>
-            </div>
-        </div>
-        
-        <div class="research-item">
-            <h3>基于傅里叶变换光谱验证维恩位移定律 <span class="date">2023.07 - 2023.12</span></h3>
-            <ul>
-                <li>主要负责光路搭建、数据处理、算法创新及代码实现</li>
-                <li>项目获第九届全国大学生物理实验室竞赛 (创新) 命题类三等奖</li>
-                <li>成果发表于《物理实验》期刊第 44 卷第 8 期 (第二作者)</li>
-            </ul>
-            <div class="project-links">
-                <a href="#project2">查看项目详情</a>
-            </div>
-        </div>
-        
-        <div class="research-item">
-            <h3>对法拉第波的相关研究 <span class="date">2022.12 - 2023.04</span></h3>
-            <ul>
-                <li>独立完成题目分解、实验设计、装置搭建、数据处理、理论分析全过程</li>
-                <li>项目获得第五届安徽省大学生物理学术竞赛 (CUPT) 省级一等奖 (第四名)</li>
-            </ul>
-            <div class="project-links">
-                <a href="#project3">查看项目详情</a>
-            </div>
-        </div>
-        
-        <div class="research-item">
-            <h3>参与量子信息实验室王双老师课题组 <span class="date">2023.09 - 2024.03</span></h3>
-            <ul>
-                <li>独立完成光纤中光传播受色散和非线性效应影响的 MATLAB 模拟工作</li>
-                <li>相关成果总结为光学小论文《基于 MATLAB 对光脉冲在光纤中的传输特性研究》</li>
-            </ul>
-            <div class="project-links">
-                <a href="#project4">查看项目详情</a>
-            </div>
-        </div>
-    </section>
-
-    <section id="projects">
-        <h2>项目详情</h2>
-        
-        <div class="project-item" id="project1">
-            <h3>基于大模型在伦理困境中的决策研究其伦理倾向性</h3>
-            <p>本研究聚焦于大语言模型在伦理困境中的决策倾向性，通过构建四个典型伦理困境，系统分析了不同模型对单因素和双因素争议性特征的偏好与歧视性表现。研究发现，模型在保护性场景中倾向于选择特定特征，而在伤害性场景中则表现出对某些特征的排斥性。</p>
-            <p>本研究提出了一种基于反思与换位思考的 PERC 框架，实验表明该框架能有效降低模型的伦理歧视性。同时，通过大量人格测试和人格赋予实验，揭示了模型在人格特质影响下的伦理决策变化。</p>
-            <p><strong>关键词：</strong>大语言模型，伦理困境，倾向性分析，PERC 框架，人格特质</p>
-        </div>
-        
-        <div class="project-item" id="project2">
-            <h3>基于傅里叶变换光谱验证维恩位移定律</h3>
-            <p>在红外波段对黑体辐射规律中的维恩位移定律进行了验证。通过搭建的傅里叶变换红外光谱仪测得一系列温度下黑体的红外辐射谱，验证了辐射峰值波长与温度倒数之间的正比例关系。</p>
-            <p>实验还探索了包括动镜移动速度校准等装置优化的方法，并采用傅里叶变换算法处理实验数据。测得比例系数为 2.812×10⁻³ m·K，与标准值的偏差为 3%。</p>
-            <p><strong>关键词：</strong>维恩位移定律，黑体辐射，傅里叶变换红外光谱</p>
-        </div>
-        
-        <div class="project-item" id="project3">
-            <h3>对法拉第波的相关研究</h3>
-            <p>研究漂浮在粘度更高的液体中的粘度较低的液滴在垂直振荡状态下产生的波浪状图案现象。通过理论分析和实验验证，得到了控制参数 α = ρRω²A²/σ，该参数决定了液滴从圆形到拉长产生稳定波浪状图案到破碎的变化。</p>
-            <p>实验表明，当α远小于1时，液滴呈圆盘状；当α接近1时，液滴伸长产生条形波浪状图案；当α远大于1时，液滴破碎。</p>
-        </div>
-        
-        <div class="project-item" id="project4">
-            <h3>基于 MATLAB 对光脉冲在光纤中的传输特性研究</h3>
-            <p>针对基于 MATLAB 对光脉冲在光纤中的传输特性展开研究，从麦克斯韦方程组出发，推导出不含增益部分的非线性薛定谔方程，并基于 MATLAB 使用分步傅里叶方法对光脉冲（高斯光、双光孤子）的传输进行模拟。</p>
-            <p>研究了光纤色散和非线性效应对光脉冲传输的影响，模拟了不同参数条件下光脉冲的传输特性。</p>
-            <p><strong>关键词：</strong>光脉冲，光纤，MATLAB，分步傅里叶方法</p>
-        </div>
-    </section>
-
-    <section id="awards">
-        <h2>竞赛奖项</h2>
-        <div class="awards-list">
-            <div class="award-item">第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组复赛第二名</div>
-            <div class="award-item">第九届全国大学生物理实验室竞赛 (创新) 命题类 国家级三等奖</div>
-            <div class="award-item">第五届安徽省大学生物理学术竞赛 (CUPT) 省级一等奖</div>
-            <div class="award-item">2023年优秀学生奖学金 银奖</div>
-            <div class="award-item">2022年优秀学生奖学金 银奖</div>
-            <div class="award-item">第38届全国中学生物理竞赛 省级一等奖</div>
-            <div class="award-item">2021年全国中学生数学奥林匹克竞赛预赛 省级一等奖</div>
-            <div class="award-item">第37届全国中学生物理竞赛 省级二等奖</div>
-        </div>
-    </section>
-
-    <section id="skills">
-        <h2>技能专长</h2>
-        <div class="skills-grid">
-            <div class="skill-category">
-                <h3>计算机技能</h3>
-                <ul>
-                    <li>MATLAB: 有丰富外包项目经验及物理模拟经验</li>
-                    <li>Python: 有大研大创两年的项目应用经验及基本科研绘图能力</li>
-                    <li>LaTex: 有4篇计算机外文会议论文撰写经验</li>
-                    <li>Origin: 在大物实验和外包项目中有一定应用经历</li>
-                </ul>
+    <!-- 主页 -->
+    <div id="home-page" class="page active">
+        <div class="container">
+            <div class="logo">
+                <i class="fas fa-user"></i>
             </div>
             
-            <div class="skill-category">
-                <h3>身体素质</h3>
-                <ul>
-                    <li>体测成绩：两年体测成绩均达到84分</li>
-                    <li>运动会：110米跨栏获得金牌、第七名, 100接力铜牌</li>
-                    <li>科考拉练：随队完成庐江、龙须山、龙井河拉练</li>
-                </ul>
+            <h1>严亦乐</h1>
+            
+            <div class="nav-links">
+                <a href="#" class="nav-link" onclick="showPage('reading-page')">
+                    <div class="nav-icon">
+                        <i class="fas fa-book"></i>
+                    </div>
+                    <div class="nav-text">阅读</div>
+                </a>
+                
+                <a href="#" class="nav-link" onclick="showPage('skills-page')">
+                    <div class="nav-icon">
+                        <i class="fas fa-lightbulb"></i>
+                    </div>
+                    <div class="nav-text">小技能</div>
+                </a>
+                
+                <a href="#" class="nav-link" onclick="showPage('collection-page')">
+                    <div class="nav-icon">
+                        <i class="fas fa-star"></i>
+                    </div>
+                    <div class="nav-text">拾贝</div>
+                </a>
             </div>
             
-            <div class="skill-category">
-                <h3>思辨能力</h3>
-                <ul>
-                    <li>担任一年地环辩论队副领队</li>
-                    <li>大二组织地环辩论队招生选拔全流程工作</li>
-                    <li>带队参加校辩论赛拿到四强</li>
-                </ul>
-            </div>
+            <footer>
+                <p>© 2024 严亦乐</p>
+            </footer>
         </div>
-    </section>
+    </div>
 
-    <footer>
-        <p>© 2024 严亦乐 | 最后更新: 2024年12月</p>
-        <p>本网站使用HTML和CSS构建，托管于GitHub Pages</p>
-    </footer>
+    <!-- 阅读页面 -->
+    <div id="reading-page" class="page">
+        <div class="page-header">
+            <h2 class="page-title">阅读</h2>
+            <p>记录阅读与思考</p>
+        </div>
+        
+        <div class="page-content">
+            <ul class="reading-list">
+                <li class="reading-item">
+                    <h3 class="reading-title">《人工智能伦理》</h3>
+                    <div class="reading-meta">2024年12月 · 技术伦理</div>
+                    <p class="reading-description">探讨人工智能发展中的伦理问题，特别是大语言模型在决策过程中的偏见与道德考量。</p>
+                </li>
+                
+            </ul>
+            
+            <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
+        </div>
+    </div>
+
+    <!-- 小技能页面 -->
+    <div id="skills-page" class="page">
+        <div class="page-header">
+            <h2 class="page-title">小技能</h2>
+            <p>实用技能与工具</p>
+        </div>
+        
+        <div class="page-content">
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <div class="skill-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <h3 class="skill-name">MATLAB编程</h3>
+                    <p class="skill-description">物理模拟、数据分析、算法实现</p>
+                </div>
+                
+            </div>
+            
+            <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
+        </div>
+    </div>
+
+    <!-- 拾贝页面 -->
+    <div id="collection-page" class="page">
+        <div class="page-header">
+            <h2 class="page-title">拾贝</h2>
+            <p>收集有趣的想法与发现</p>
+        </div>
+        
+        <div class="page-content">
+            <div class="collection-grid">
+                <div class="collection-item">
+                    <div class="collection-icon">
+                        <i class="fas fa-quote-left"></i>
+                    </div>
+                    <h4 class="collection-title">名言收藏</h4>
+                    <p>"科学是在不断修正错误中前进的"</p>
+                </div>
+                
+            </div>
+            
+            <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
+        </div>
+    </div>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <script>
+        // 页面切换功能
+        function showPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 显示目标页面
+            document.getElementById(pageId).classList.add('active');
+            
+            // 滚动到页面顶部
+            window.scrollTo(0, 0);
+        }
+        
+        // 处理URL哈希变化
+        window.addEventListener('hashchange', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash === 'reading') {
+                showPage('reading-page');
+            } else if (hash === 'skills') {
+                showPage('skills-page');
+            } else if (hash === 'collection') {
+                showPage('collection-page');
+            } else {
+                showPage('home-page');
+            }
+        });
+        
+        // 初始页面设置
+        window.addEventListener('DOMContentLoaded', function() {
+            const hash = window.location.hash.substring(1);
+            if (hash === 'reading') {
+                showPage('reading-page');
+            } else if (hash === 'skills') {
+                showPage('skills-page');
+            } else if (hash === 'collection') {
+                showPage('collection-page');
+            } else {
+                showPage('home-page');
+            }
+        });
+    </script>
 </body>
 </html>

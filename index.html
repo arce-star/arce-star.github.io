@@ -4,9 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>摇摇乐 - 主页</title>
-    <!-- Favicon 图标 -->
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">    <style>
+    <style>
         * {
             margin: 0;
             padding: 0;
@@ -182,18 +180,43 @@
         }
         
         /* 小技能页面样式 */
-        .skills-grid {
+        /* .skills-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
             gap: 20px;
+        } */
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 25px;
+            padding: 20px;
         }
-        
-        .skill-card {
+                
+        /* .skill-card {
             background: #f8f9fa;
             padding: 25px;
             border-radius: 8px;
             text-align: center;
             transition: transform 0.3s;
+        } */
+
+        .skill-card {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 30px;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border: 1px solid rgba(255,255,255,0.8);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .skill-image {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
         }
         
         .skill-card:hover {
@@ -236,6 +259,12 @@
             gap: 8px;
             margin-top: 20px;
         }
+        .skill-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            align-items: start;
+        }
 
         .tag {
             background: linear-gradient(135deg, #667eea, #764ba2);
@@ -246,6 +275,20 @@
             font-weight: 500;
             letter-spacing: 0.3px;
             box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+        }
+
+        .skill-image img {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            transition: all 0.3s ease;
+        }
+
+        .skill-image img:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.2);
         }
         
         /* 拾贝页面样式 */
@@ -425,6 +468,14 @@
                                 <span class="step-text">调整四边锚点，自定义融合形状</span>
                             </div>
                         </div>
+                        <div class="skill-image">
+                            <!-- <div class="image-placeholder">
+                                <i class="fas fa-image"></i>
+                                <span>文字肖像效果图</span>
+                            </div> -->
+                            <!-- 或者使用实际图片 -->
+                            <img src="PS融合效果.png" alt="PS融合效果示例">
+                        </div>
                         <!-- <div class="skill-tags">
                             <span class="tag">PS技巧</span>
                         </div> -->
@@ -437,33 +488,45 @@
                     <!-- <div class="skill-icon">
                         <i class="fas fa-magic"></i>
                     </div> -->
-                    <h3 class="skill-name">PS融合效果</h3>
+                    <h3 class="skill-name">PS文字肖像</h3>
                     <div class="skill-description">
                         <div class="skill-steps">
                             <div class="step">
                                 <span class="step-number">1</span>
-                                <span class="step-text">创建形状并添加描边</span>
+                                <span class="step-text">新建黑色画布</span>
                             </div>
                             <div class="step">
                                 <span class="step-number">2</span>
-                                <span class="step-text">属性面板应用蒙版，羽化值设为16</span>
+                                <span class="step-text">载入图片后执行高斯模糊 数值5，保存文件</span>
                             </div>
                             <div class="step">
                                 <span class="step-number">3</span>
-                                <span class="step-text">添加色阶调整层，左右滑块向中间调整至2/3位置</span>
+                                <span class="step-text">输入满屏白色文字，右键栅格化文字</span>
                             </div>
                             <div class="step">
                                 <span class="step-number">4</span>
-                                <span class="step-text">复制图层，相交区域自动产生躲避效果</span>
+                                <span class="step-text">执行滤镜-扭曲-置换 数值10，选择刚刚保存的文件</span>
                             </div>
                             <div class="step">
                                 <span class="step-number">5</span>
-                                <span class="step-text">调整四边锚点，自定义融合形状</span>
+                                <span class="step-text">按住Ctrl点击文字图层，点击肖像图层再点击下面蒙版按钮</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">6</span>
+                                <span class="step-text">关闭文字图层</span>
                             </div>
                         </div>
                         <!-- <div class="skill-tags">
                             <span class="tag">PS技巧</span>
                         </div> -->
+                        <div class="skill-image">
+                            <!-- <div class="image-placeholder">
+                                <i class="fas fa-image"></i>
+                                <span>文字肖像效果图</span>
+                            </div> -->
+                            <!-- 或者使用实际图片 -->
+                            <img src="PS文字肖像.png" alt="PS文字肖像效果示例">
+                        </div>
                     </div>
                 </div>
             </div>

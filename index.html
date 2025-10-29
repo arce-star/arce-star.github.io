@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>严亦乐 - 主页</title>
+    <title>摇摇乐 - 主页</title>
     <style>
         * {
             margin: 0;
@@ -203,7 +203,19 @@
             margin-bottom: 15px;
             color: #3498db;
         }
-        
+
+        .skill-name {
+            font-size: 1.4rem;
+            margin-bottom: 25px;
+            color: #2d3748;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .skill-steps {
+            text-align: left;
+            margin-bottom: 20px;
+        }
         .skill-name {
             font-size: 1.2rem;
             margin-bottom: 10px;
@@ -213,6 +225,25 @@
         .skill-description {
             color: #666;
             line-height: 1.5;
+        }
+
+        .skill-tags {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 20px;
+        }
+
+        .tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            letter-spacing: 0.3px;
+            box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
         }
         
         /* 拾贝页面样式 */
@@ -290,10 +321,10 @@
     <div id="home-page" class="page active">
         <div class="container">
             <div class="logo">
-                <i class="fas fa-user"></i>
+                <i class="fas fa-seedling"></i>
             </div>
             
-            <h1>严亦乐</h1>
+            <h1>摇摇乐的主页</h1>
             
             <div class="nav-links">
                 <a href="#" class="nav-link" onclick="showPage('reading-page')">
@@ -319,7 +350,7 @@
             </div>
             
             <footer>
-                <p>© 2024 严亦乐</p>
+                <p>© 2024 摇摇乐</p>
             </footer>
         </div>
     </div>
@@ -334,9 +365,18 @@
         <div class="page-content">
             <ul class="reading-list">
                 <li class="reading-item">
-                    <h3 class="reading-title">《人工智能伦理》</h3>
-                    <div class="reading-meta">2024年12月 · 技术伦理</div>
-                    <p class="reading-description">探讨人工智能发展中的伦理问题，特别是大语言模型在决策过程中的偏见与道德考量。</p>
+                    <h3 class="reading-title">《我是潘金莲》</h3>
+                    <div class="reading-meta">2025年10月 · 官场黑暗</div>
+                    <p class="reading-description">他们不想死，但看到的常常都是死路。</p>
+                </li>
+                
+            </ul>
+
+            <ul class="reading-list">
+                <li class="reading-item">
+                    <h3 class="reading-title">《雪国》</h3>
+                    <div class="reading-meta">待读 · 文学经典</div>
+                    <p class="reading-description">穿过县界长长的隧道，便是雪国。夜空下一片白茫茫。</p>
                 </li>
                 
             </ul>
@@ -349,19 +389,81 @@
     <div id="skills-page" class="page">
         <div class="page-header">
             <h2 class="page-title">小技能</h2>
-            <p>实用技能与工具</p>
+            <p>实用技能与操作</p>
         </div>
         
         <div class="page-content">
+
             <div class="skills-grid">
                 <div class="skill-card">
-                    <div class="skill-icon">
-                        <i class="fas fa-code"></i>
+                    <!-- <div class="skill-icon">
+                        <i class="fas fa-magic"></i>
+                    </div> -->
+                    <h3 class="skill-name">PS融合效果</h3>
+                    <div class="skill-description">
+                        <div class="skill-steps">
+                            <div class="step">
+                                <span class="step-number">1</span>
+                                <span class="step-text">创建形状并添加描边</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <span class="step-text">属性面板应用蒙版，羽化值设为16</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">3</span>
+                                <span class="step-text">添加色阶调整层，左右滑块向中间调整至2/3位置</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">4</span>
+                                <span class="step-text">复制图层，相交区域自动产生躲避效果</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">5</span>
+                                <span class="step-text">调整四边锚点，自定义融合形状</span>
+                            </div>
+                        </div>
+                        <!-- <div class="skill-tags">
+                            <span class="tag">PS技巧</span>
+                        </div> -->
                     </div>
-                    <h3 class="skill-name">MATLAB编程</h3>
-                    <p class="skill-description">物理模拟、数据分析、算法实现</p>
                 </div>
-                
+            </div>
+
+            <div class="skills-grid">
+                <div class="skill-card">
+                    <!-- <div class="skill-icon">
+                        <i class="fas fa-magic"></i>
+                    </div> -->
+                    <h3 class="skill-name">PS融合效果</h3>
+                    <div class="skill-description">
+                        <div class="skill-steps">
+                            <div class="step">
+                                <span class="step-number">1</span>
+                                <span class="step-text">创建形状并添加描边</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">2</span>
+                                <span class="step-text">属性面板应用蒙版，羽化值设为16</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">3</span>
+                                <span class="step-text">添加色阶调整层，左右滑块向中间调整至2/3位置</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">4</span>
+                                <span class="step-text">复制图层，相交区域自动产生躲避效果</span>
+                            </div>
+                            <div class="step">
+                                <span class="step-number">5</span>
+                                <span class="step-text">调整四边锚点，自定义融合形状</span>
+                            </div>
+                        </div>
+                        <!-- <div class="skill-tags">
+                            <span class="tag">PS技巧</span>
+                        </div> -->
+                    </div>
+                </div>
             </div>
             
             <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
@@ -379,10 +481,34 @@
             <div class="collection-grid">
                 <div class="collection-item">
                     <div class="collection-icon">
-                        <i class="fas fa-quote-left"></i>
+                        <i class="fas fa-bookmark"></i>
                     </div>
-                    <h4 class="collection-title">名言收藏</h4>
+                    <!-- <h4 class="collection-title">名言收藏</h4> -->
                     <p>"科学是在不断修正错误中前进的"</p>
+                </div>
+
+                <div class="collection-item">
+                    <div class="collection-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <!-- <h4 class="collection-title">名言收藏</h4> -->
+                    <p>"有的兄弟，有的"</p>
+                </div>
+
+                <div class="collection-item">
+                    <div class="collection-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <!-- <h4 class="collection-title">名言收藏</h4> -->
+                    <p>"雅典娜优先断兵线，是包赢滴。"</p>
+                </div>
+
+                <div class="collection-item">
+                    <div class="collection-icon">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <!-- <h4 class="collection-title">名言收藏</h4> -->
+                    <p>"我进厂辣，桂夏！"</p>
                 </div>
                 
             </div>

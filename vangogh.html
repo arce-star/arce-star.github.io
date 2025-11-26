@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Van Gogh: Realistic Cycle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Caveat:wght@700&display=swap');
+
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050510;
+            font-family: 'Caveat', cursive;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        /* 柔和油画滤镜 - 保持不变，质感很好 */
+        .canvas-container {
+            filter: url('#soft-impasto'); 
+            width: 100vw;
+            height: 100vh;
+        }
+
+        /* 按钮控制区 */
+        .control-panel {
+            position: absolute;
+            bottom: 40px;
+            right: 40px;
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .btn {
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(8px);
+            color: #f1c40f;
+            font-size: 2rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            outline: none;
+            -webkit-touch-callout: none;
+        }
+
+        .btn:active {
+            transform: scale(0.9);
+            background: rgba(241, 196, 15, 0.2);
+            border-color: #f1c40f;
+        }
+
+        .time-indicator {
+            color: rgba(255,255,255,0.6);
+            font-size: 1.2rem;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.8);
+            width: 80px;
+            text-align: center;
+            pointer-events: none;
+        }
+
+        .svg-defs { position: absolute; width: 0; height: 0; }
+        
+        .hint {
+            position: absolute;
+            bottom: 120px;
+            right: 40px;
+            color: rgba(255,255,255,0.4);
+            text-align: center;
+            width: 220px;
+            pointer-events: none;
+            font-size: 1rem;
+        }
+    </style>
+</head>
+<body>
+
+    <svg class="svg-defs">
+        <filter id="soft-impasto">
+            <feTurbulence type="fractalNoise" baseFrequency="0.005" numOctaves="3" result="noise" />
+            <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" />
+            <feDiffuseLighting in="noise" lighting-color="#fff" surfaceScale="1.5">
+                <feDistantLight azimuth="45" elevation="60" />
+            </feDiffuseLighting>
+            <feComposite operator="in" in2="SourceGraphic"/>
+            <feBlend mode="multiply" in2="SourceGraphic" />
+        </filter>
+    </svg>
+
+    <div class="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
+
+    <div class="hint">Hold buttons to control sun/moon</div>
+
+    <div class="control-panel">
+        <button class="btn" id="btn-prev">↺</button>
+        <div class="time-indicator" id="time-text">NOON</div>
+        <button class="btn" id="btn-next">↻</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnNext = document.getElementById('btn-next');
+        const timeText = document.getElementById('time-text');
+
+        let width, height;
+        let clouds = [];
+        let seagulls = [];
+        let stars = [];
+        let time = 0;
+        
+        // === 核心状态 ===
+        // 0=正午, 90=日落, 180=午夜, 270=日出
+        let cycleAngle = 270; 
+        
+        // 旋转方向
+        let rotationDirection = 0;
+        const rotationSpeed = 0.8; 
+
+        // === 按钮逻辑 ===
+        function startRotate(dir) { rotationDirection = dir; }
+        function stopRotate() { rotationDirection = 0; }
+
+        btnNext.addEventListener('mousedown', () => startRotate(1));
+        btnNext.addEventListener('touchstart', (e) => { e.preventDefault(); startRotate(1); });
+        
+        btnPrev.addEventListener('mousedown', () => startRotate(-1));
+        btnPrev.addEventListener('touchstart', (e) => { e.preventDefault(); startRotate(-1); });
+
+        window.addEventListener('mouseup', stopRotate);
+        window.addEventListener('touchend', stopRotate);
+
+        // === 色彩配置 ===
+        const palette = {
+            noon: { sky: [100, 180, 230], sea: [0, 105, 148], sun: [255, 255, 240] },
+            sunset: { sky: [200, 80, 50], sea: [100, 40, 30], sun: [255, 140, 0] },
+            night: { sky: [10, 15, 35], sea: [5, 5, 20], sun: [220, 220, 230] } // sun在这里指代月亮颜色
+        };
+
+        // === 实体类定义 ===
+
+        // 1. 星星 (闪烁效果)
+        class Star {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * (height * 0.55); // 只在天上
+                this.baseSize = Math.random() * 2 + 1;
+                this.blinkSpeed = Math.random() * 0.05 + 0.01;
+                this.offset = Math.random() * Math.PI * 2;
+            }
+            draw(opacity) {
+                // 星星透明度 = 全局夜晚浓度 * 自身闪烁
+                let blink = 0.5 + Math.sin(time * this.blinkSpeed + this.offset) * 0.5; // 0~1
+                let finalAlpha = opacity * blink;
+                
+                if (finalAlpha <= 0.01) return;
+
+                ctx.fillStyle = `rgba(255, 255, 255, ${finalAlpha})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.baseSize, 0, Math.PI*2);
+                ctx.fill();
+            }
+        }
+
+        // 2. 云朵 (多圆聚合)
+        class Cloud {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * (height * 0.4);
+                this.speed = Math.random() * 0.2 + 0.1;
+                this.scale = Math.random() * 0.5 + 0.5;
+                // 一个云朵由3-5个圆组成
+                this.parts = [];
+                let partsCount = 3 + Math.floor(Math.random() * 3);
+                for(let i=0; i<partsCount; i++) {
+                    this.parts.push({
+                        x: (Math.random() - 0.5) * 40 * this.scale,
+                        y: (Math.random() - 0.5) * 20 * this.scale,
+                        r: (20 + Math.random() * 15) * this.scale
+                    });
+                }
+            }
+            update() {
+                this.x += this.speed;
+                if (this.x > width + 100) this.x = -100;
+            }
+            draw(opacity) {
+                if (opacity <= 0.01) return;
+                ctx.fillStyle = `rgba(255, 255, 255, ${opacity * 0.8})`; // 云有点透
+                
+                this.parts.forEach(p => {
+                    ctx.beginPath();
+                    ctx.arc(this.x + p.x, this.y + p.y, p.r, 0, Math.PI*2);
+                    ctx.fill();
+                });
+            }
+        }
+
+        // 3. 海鸥 (贝塞尔曲线)
+        class Seagull {
+            constructor() {
+                this.x = Math.random() * width;
+                this.y = Math.random() * (height * 0.5);
+                this.speed = Math.random() * 0.5 + 0.5;
+                this.size = Math.random() * 0.5 + 0.5;
+                this.yBase = this.y;
+                this.offset = Math.random() * 100;
+            }
+            update() {
+                this.x += this.speed;
+                // 上下浮动
+                this.y = this.yBase + Math.sin(time * 0.02 + this.offset) * 10;
+                
+                if (this.x > width + 50) {
+                    this.x = -50;
+                    this.yBase = Math.random() * (height * 0.5);
+                }
+            }
+            draw(opacity) {
+                if (opacity <= 0.01) return;
+                
+                ctx.strokeStyle = `rgba(255, 255, 255, ${opacity})`;
+                ctx.lineWidth = 2 * this.size;
+                ctx.lineCap = 'round';
+                
+                // 画M形
+                let s = 10 * this.size;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                // 左翼
+                ctx.quadraticCurveTo(this.x - s, this.y - s, this.x - s*2, this.y + s*0.5);
+                // 右翼
+                ctx.moveTo(this.x, this.y);
+                ctx.quadraticCurveTo(this.x + s, this.y - s, this.x + s*2, this.y + s*0.5);
+                ctx.stroke();
+            }
+        }
+
+        function initEntities() {
+            stars = []; clouds = []; seagulls = [];
+            
+            for(let i=0; i<150; i++) stars.push(new Star());
+            for(let i=0; i<15; i++) clouds.push(new Cloud());
+            for(let i=0; i<8; i++) seagulls.push(new Seagull());
+        }
+
+        // === 辅助函数 ===
+        function resize() {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+            initEntities();
+        }
+        window.addEventListener('resize', resize);
+
+        function lerp(a, b, t) { return a + (b - a) * t; }
+        function lerpArray(c1, c2, t) {
+            return [
+                Math.round(lerp(c1[0], c2[0], t)),
+                Math.round(lerp(c1[1], c2[1], t)),
+                Math.round(lerp(c1[2], c2[2], t))
+            ];
+        }
+        function rgb(arr) { return `rgb(${arr[0]}, ${arr[1]}, ${arr[2]})`; }
+
+        // 计算天空颜色混合
+        function getColorState() {
+            let ang = ((cycleAngle % 360) + 360) % 360; 
+            
+            // 更新文字提示
+            if(ang > 315 || ang < 45) timeText.innerText = "NOON";
+            else if(ang >= 45 && ang < 135) timeText.innerText = "SUNSET";
+            else if(ang >= 135 && ang < 225) timeText.innerText = "MIDNIGHT";
+            else timeText.innerText = "DAWN";
+
+            // 1. 白天 -> 日落 (0-90)
+            if (ang >= 0 && ang < 90) return blendState(palette.noon, palette.sunset, ang/90);
+            // 2. 日落 -> 午夜 (90-180)
+            else if (ang >= 90 && ang < 180) return blendState(palette.sunset, palette.night, (ang-90)/90);
+            // 3. 午夜 -> 日出 (180-270) - 保持黑夜
+            else if (ang >= 180 && ang < 270) return palette.night;
+            // 4. 日出 -> 正午 (270-360)
+            else {
+                let t = (ang - 270) / 90;
+                if(t < 0.2) return blendState(palette.night, palette.sunset, t*5); 
+                else return blendState(palette.sunset, palette.noon, (t-0.2)*1.25);
+            }
+        }
+        function blendState(s1, s2, t) {
+            return {
+                sky: lerpArray(s1.sky, s2.sky, t),
+                sea: lerpArray(s1.sea, s2.sea, t),
+                sun: lerpArray(s1.sun, s2.sun, t)
+            };
+        }
+
+        // === 核心渲染 ===
+        function drawScene() {
+            // 更新角度
+            if (rotationDirection !== 0) cycleAngle += rotationDirection * rotationSpeed;
+            
+            // 归一化角度
+            let ang = ((cycleAngle % 360) + 360) % 360;
+            const colors = getColorState();
+            const horizon = height * 0.6;
+
+            // 1. 计算天体可见度系数 (Day/Night Intensity)
+            // 根据角度判断 白天还是晚上
+            // Noon(0) -> Sunset(90). isDay 1->0
+            // Dawn(270) -> Noon(360/0). isDay 0->1
+            let dayIntensity = 0;
+            if (ang < 90 || ang > 270) {
+                // 粗略的白天强度，用于淡入淡出云和星星
+                if(ang < 90) dayIntensity = 1 - (ang/90);
+                else dayIntensity = (ang-270)/90;
+            }
+            
+            // 2. 绘制天空
+            let grad = ctx.createLinearGradient(0, 0, 0, horizon);
+            grad.addColorStop(0, rgb(colors.sky));
+            grad.addColorStop(1, `rgba(${colors.sky[0]*0.9}, ${colors.sky[1]*0.9}, ${colors.sky[2]*0.9}, 1)`);
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, width, horizon);
+
+            time++;
+
+            // 3. 绘制 星星 (只在晚上)
+            // 晚上强度 = 1 - dayIntensity
+            // 但为了让星星在黄昏就稍微出来一点，我们做一个平滑处理
+            let nightIntensity = 1 - dayIntensity;
+            if (nightIntensity > 0) {
+                stars.forEach(s => s.draw(nightIntensity));
+            }
+
+            // 4. 绘制 云和海鸥 (只在白天)
+            if (dayIntensity > 0) {
+                clouds.forEach(c => { c.update(); c.draw(dayIntensity); });
+                seagulls.forEach(s => { s.update(); s.draw(dayIntensity); });
+            }
+
+            // 5. 天体轨道计算 (关键修改：分离轨道)
+            let rad = (cycleAngle - 90) * (Math.PI / 180);
+            
+            // 轨道圆心下移，制造空窗期
+            let orbitCy = horizon + 200; // 圆心在海平面以下 200px
+            let orbitRx = width * 0.4;
+            let orbitRy = height * 0.8; // 垂直半径加大，保证能升上来
+            
+            let sunX = width/2 + Math.cos(rad) * orbitRx;
+            let sunY = orbitCy + Math.sin(rad) * orbitRy;
+            
+            let moonX = width/2 + Math.cos(rad + Math.PI) * orbitRx;
+            let moonY = orbitCy + Math.sin(rad + Math.PI) * orbitRy;
+
+            // 6. 绘制天体 (如果在海平面以上或附近)
+            // 记录当前主要光源位置和强度用于反射
+            let lightSource = null;
+
+            // 绘制月亮
+            if (moonY < horizon + 60) {
+                drawCelestialBody(moonX, moonY, true, colors.sun); // 这里colors.sun其实是泛指天体颜色
+                if (moonY < horizon + 50) lightSource = {x: moonX, y: moonY, color: colors.sun};
+            }
+            // 绘制太阳
+            if (sunY < horizon + 60) {
+                drawCelestialBody(sunX, sunY, false, colors.sun);
+                if (sunY < horizon + 50) lightSource = {x: sunX, y: sunY, color: colors.sun};
+            }
+
+            // 7. 绘制大海 (覆盖天体下半部分)
+            drawOcean(colors, lightSource, horizon);
+
+            requestAnimationFrame(drawScene);
+        }
+
+        function drawCelestialBody(x, y, isMoon, color) {
+            const size = isMoon ? 45 : 60;
+            const horizon = height * 0.6;
+            
+            // 如果完全在海面下，不画
+            if (y - size > horizon) return;
+
+            // 光晕
+            for(let i=0; i<5; i++) {
+                let r = size + i*10 + Math.sin(time*0.1)*2;
+                let alpha = (1 - i/5) * 0.3;
+                // 接近海平面时，光晕减弱
+                let distToHorizon = horizon - y;
+                if (distToHorizon < 100) alpha *= Math.max(0, distToHorizon/100);
+
+                ctx.strokeStyle = `rgba(${color[0]}, ${color[1]}, ${color[2]}, ${alpha})`;
+                ctx.beginPath();
+                ctx.arc(x, y, r, 0, Math.PI*2);
+                ctx.stroke();
+            }
+
+            // 本体
+            ctx.fillStyle = rgb(color);
+            ctx.beginPath();
+            ctx.arc(x, y, size, 0, Math.PI*2);
+            ctx.fill();
+            
+            // 月亮纹理
+            if (isMoon) {
+                ctx.fillStyle = 'rgba(0,0,0,0.1)';
+                ctx.beginPath(); ctx.arc(x-10, y-5, 8, 0, Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(x+5, y+10, 5, 0, Math.PI*2); ctx.fill();
+            }
+        }
+
+        function drawOcean(colors, lightSource, horizon) {
+            // 海底色
+            ctx.fillStyle = rgb(colors.sea);
+            ctx.fillRect(0, horizon, width, height - horizon);
+
+            // 只有当光源存在且高于一定高度时才有强反射
+            let reflectionOpacity = 0;
+            if (lightSource) {
+                // 计算可见度：如果光源中心在海平线以下，强度迅速衰减
+                let distAbove = horizon - lightSource.y; // >0 在上方
+                // 线性衰减：光源中心距离海平面 0 到 -80 像素之间消失
+                if (distAbove > -80) {
+                     reflectionOpacity = 1;
+                     if (distAbove < 50) { // 接近海面时开始减弱
+                         reflectionOpacity = (distAbove + 80) / 130;
+                     }
+                }
+            }
+            if (reflectionOpacity < 0) reflectionOpacity = 0;
+
+            // 海浪绘制
+            const rows = 45;
+            for (let i = 0; i < rows; i++) {
+                let pct = i / rows;
+                let y = horizon + Math.pow(pct, 2) * (height - horizon);
+                let step = 20 + pct * 30;
+                
+                for (let x = 0; x < width; x += step) {
+                    // 正弦波浪运动
+                    let waveX = x + Math.sin(time*0.02 + i + x*0.01) * 10;
+                    
+                    let isReflect = false;
+                    let reflectAlpha = 0;
+                    
+                    if (lightSource && reflectionOpacity > 0.01) {
+                        let dist = Math.abs(waveX - lightSource.x);
+                        let reflectW = 80 + pct * 500; // 倒影呈梯形
+                        if (dist < reflectW / 2) {
+                            isReflect = true;
+                            reflectAlpha = 1 - (dist/(reflectW/2));
+                            // 随着光源没入，整体变暗
+                            reflectAlpha *= reflectionOpacity;
+                        }
+                    }
+                    
+                    ctx.beginPath();
+                    ctx.lineWidth = 3 + pct * 5;
+                    
+                    if (isReflect) {
+                        // 反射光
+                        let glimmer = 0.5 + Math.sin(time*0.1 + waveX)*0.5;
+                        ctx.strokeStyle = `rgba(${lightSource.color[0]}, ${lightSource.color[1]}, ${lightSource.color[2]}, ${reflectAlpha * glimmer})`;
+                    } else {
+                        // 普通浪花 (稍暗)
+                        ctx.strokeStyle = `rgba(${colors.sea[0]*0.9}, ${colors.sea[1]*0.9}, ${colors.sea[2]*0.9}, 0.6)`;
+                    }
+                    
+                    ctx.moveTo(waveX, y);
+                    ctx.lineTo(waveX + step*0.8, y);
+                    ctx.stroke();
+                }
+            }
+        }
+
+        resize();
+        initEntities();
+        drawScene();
+
+    </script>
+</body>
+</html>

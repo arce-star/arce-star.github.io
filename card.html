@@ -3,384 +3,131 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Frontend Demo - Ultimate Interactive</title>
+    <title>Void Reactor</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.19.0/matter.min.js"></script>
     <style>
-        /* 使用系统默认字体作为后备，防止加载失败导致文字消失 */
-        @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;500;700&display=swap');
-
-        :root {
-            --primary: #00d2ff;
-            --accent: #ff0055;
-            --warning: #ffcc00;
-            --dark: #0f172a;
-            --border: rgba(255, 255, 255, 0.3);
-            /* 动态变量，由JS控制 */
-            --energy-color: #00d2ff; 
-            --energy-glow: 10px;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            height: 100vh; width: 100%; display: flex; justify-content: center; align-items: center;
-            background-color: var(--dark); 
-            font-family: 'Rajdhani', 'Segoe UI', sans-serif; /* 字体回退机制 */
-            overflow: hidden;
-            perspective: 1000px;
-            user-select: none;
-        }
-
-        #bg-canvas { position: absolute; top: 0; left: 0; z-index: 0; opacity: 0.5; }
-
-        /* --- 核心容器 --- */
-        .card-wrapper {
-            position: relative; z-index: 10; width: 380px; height: 450px;
-            transform-style: preserve-3d; /* 关键：保持3D空间 */
-            transition: transform 0.1s ease-out; /* 丝滑跟随 */
-        }
-
-        /* 
-           重点修复：将背景和内容分离。
-           .glass-layer 负责背景和 overflow:hidden
-           .content-layer 负责文字和 translateZ 
-        */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;500;700&display=swap');
+        :root { --neon-blue: #00f3ff; --neon-red: #ff0055; --base-width: 360px; --base-height: 520px; }
+        body { margin: 0; height: 100vh; background: #050505 radial-gradient(circle at 50% 50%, #1a1a2e 0%, #000 70%); display: flex; justify-content: center; align-items: center; font-family: 'Rajdhani', sans-serif; overflow: hidden; perspective: 1200px; }
         
-        /* 1. 玻璃背景层 */
-        .glass-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(16px); 
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid var(--border);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-            overflow: hidden; /* 这里隐藏溢出的高光 */
-            transform: translateZ(0px); /* 基准面 */
-            pointer-events: none; /* 让鼠标事件穿透给内容 */
-        }
-
-        /* 动态高光 */
-        .glare {
-            position: absolute; width: 200%; height: 200%; top: -50%; left: -50%;
-            background: radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
-            mix-blend-mode: overlay;
-            opacity: 0; transform: translateZ(1px);
-        }
-
-        /* 2. 内容悬浮层 (不设 overflow:hidden) */
-        .content-layer {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 30px;
-            display: flex; flex-direction: column; justify-content: space-between;
-            transform-style: preserve-3d; /* 让子元素继续悬浮 */
-            pointer-events: auto; /* 恢复交互 */
-        }
-
-        /* --- 内部元素样式 --- */
-        .header { 
-            display: flex; justify-content: space-between; align-items: flex-start; 
-            transform: translateZ(40px); 
-        }
-
-        /* 全息雷达动画 */
-        .radar-container {
-            width: 60px; height: 60px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-radius: 50%;
-            position: relative;
-            background: radial-gradient(rgba(0, 210, 255, 0.1), transparent);
-        }
-        .radar-line {
-            width: 50%; height: 2px;
-            background: var(--energy-color);
-            position: absolute; top: 50%; left: 50%;
-            transform-origin: 0 0;
-            box-shadow: 0 0 10px var(--energy-color);
-            animation: radar-spin 2s linear infinite;
-        }
-        @keyframes radar-spin { to { transform: rotate(360deg); } }
-
-        .tag {
-            background: rgba(0,0,0,0.4); padding: 5px 10px; border-radius: 4px;
-            font-size: 0.8rem; color: var(--border); border: 1px solid var(--border);
-        }
-
-        .main-info { transform: translateZ(60px); }
-        .main-info h2 { color: var(--energy-color); font-size: 1rem; letter-spacing: 2px; margin-bottom: 5px; transition: color 0.3s;}
-        .main-info h1 { 
-            color: white; font-size: 3rem; line-height: 0.9; 
-            text-shadow: 0 5px 15px rgba(0,0,0,0.5);
-            margin-bottom: 15px;
-        }
-
-        /* 能量滑块区域 */
-        .control-panel {
-            background: rgba(0,0,0,0.3);
-            padding: 15px;
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.1);
-            transform: translateZ(50px);
-        }
+        #scaler { transform-origin: center center; width: var(--base-width); height: var(--base-height); position: relative; }
+        .card-scene { width: 100%; height: 100%; transform-style: preserve-3d; }
+        .card { width: 100%; height: 100%; position: relative; transform-style: preserve-3d; border-radius: 20px; background: rgba(10, 10, 15, 0.6); box-shadow: 0 0 0 1px rgba(255,255,255,0.3), 0 30px 60px rgba(0,0,0,0.6); transition: transform 0.1s; }
         
-        .control-label {
-            display: flex; justify-content: space-between; color: #aaa; font-size: 0.8rem; margin-bottom: 10px;
-        }
-
-        /* 自定义 Range Slider */
-        input[type=range] {
-            -webkit-appearance: none; width: 100%; background: transparent;
-        }
-        input[type=range]:focus { outline: none; }
+        .layer-portal, .layer-holo, #physics-canvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 20px; pointer-events: none; }
+        .layer-portal { transform: translateZ(-40px); overflow: hidden; }
+        .portal-grid { position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background-image: linear-gradient(rgba(255,255,255,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.3) 1px, transparent 1px); background-size: 40px 40px; transform: perspective(500px) rotateX(60deg); opacity: 0.15; }
+        .portal-glow { position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; background: radial-gradient(circle, var(--neon-blue) 0%, transparent 70%); transform: translate(-50%, -50%); opacity: 0.3; mix-blend-mode: screen; animation: pulse 4s infinite alternate; }
         
-        /* 滑轨 */
-        input[type=range]::-webkit-slider-runnable-track {
-            width: 100%; height: 6px; cursor: pointer;
-            background: rgba(255,255,255,0.1); border-radius: 3px;
-        }
-        /* 滑块 */
-        input[type=range]::-webkit-slider-thumb {
-            height: 20px; width: 20px; border-radius: 50%;
-            background: var(--energy-color);
-            box-shadow: 0 0 var(--energy-glow) var(--energy-color);
-            cursor: pointer; -webkit-appearance: none;
-            margin-top: -7px;
-            transition: transform 0.1s, box-shadow 0.3s, background 0.3s;
-        }
-        input[type=range]:active::-webkit-slider-thumb {
-            transform: scale(1.3);
-        }
-
-        /* 底部数据 */
-        .footer-stats {
-            display: flex; gap: 15px; transform: translateZ(30px); margin-top: 20px;
-        }
-        .stat-item { flex: 1; }
-        .bar-bg { width: 100%; height: 4px; background: rgba(255,255,255,0.1); border-radius: 2px; overflow: hidden; margin-top: 5px; }
-        .bar-fill { height: 100%; width: 0%; background: var(--energy-color); transition: width 0.5s ease, background 0.3s; box-shadow: 0 0 10px var(--energy-color); }
-
-        /* 震动动画 Class */
-        .shake-mode { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both infinite; }
-
-        @keyframes shake {
-            10%, 90% { transform: translate3d(-1px, 0, 0) rotateY(var(--rotY)) rotateX(var(--rotX)); }
-            20%, 80% { transform: translate3d(2px, 0, 0) rotateY(var(--rotY)) rotateX(var(--rotX)); }
-            30%, 50%, 70% { transform: translate3d(-4px, 0, 0) rotateY(var(--rotY)) rotateX(var(--rotX)); }
-            40%, 60% { transform: translate3d(4px, 0, 0) rotateY(var(--rotY)) rotateX(var(--rotX)); }
-        }
-
+        #physics-canvas { transform: translateZ(10px); }
+        .layer-holo { background: linear-gradient(135deg, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,0,255,0.3) 45%, rgba(0,255,255,0.3) 50%, rgba(255,255,0,0.3) 55%, transparent 100%); background-size: 300% 300%; mix-blend-mode: color-dodge; opacity: 0.6; transform: translateZ(30px); }
+        
+        .layer-ui { position: absolute; top: 0; left: 0; width: 100%; height: 100%; transform: translateZ(40px); color: white; pointer-events: none; }
+        .top-bar { position: absolute; top: 25px; left: 25px; right: 25px; display: flex; justify-content: space-between; }
+        .h-tag { font-family: 'Orbitron'; font-size: 10px; border: 1px solid var(--neon-blue); padding: 4px 8px; color: var(--neon-blue); background: rgba(0,0,0,0.5); }
+        .main-title { position: absolute; top: 120px; left: 25px; }
+        .main-title h1 { font-family: 'Orbitron'; font-weight: 900; font-size: 40px; line-height: 0.9; margin: 0; text-shadow: 0 5px 15px rgba(0,0,0,0.5); background: linear-gradient(to right, #fff, var(--neon-blue)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .control-area { position: absolute; bottom: 25px; left: 25px; right: 25px; background: rgba(0,0,0,0.7); backdrop-filter: blur(12px); padding: 15px 20px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.15); pointer-events: auto; z-index: 100; }
+        
+        input[type="range"] { -webkit-appearance: none; width: 100%; height: 4px; background: rgba(255,255,255,0.2); border-radius: 2px; outline: none; margin-top: 10px; }
+        input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; background: var(--neon-blue); border-radius: 50%; box-shadow: 0 0 10px var(--neon-blue); transition: transform 0.2s; }
+        
+        .card.danger-mode { animation: shake 0.2s infinite; border-color: var(--neon-red); box-shadow: 0 0 20px var(--neon-red); }
+        .card.danger-mode .h-tag { border-color: var(--neon-red); color: var(--neon-red); }
+        
+        #shatter-container { position: absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+        .shard { position: absolute; background: rgba(255,255,255,0.9); box-shadow: 0 0 10px var(--neon-blue); }
+        .reboot-screen { position: absolute; top:0; left:0; width:100%; height:100%; background: #000; display: flex; justify-content: center; align-items: center; z-index: 200; opacity: 0; pointer-events: none; transition: opacity 0.5s; color: white; font-family: 'Orbitron'; }
+        .reboot-screen.visible { opacity: 1; pointer-events: auto; }
+        
+        @keyframes pulse { to { transform: translate(-50%,-50%) scale(1.2); opacity: 0.6; } }
+        @keyframes shake { 0% { transform: translate(1px, 1px); } 50% { transform: translate(-1px, -1px); } 100% { transform: translate(0, 2px); } }
     </style>
 </head>
 <body>
-
-    <canvas id="bg-canvas"></canvas>
-
-    <!-- 卡片主体 Wrapper -->
-    <div class="card-wrapper" id="card">
-        
-        <!-- 层级1：玻璃背景 (负责高光和边框) -->
-        <div class="glass-layer">
-            <div class="glare" id="glare"></div>
-        </div>
-
-        <!-- 层级2：内容实体 (负责文字和交互，Z轴突起) -->
-        <div class="content-layer">
-            
-            <div class="header">
-                <div class="radar-container">
-                    <div class="radar-line"></div>
-                </div>
-                <div class="tag">MK-85</div>
-            </div>
-
-            <div class="main-info">
-                <h2>SYSTEM CORE</h2>
-                <h1>ARC<br>REACTOR</h1>
-                
-                <!-- 交互组件：能量滑块 -->
-                <div class="control-panel">
-                    <div class="control-label">
-                        <span>ENERGY OUTPUT</span>
-                        <span id="output-val">50%</span>
+    <div id="scaler">
+        <div class="card-scene" id="scene">
+            <div class="card" id="card">
+                <div class="layer-portal"><div class="portal-grid" id="portal-grid"></div><div class="portal-glow"></div></div>
+                <canvas id="physics-canvas"></canvas>
+                <div class="layer-holo" id="holo-foil"></div>
+                <div id="shatter-container"></div>
+                <div class="layer-ui">
+                    <div class="top-bar"><div class="h-tag">VOID INC.</div><div class="h-tag" id="status-tag">STABLE</div></div>
+                    <div class="main-title"><h1>REACTOR<br>CORE</h1><p>QUANTUM SINGULARITY</p></div>
+                    <div class="control-area">
+                        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--neon-blue); font-weight:700;"><span>ENERGY LEVEL</span><span id="energy-val">20%</span></div>
+                        <input type="range" id="slider" min="0" max="100" value="20">
                     </div>
-                    <input type="range" id="energy-slider" min="0" max="100" value="50">
                 </div>
             </div>
-
-            <div class="footer-stats">
-                <div class="stat-item">
-                    <span style="color: #aaa; font-size: 0.8rem;">TEMP</span>
-                    <div class="bar-bg"><div class="bar-fill" id="bar-temp" style="width: 40%"></div></div>
-                </div>
-                <div class="stat-item">
-                    <span style="color: #aaa; font-size: 0.8rem;">LOAD</span>
-                    <div class="bar-bg"><div class="bar-fill" id="bar-load" style="width: 60%"></div></div>
-                </div>
-            </div>
-
+            <div class="reboot-screen" id="reboot-screen"><p>REBOOTING SYSTEM...</p></div>
         </div>
     </div>
-
     <script>
-        // === 1. 3D 视差核心 (修复版) ===
-        const card = document.getElementById('card');
-        const glare = document.getElementById('glare');
-        let bounds;
-
-        function rotateToMouse(e) {
-            bounds = card.getBoundingClientRect();
-            const mouseX = e.clientX;
-            const mouseY = e.clientY;
-            const leftX = mouseX - bounds.x;
-            const topY = mouseY - bounds.y;
-            
-            const center = {
-                x: leftX - bounds.width / 2,
-                y: topY - bounds.height / 2
-            }
-            
-            const distance = Math.sqrt(center.x**2 + center.y**2);
-
-            // 旋转角度
-            const rotX = (center.y / 100) * -1.5; // 上下翻转
-            const rotY = (center.x / 100) * 1.5;  // 左右翻转
-            
-            // 存入CSS变量供震动动画使用
-            card.style.setProperty('--rotX', rotX + 'deg');
-            card.style.setProperty('--rotY', rotY + 'deg');
-
-            // 如果处于震动模式，不应用这里的 transform，交给 animation 处理
-            if (!card.classList.contains('shake-mode')) {
-                card.style.transform = `rotateX(${rotX}deg) rotateY(${rotY}deg)`;
-            }
-
-            // 高光移动
-            const glareX = 50 + (center.x / bounds.width) * 100;
-            const glareY = 50 + (center.y / bounds.height) * 100;
-            glare.style.background = `radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255, 255, 255, 0.3) 0%, transparent 80%)`;
-            glare.style.opacity = '1';
-        }
-
-        document.addEventListener('mousemove', rotateToMouse);
+        const card = document.getElementById('card'), scene = document.getElementById('scene'), foil = document.getElementById('holo-foil'), grid = document.getElementById('portal-grid');
+        const slider = document.getElementById('slider'), statusTag = document.getElementById('status-tag'), reboot = document.getElementById('reboot-screen');
+        let destroyed = false, unstable = false;
         
-        // 鼠标离开回正
-        document.addEventListener('mouseleave', () => {
-            if (!card.classList.contains('shake-mode')) {
-                card.style.transform = `rotateX(0deg) rotateY(0deg)`;
-            }
-            glare.style.opacity = '0';
+        // 1. 缩放适配
+        function fit() { const s = Math.min((window.innerWidth-20)/360, (window.innerHeight-20)/520, 1.1); document.getElementById('scaler').style.transform = `scale(${s})`; }
+        window.addEventListener('resize', fit); fit();
+
+        // 2. 物理引擎
+        const {Engine, Render, World, Bodies, Runner, Body} = Matter;
+        const engine = Engine.create(), canvas = document.getElementById('physics-canvas');
+        const render = Render.create({ canvas, engine, options: { width: 360, height: 520, background: 'transparent', wireframes: false } });
+        const floorY = 520 - 90; // 隐形地板
+        World.add(engine.world, [
+            Bodies.rectangle(180, floorY+25, 360, 50, {isStatic:true, render:{visible:false}}),
+            Bodies.rectangle(180, -25, 360, 50, {isStatic:true}),
+            Bodies.rectangle(385, 260, 50, 520, {isStatic:true}),
+            Bodies.rectangle(-25, 260, 50, 520, {isStatic:true})
+        ]);
+        const particles = []; const colors = ['#00f3ff', '#bc13fe', '#fff'];
+        for(let i=0; i<20; i++) particles.push(Bodies.circle(Math.random()*360, Math.random()*200, Math.random()*6+4, {restitution:0.9, render:{fillStyle:colors[i%3]}}));
+        World.add(engine.world, particles);
+        Runner.run(Runner.create(), engine); Render.run(render);
+
+        // 3. 交互 (鼠标+触摸)
+        function move(x, y) {
+            if(destroyed) return;
+            const w = window.innerWidth, h = window.innerHeight;
+            const dx = (x - w/2)/(w/2), dy = (y - h/2)/(h/2);
+            scene.style.transform = `rotateX(${dy*-10}deg) rotateY(${dx*10}deg)`;
+            engine.world.gravity.x = dx*2; engine.world.gravity.y = 1 + dy*2;
+            foil.style.backgroundPosition = `${50+dx*20}% ${50+dy*20}%`;
+            grid.style.transform = `perspective(500px) rotateX(60deg) translate(${dx*-20}px, ${dy*-10}px)`;
+        }
+        document.addEventListener('mousemove', e => move(e.clientX, e.clientY));
+        document.addEventListener('touchmove', e => { e.preventDefault(); move(e.touches[0].clientX, e.touches[0].clientY); }, {passive:false});
+
+        // 4. 逻辑
+        slider.addEventListener('input', e => {
+            if(destroyed) return;
+            const v = +e.target.value;
+            document.getElementById('energy-val').innerText = v + '%';
+            if(Math.random() < v/150) particles.forEach(p => Body.applyForce(p, p.position, {x:(Math.random()-.5)*.005, y:-.00015*v}));
+            if(v >= 95 && !unstable) { unstable = true; card.classList.add('danger-mode'); statusTag.innerText="CRITICAL"; statusTag.style.color="var(--neon-red)"; statusTag.style.borderColor="var(--neon-red)"; particles.forEach(p=>p.render.fillStyle='#ff0055'); }
+            else if(v < 95 && unstable) { unstable = false; card.classList.remove('danger-mode'); statusTag.innerText="STABLE"; statusTag.style.color="var(--neon-blue)"; statusTag.style.borderColor="var(--neon-blue)"; particles.forEach((p,i)=>p.render.fillStyle=colors[i%3]); }
         });
 
-        // === 2. 交互逻辑：能量滑块 ===
-        const slider = document.getElementById('energy-slider');
-        const outputVal = document.getElementById('output-val');
-        const root = document.documentElement;
-        const barTemp = document.getElementById('bar-temp');
-        const barLoad = document.getElementById('bar-load');
-        const radar = document.querySelector('.radar-line');
-
-        slider.addEventListener('input', (e) => {
-            const val = parseInt(e.target.value);
-            outputVal.innerText = val + "%";
-
-            // 1. 改变颜色逻辑：安全蓝 -> 警告黄 -> 危险红
-            let newColor;
-            if (val < 60) {
-                newColor = '#00d2ff'; // 蓝
-                card.classList.remove('shake-mode');
-            } else if (val < 90) {
-                newColor = '#ffcc00'; // 黄
-                card.classList.remove('shake-mode');
-            } else {
-                newColor = '#ff0055'; // 红
-                card.classList.add('shake-mode'); // 触发震动
-                // 在震动模式下，我们需要手动更新 transform 保持角度，或者让动画处理
-            }
-
-            // 2. 更新 CSS 变量，影响所有发光的组件
-            root.style.setProperty('--energy-color', newColor);
-            root.style.setProperty('--energy-glow', `${val / 3}px`); // 发光强度随数值增强
-
-            // 3. 联动进度条
-            barTemp.style.width = (val * 0.8) + "%";
-            barLoad.style.width = (val * 1.1 > 100 ? 100 : val * 1.1) + "%";
-
-            // 4. 雷达转速 (数值越大，动画时间越短)
-            const speed = 2 - (val / 100) * 1.8; // 最快 0.2s
-            radar.style.animationDuration = `${speed}s`;
-        });
-
-        // === 3. 背景 Canvas (增加了响应能量颜色的逻辑) ===
-        const canvas = document.getElementById('bg-canvas');
-        const ctx = canvas.getContext('2d');
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-
-        let particlesArray = [];
-
-        class Particle {
-            constructor() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 2;
-                this.speedX = Math.random() * 2 - 1;
-                this.speedY = Math.random() * 2 - 1;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-            }
-            draw() {
-                // 粒子颜色跟随 CSS 变量
-                ctx.fillStyle = getComputedStyle(root).getPropertyValue('--energy-color').trim() || '#00d2ff';
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        function init() {
-            particlesArray = [];
-            for (let i = 0; i < 80; i++) particlesArray.push(new Particle());
-        }
-        init();
-
-        function animate() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // 连线颜色也跟随
-            const color = getComputedStyle(root).getPropertyValue('--energy-color').trim();
-            
-            for (let i = 0; i < particlesArray.length; i++) {
-                particlesArray[i].update();
-                particlesArray[i].draw();
-                
-                for (let j = i; j < particlesArray.length; j++) {
-                    const dx = particlesArray[i].x - particlesArray[j].x;
-                    const dy = particlesArray[i].y - particlesArray[j].y;
-                    const dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist < 100) {
-                        ctx.beginPath();
-                        ctx.strokeStyle = color;
-                        ctx.globalAlpha = 1 - dist/100;
-                        ctx.lineWidth = 0.5;
-                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
-                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
-                        ctx.stroke();
-                        ctx.globalAlpha = 1;
-                    }
+        card.addEventListener('click', e => {
+            if(e.target === slider || destroyed) return;
+            if(!unstable) { scene.style.transform += " scale(0.98)"; setTimeout(()=>scene.style.transform=scene.style.transform.replace(" scale(0.98)",""), 100); }
+            else {
+                destroyed = true; card.style.opacity = 0;
+                const cont = document.getElementById('shatter-container'); cont.style.display='block';
+                for(let i=0; i<50; i++) {
+                    const s = document.createElement('div'); s.className='shard';
+                    s.style.cssText = `width:${Math.random()*40+10}px; height:${Math.random()*40+10}px; left:${Math.random()*360}px; top:${Math.random()*520}px; clip-path:polygon(${Math.random()*100}% 0, 100% ${Math.random()*100}%, 0 100%);`;
+                    cont.appendChild(s);
+                    s.animate([{transform:'translate(0,0)', opacity:1}, {transform:`translate(${(Math.random()-.5)*800}px, ${(Math.random()-.5)*800}px) rotate(${Math.random()*360}deg)`, opacity:0}], {duration:1000, fill:'forwards'});
                 }
+                setTimeout(()=>{ reboot.classList.add('visible'); cont.innerHTML=''; }, 1500);
+                setTimeout(()=>{ reboot.classList.remove('visible'); destroyed=false; unstable=false; card.classList.remove('danger-mode'); slider.value=20; card.style.opacity=1; cont.style.display='none'; statusTag.innerText="STABLE"; statusTag.style.color="var(--neon-blue)"; statusTag.style.borderColor="var(--neon-blue)"; particles.forEach((p,i)=>p.render.fillStyle=colors[i%3]); }, 4500);
             }
-            requestAnimationFrame(animate);
-        }
-        animate();
-
-        window.addEventListener('resize', () => {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            init();
         });
-
     </script>
 </body>
 </html>

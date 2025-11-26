@@ -1,12 +1,12 @@
-<!-- 2.0版本 新增前端小网页功能 -->
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>摇摇乐 - 主页</title>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        /* --- 保持原有的基础样式 --- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -28,7 +28,6 @@
         .nav-link:hover { transform: translateY(-5px); color: #3498db; }
         .nav-icon { font-size: 3rem; margin-bottom: 15px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #f8f9fa; transition: background-color 0.3s; }
         .nav-link:hover .nav-icon { background-color: #e3f2fd; }
-        .nav-text { font-size: 1.2rem; font-weight: 500; }
         
         .back-home { display: inline-block; margin-top: 30px; padding: 10px 20px; background-color: #f8f9fa; color: #333; text-decoration: none; border-radius: 5px; transition: background-color 0.3s; }
         .back-home:hover { background-color: #e9ecef; }
@@ -39,37 +38,18 @@
         .page.active { display: block; }
         .page-header { text-align: center; margin-bottom: 40px; }
         .page-title { font-size: 2rem; margin-bottom: 10px; color: #222; }
-        .page-content { text-align: left; }
 
-        /* --- 原有业务样式保持不变 (阅读、拾贝等) --- */
-        .reading-list { list-style: none; }
-        .reading-item { margin-bottom: 30px; padding: 20px; border-radius: 8px; background-color: #f8f9fa; transition: transform 0.3s; }
-        .reading-item:hover { transform: translateX(5px); }
-        .reading-title { font-size: 1.3rem; margin-bottom: 10px; color: #222; }
-        .reading-meta { color: #666; font-size: 0.9rem; margin-bottom: 10px; }
+        /* 内容样式 */
+        .reading-item, .collection-item, .skill-card { 
+            background: #f8f9fa; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: left;
+        }
+        .collection-grid, .skills-grid { display: grid; gap: 20px; }
+        .collection-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
         
-        .collection-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
-        .collection-item { background: #f8f9fa; padding: 20px; border-radius: 8px; text-align: center; transition: transform 0.3s; }
-        .collection-item:hover { transform: scale(1.05); }
-        .collection-icon { font-size: 2rem; margin-bottom: 10px; color: #e74c3c; }
-
-        /* --- Skills 样式 --- */
-        .skills-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(400px, 1fr)); gap: 25px; padding: 20px; }
-        .skill-card { background: linear-gradient(145deg, #ffffff, #f8f9fa); padding: 30px; border-radius: 16px; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.8); overflow: hidden; }
-        .skill-card:hover { transform: translateY(-5px); }
-        .skill-name { font-size: 1.4rem; margin-bottom: 25px; color: #2d3748; font-weight: 600; }
-        .skill-steps { text-align: left; margin-bottom: 20px; }
-        .step { margin-bottom: 10px; display: flex; align-items: flex-start; }
-        .step-number { background: #3498db; color: white; width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; margin-right: 10px; flex-shrink: 0; }
-        .skill-image img { width: 100%; height: 250px; object-fit: cover; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); transition: all 0.3s ease; }
-        .skill-image img:hover { transform: scale(1.02); }
-
-        /* =========================================
-           新增：前端小网页页面样式 (左侧目录，右侧预览)
-           ========================================= */
+        /* === 前端实验室响应式布局 === */
         .frontend-container {
             display: flex;
-            height: 70vh; /* 占据视口高度 */
+            height: 80vh;
             background: #fff;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
@@ -77,23 +57,18 @@
             border: 1px solid #eee;
         }
 
-        /* 左侧边栏 */
         .frontend-sidebar {
-            width: 170px;
+            width: 180px;
             background: #f8f9fa;
             border-right: 1px solid #eee;
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 15px;
+            flex-shrink: 0;
         }
 
-        .frontend-sidebar h3 {
-            font-size: 1.1rem;
-            color: #666;
-            margin-bottom: 10px;
-            padding-left: 10px;
-        }
+        .frontend-sidebar h3 { font-size: 1.1rem; color: #666; margin-bottom: 10px; padding-left: 10px; }
 
         .demo-btn {
             padding: 15px;
@@ -106,295 +81,136 @@
             color: #444;
             transition: all 0.3s;
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            display: flex; align-items: center; gap: 10px;
+            width: 100%;
         }
-
-        .demo-btn i { color: #3498db; }
-
-        .demo-btn:hover {
-            background: #e3f2fd;
-            color: #3498db;
-            transform: translateX(5px);
-        }
-
-        .demo-btn.active-btn {
-            background: #3498db;
-            color: white;
-        }
+        .demo-btn:hover { background: #e3f2fd; color: #3498db; transform: translateX(5px); }
+        .demo-btn.active-btn { background: #3498db; color: white; }
         .demo-btn.active-btn i { color: white; }
 
-        /* 右侧展示区 */
         .frontend-display {
             flex: 1;
             position: relative;
-            background: #111; /* 默认黑色背景，因为那两个demo都是黑底 */
+            background: #111;
+            overflow: hidden;
         }
+        #demo-frame { width: 100%; height: 100%; border: none; display: block; }
+        .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); text-align: center; pointer-events: none; width: 100%; }
 
-        #demo-frame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            display: block;
+        /* 手机端适配 */
+        @media (max-width: 768px) {
+            .container { padding: 0 10px; }
+            .nav-link { width: 100px; padding: 15px; }
+            .nav-icon { width: 60px; height: 60px; font-size: 2rem; }
+            
+            .frontend-container { flex-direction: column; height: 85vh; }
+            .frontend-sidebar {
+                width: 100%; height: auto; flex-direction: row; overflow-x: auto;
+                padding: 10px; border-right: none; border-bottom: 1px solid #eee;
+                gap: 10px; align-items: center; scrollbar-width: none;
+            }
+            .frontend-sidebar::-webkit-scrollbar { display: none; }
+            .frontend-sidebar h3 { display: none; }
+            .demo-btn { min-width: 130px; width: auto; padding: 10px; font-size: 0.9rem; justify-content: center; }
+            .demo-btn:hover { transform: none; }
+            .empty-state i { transform: rotate(-90deg); margin-bottom: 10px; display: block; }
         }
-
-        .empty-state {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            color: rgba(255,255,255,0.3);
-            text-align: center;
-            pointer-events: none;
-        }
-
-        @media (max-width: 1068px) {
-            .frontend-container { flex-direction: column; height: 800px; }
-            .frontend-sidebar { width: 100%; flex-direction: row; overflow-x: auto; }
-            .demo-btn { min-width: 150px; }
-        }
-
     </style>
 </head>
 <body>
-    <!-- 主页 -->
     <div id="home-page" class="page active">
         <div class="container">
-            <div class="logo">
-                <i class="fas fa-seedling"></i>
-            </div>
-            
+            <div class="logo"><i class="fas fa-seedling"></i></div>
             <h1>摇摇乐的主页</h1>
-            
             <div class="nav-links">
                 <a class="nav-link" onclick="showPage('reading-page')">
                     <div class="nav-icon"><i class="fas fa-book"></i></div>
                     <div class="nav-text">阅读</div>
                 </a>
-                
                 <a class="nav-link" onclick="showPage('skills-page')">
                     <div class="nav-icon"><i class="fas fa-lightbulb"></i></div>
                     <div class="nav-text">小技能</div>
                 </a>
-                
                 <a class="nav-link" onclick="showPage('collection-page')">
                     <div class="nav-icon"><i class="fas fa-star"></i></div>
                     <div class="nav-text">拾贝</div>
                 </a>
-
-                <!-- 新增：前端小网页按钮 -->
                 <a class="nav-link" onclick="showPage('frontend-page')">
                     <div class="nav-icon" style="color: #3498db;"><i class="fas fa-code"></i></div>
                     <div class="nav-text">前端网页</div>
                 </a>
             </div>
-            
-            <footer>
-                <p>© 2024 摇摇乐</p>
-            </footer>
+            <footer><p>© 2024 摇摇乐</p></footer>
         </div>
     </div>
 
-    <!-- 阅读页面 -->
     <div id="reading-page" class="page">
-        <div class="page-header">
-            <h2 class="page-title">阅读</h2>
-            <p>记录阅读与思考</p>
-        </div>
+        <div class="page-header"><h2>阅读</h2><p>记录阅读与思考</p></div>
         <div class="page-content">
-            <ul class="reading-list">
-                <li class="reading-item">
-                    <h3 class="reading-title">《我是潘金莲》</h3>
-                    <div class="reading-meta">2025年10月 · 官场黑暗</div>
-                    <p class="reading-description">他们不想死，但看到的常常都是死路。</p>
-                </li>
-                <li class="reading-item">
-                    <h3 class="reading-title">《雪国》</h3>
-                    <div class="reading-meta">待读 · 文学经典</div>
-                    <p class="reading-description">穿过县界长长的隧道，便是雪国。夜空下一片白茫茫。</p>
-                </li>
-            </ul>
-            <div style="text-align:center;">
-                <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
-            </div>
+            <div class="reading-item"><h3>《我是潘金莲》</h3><p>他们不想死，但看到的常常都是死路。</p></div>
+            <div class="reading-item"><h3>《雪国》</h3><p>穿过县界长长的隧道，便是雪国。</p></div>
+            <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
         </div>
     </div>
 
-    <!-- 小技能页面 -->
     <div id="skills-page" class="page">
-        <div class="page-header">
-            <h2 class="page-title">小技能</h2>
-            <p>实用技能与操作</p>
-        </div>
+        <div class="page-header"><h2>小技能</h2><p>实用技能与操作</p></div>
         <div class="page-content">
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <h3 class="skill-name">PS融合效果</h3>
-                    <div class="skill-description">
-                        <div class="skill-steps">
-                            <div class="step"><span class="step-number">1</span><span class="step-text">创建形状并添加描边</span></div>
-                            <div class="step"><span class="step-number">2</span><span class="step-text">属性面板应用蒙版，羽化值设为16</span></div>
-                            <div class="step"><span class="step-number">3</span><span class="step-text">添加色阶调整层，左右滑块向中间调整至2/3位置</span></div>
-                            <div class="step"><span class="step-number">4</span><span class="step-text">复制图层，相交区域自动产生躲避效果</span></div>
-                        </div>
-                        <div class="skill-image">
-                            <!-- 请确保图片同目录下有 PS融合效果.png，否则会显示破图 -->
-                            <img src="PS融合效果.png" alt="PS融合效果示例" onerror="this.src='https://via.placeholder.com/400x250?text=PS+Effect'">
-                        </div>
-                    </div>
-                </div>
-                <div class="skill-card">
-                    <h3 class="skill-name">PS文字肖像</h3>
-                    <div class="skill-description">
-                        <div class="skill-steps">
-                            <div class="step"><span class="step-number">1</span><span class="step-text">载入图片后执行高斯模糊 数值5，保存文件</span></div>
-                            <div class="step"><span class="step-number">2</span><span class="step-text">输入满屏白色文字，右键栅格化文字</span></div>
-                            <div class="step"><span class="step-number">3</span><span class="step-text">执行滤镜-扭曲-置换，选择刚刚保存的文件</span></div>
-                            <div class="step"><span class="step-number">4</span><span class="step-text">Ctrl点击文字图层选区，给肖像图层加蒙版</span></div>
-                        </div>
-                        <div class="skill-image">
-                            <img src="PS文字肖像.png" alt="PS文字肖像效果示例" onerror="this.src='https://via.placeholder.com/400x250?text=Text+Portrait'">
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div style="text-align:center;">
-                <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
-            </div>
+            <div class="skill-card"><h3>PS融合效果</h3><p>蒙版与羽化值的巧妙运用。</p></div>
+            <div class="skill-card"><h3>PS文字肖像</h3><p>置换滤镜与高斯模糊的结合。</p></div>
+            <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
         </div>
     </div>
 
-    <!-- 拾贝页面 -->
     <div id="collection-page" class="page">
-        <div class="page-header">
-            <h2 class="page-title">拾贝</h2>
-            <p>收集有趣的想法与发现</p>
-        </div>
+        <div class="page-header"><h2>拾贝</h2><p>收集有趣的想法</p></div>
         <div class="page-content">
             <div class="collection-grid">
-                <div class="collection-item">
-                    <div class="collection-icon"><i class="fas fa-quote-left"></i></div>
-                    <p>"科学是在不断修正错误中前进的"</p>
-                </div>
-                <div class="collection-item">
-                    <div class="collection-icon"><i class="fas fa-quote-left"></i></div>
-                    <p>"有的兄弟，有的"</p>
-                </div>
-                <div class="collection-item">
-                    <div class="collection-icon"><i class="fas fa-gamepad"></i></div>
-                    <p>"雅典娜优先断兵线，是包赢滴。"</p>
-                </div>
-                <div class="collection-item">
-                    <div class="collection-icon"><i class="fas fa-briefcase"></i></div>
-                    <p>"我进厂辣，桂夏！"</p>
-                </div>
+                <div class="collection-item"><p>"科学是在不断修正错误中前进的"</p></div>
+                <div class="collection-item"><p>"有的兄弟，有的"</p></div>
             </div>
-            <div style="text-align:center;">
-                <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
-            </div>
+            <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
         </div>
     </div>
 
-    <!-- =========================================
-         新增：前端小网页页面结构
-         ========================================= -->
     <div id="frontend-page" class="page">
-        <div class="page-header">
-            <h2 class="page-title">前端实验室</h2>
-            <!-- <p>Code & Magic</p> -->
-        </div>
-
+        <div class="page-header"><h2>前端实验室</h2></div>
         <div class="frontend-container">
-            <!-- 左侧目录 -->
             <div class="frontend-sidebar">
                 <h3>目录</h3>
-                <!-- 
-                     注意：这里点击按钮会加载对应的 .html 文件 
-                     请确保你已经将之前的代码保存为 card.html 和 fluid.html
-                -->
-                <button class="demo-btn" onclick="loadDemo('card.html', this)">
-                    <i class="fas fa-cube"></i> 能量卡片
-                </button>
-                <button class="demo-btn" onclick="loadDemo('fluid.html', this)">
-                    <i class="fas fa-font"></i> 流体文字
-                </button>
-                <button class="demo-btn" onclick="loadDemo('vangogh.html', this)">
-                    <i class="fas fa-magic"></i> 日出与日落
-                </button>
+                <button class="demo-btn" onclick="loadDemo('card.html', this)"><i class="fas fa-cube"></i> 能量卡片</button>
+                <button class="demo-btn" onclick="loadDemo('fluid.html', this)"><i class="fas fa-font"></i> 流体文字</button>
+                <button class="demo-btn" onclick="loadDemo('vangogh.html', this)"><i class="fas fa-magic"></i> 日出日落</button>
             </div>
-
-            <!-- 右侧展示区域 -->
             <div class="frontend-display">
-                <div class="empty-state" id="empty-hint">
-                    <i class="fas fa-arrow-left" style="font-size: 2rem; margin-bottom: 5px;"></i>
-                    <p>点击左侧列表预览效果</p>
-                </div>
-                <!-- iframe 容器 -->
+                <div class="empty-state" id="empty-hint"><i class="fas fa-arrow-left"></i><p>点击列表预览</p></div>
                 <iframe id="demo-frame" src="" frameborder="0"></iframe>
             </div>
         </div>
-
-        <div style="text-align:center;">
-            <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
-        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
     </div>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
     <script>
-        // 页面切换功能
         function showPage(pageId) {
-            // 隐藏所有页面
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // 显示目标页面
-            const targetPage = document.getElementById(pageId);
-            if(targetPage) {
-                targetPage.classList.add('active');
+            document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+            const target = document.getElementById(pageId);
+            if(target) {
+                target.classList.add('active');
                 window.scrollTo(0, 0);
-                
-                // 更新 URL hash
-                const hashName = pageId.replace('-page', '');
-                if(hashName !== 'home') {
-                    history.pushState(null, null, '#' + hashName);
-                } else {
-                    history.pushState(null, null, window.location.pathname);
-                }
+                const hash = pageId === 'home-page' ? '' : '#' + pageId.replace('-page', '');
+                history.pushState(null, null, hash || location.pathname);
             }
         }
-
-        // 新增：加载前端 Demo 的功能
-        function loadDemo(fileName, btnElement) {
-            const iframe = document.getElementById('demo-frame');
-            const emptyHint = document.getElementById('empty-hint');
-            
-            // 设置 iframe 地址
-            iframe.src = fileName;
-            
-            // 隐藏提示文字
-            if(emptyHint) emptyHint.style.display = 'none';
-
-            // 处理按钮高亮状态
-            document.querySelectorAll('.demo-btn').forEach(btn => btn.classList.remove('active-btn'));
-            if(btnElement) btnElement.classList.add('active-btn');
+        function loadDemo(file, btn) {
+            document.getElementById('demo-frame').src = file;
+            document.getElementById('empty-hint').style.display = 'none';
+            document.querySelectorAll('.demo-btn').forEach(b => b.classList.remove('active-btn'));
+            btn.classList.add('active-btn');
         }
-        
-        // 处理URL哈希变化
-        function handleHash() {
-            const hash = window.location.hash.substring(1);
-            if (hash === 'reading') showPage('reading-page');
-            else if (hash === 'skills') showPage('skills-page');
-            else if (hash === 'collection') showPage('collection-page');
-            else if (hash === 'frontend') showPage('frontend-page'); // 新增
-            else showPage('home-page');
-        }
-
-        window.addEventListener('hashchange', handleHash);
-        window.addEventListener('DOMContentLoaded', handleHash);
+        window.addEventListener('DOMContentLoaded', () => {
+            const hash = location.hash.substring(1);
+            if(['reading','skills','collection','frontend'].includes(hash)) showPage(hash + '-page');
+        });
     </script>
 </body>
 </html>

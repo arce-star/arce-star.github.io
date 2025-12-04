@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Yin Yang Blocks Mobile + Level Select</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #111; 
+            transition: background-color 0.4s ease; 
+            overflow: hidden;
+            font-family: 'Arial', sans-serif;
+            user-select: none;
+            -webkit-user-select: none;
+            touch-action: none;
+        }
+
+        #game-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        #gameCanvas {
+            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            background-color: transparent; 
+            border-radius: 4px;
+            max-width: 95vw;
+            height: auto;
+        }
+
+        #instructions {
+            width: 100%;
+            color: #888;
+            text-align: center;
+            pointer-events: none;
+            font-size: 14px;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+            position: relative;
+            pointer-events: auto; /* 允许点击选关按钮 */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+
+        /* 选关按钮样式 */
+        .btn-mini {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #aaa;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+        .btn-mini:hover {
+            background: rgba(255, 255, 255, 0.3);
+            color: #fff;
+        }
+
+        /* --- 选关菜单层 --- */
+        #level-menu {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(10, 10, 10, 0.95);
+            z-index: 200;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+            backdrop-filter: blur(5px);
+            border-radius: 8px;
+        }
+        #level-menu.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .menu-title {
+            color: #fff;
+            font-size: 24px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            letter-spacing: 2px;
+        }
+
+        .level-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr); /* 每行4个 */
+            gap: 15px;
+            max-height: 60vh;
+            overflow-y: auto;
+            padding: 10px;
+        }
+
+        .level-btn {
+            width: 50px;
+            height: 50px;
+            background: #333;
+            border: 2px solid #555;
+            color: #fff;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: transform 0.1s, background 0.2s;
+        }
+        .level-btn:hover { background: #555; }
+        .level-btn:active { transform: scale(0.9); }
+        .level-btn.current {
+            border-color: #4169E1;
+            background: #223;
+            color: #4169E1;
+        }
+        .btn-close {
+            margin-top: 20px;
+            padding: 10px 30px;
+            background: transparent;
+            border: 1px solid #666;
+            color: #888;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        /* --- 移动端控制器 --- */
+        #mobile-controls {
+            margin-top: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 90%;
+            max-width: 400px;
+            padding-bottom: 20px; 
+        }
+
+        .dpad {
+            display: grid;
+            grid-template-columns: 60px 60px 60px;
+            grid-template-rows: 60px 60px;
+            gap: 5px;
+            justify-items: center;
+            align-items: center;
+        }
+
+        .switch-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ctrl-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255, 255, 255, 0.15);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            color: white;
+            font-size: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            backdrop-filter: blur(5px);
+            transition: transform 0.1s, background 0.1s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .ctrl-btn:active {
+            background: rgba(255, 255, 255, 0.4);
+            transform: scale(0.9);
+        }
+
+        #btn-up { grid-column: 2; grid-row: 1; }
+        #btn-left { grid-column: 1; grid-row: 2; }
+        #btn-down { grid-column: 2; grid-row: 2; }
+        #btn-right { grid-column: 3; grid-row: 2; }
+
+        #btn-switch {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 16px;
+            background: rgba(65, 105, 225, 0.3);
+            border-color: rgba(65, 105, 225, 0.6);
+        }
+        #btn-switch:active {
+            background: rgba(65, 105, 225, 0.6);
+        }
+
+        /* --- 胜利菜单 --- */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            backdrop-filter: blur(4px);
+            z-index: 100;
+        }
+
+        #ui-layer.visible {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .level-title {
+            color: #FFD700;
+            font-size: 36px;
+            font-weight: 900;
+            margin-bottom: 30px;
+            text-shadow: 0 0 20px rgba(255, 215, 0, 0.5);
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 20px;
+        }
+
+        button.action-btn {
+            padding: 12px 24px;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .btn-replay { background-color: #eee; color: #333; }
+        .btn-next { background-color: #4169E1; color: white; }
+
+        @media (min-width: 768px) {
+            #mobile-controls {
+                display: none; 
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-container">
+        <!-- 顶部指示器与选关按钮 -->
+        <div id="instructions">
+            <span id="level-indicator">Level 1</span>
+            <button class="btn-mini" onclick="game.toggleLevelMenu()">选关 (Levels)</button>
+        </div>
+        
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- 选关菜单 -->
+        <div id="level-menu">
+            <div class="menu-title">SELECT LEVEL</div>
+            <div class="level-grid" id="level-grid-container">
+                <!-- 按钮由 JS 动态生成 -->
+            </div>
+            <button class="btn-close" onclick="game.toggleLevelMenu()">Close</button>
+        </div>
+
+        <!-- 移动端虚拟按键 -->
+        <div id="mobile-controls">
+            <div class="dpad">
+                <div class="ctrl-btn" id="btn-up">▲</div>
+                <div class="ctrl-btn" id="btn-left">◀</div>
+                <div class="ctrl-btn" id="btn-down">▼</div>
+                <div class="ctrl-btn" id="btn-right">▶</div>
+            </div>
+            <div class="switch-area">
+                <div class="ctrl-btn" id="btn-switch">SWITCH</div>
+            </div>
+        </div>
+
+        <!-- 胜利菜单 -->
+        <div id="ui-layer">
+            <div class="level-title">WIN!</div>
+            <div class="btn-group">
+                <button class="action-btn btn-replay" onclick="game.restartLevel()">重玩</button>
+                <button class="action-btn btn-next" onclick="game.nextLevel()">下一关</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+    const LEVELS = [
+        [ "#######", "#B1BW$#", "#W2 W@#", "#######" ],
+        [ "#######", "#B1 B #", "#W WWW#", "#B B B#", "# @ B2#", "# $ W #", "#######" ],
+        [ "########", "#@W W 2#", "#W B B #", "#W B W #", "#1 B B #", "#W$W   #", "########" ],
+        [ "#######", "#B1B @#", "### W #", "#$B B #", "# W2W #", "#######" ],
+        [ "########", "#B1 B 2#", "#W WWW #", "#B B$B #", "#W@W W #", "#B B B #", "########" ],
+        
+        // --- Super Hard 2 ---
+        [
+            "#########",
+            "#1BBB#W2#",
+            "#WW#B#WW#",
+            "#B #B# B#",
+            "#W BBB W#",
+            "# B W B #",
+            "#W# # #W#",
+            "#@W B B$#",
+            "#########"
+        ],
+        // --- Super Hard 3 ---
+        [
+            "##########",
+            "#1B    W2#",
+            "#W BWWWB #",
+            "# B W B W#",
+            "#W B W B #",
+            "# BWWWB W#",
+            "#$W    B@#",
+            "##########"
+        ]
+    ];
+
+    const TILE_SIZE = 60;
+    const ANIM_SPEED = 0.25;
+    const BUMP_FORCE = 10;
+
+    const COLORS = {
+        wall: '#666666',       
+        floorWhite: '#DDDDDD', 
+        floorBlack: '#222222', 
+        endPoint: '#4169E1',
+        pWhite: '#FFFFFF',     
+        pBlack: '#111111'      
+    };
+
+    class GameEngine {
+        constructor() {
+            this.canvas = document.getElementById('gameCanvas');
+            this.ctx = this.canvas.getContext('2d');
+            this.uiLayer = document.getElementById('ui-layer');
+            this.levelMenu = document.getElementById('level-menu');
+            this.levelText = document.getElementById('level-indicator');
+            
+            this.currentLevelIdx = 0;
+            this.turn = 'black';
+            this.gameWon = false;
+            this.isMenuOpen = false; // 控制选关菜单状态
+            this.particles = [];
+            this.grid = [];
+            this.endPoints = [];
+            
+            this.rows = 0;
+            this.cols = 0;
+
+            // 初始化选关菜单按钮
+            this.initLevelGrid();
+
+            // 绑定键盘
+            window.addEventListener('keydown', (e) => this.handleInput(e));
+            
+            // 绑定触摸按钮
+            this.bindTouchControls();
+
+            this.loop = this.loop.bind(this);
+            requestAnimationFrame(this.loop);
+            
+            this.loadLevel(this.currentLevelIdx);
+        }
+
+        // --- 选关功能逻辑 ---
+        initLevelGrid() {
+            const container = document.getElementById('level-grid-container');
+            container.innerHTML = ''; // 清空
+            
+            LEVELS.forEach((level, index) => {
+                const btn = document.createElement('div');
+                btn.className = 'level-btn';
+                btn.innerText = index + 1;
+                btn.onclick = () => {
+                    this.loadLevel(index);
+                    this.toggleLevelMenu(); // 选完关后关闭菜单
+                };
+                container.appendChild(btn);
+            });
+        }
+
+        toggleLevelMenu() {
+            this.isMenuOpen = !this.isMenuOpen;
+            if (this.isMenuOpen) {
+                this.levelMenu.classList.add('visible');
+                this.updateLevelButtonsStyle();
+            } else {
+                this.levelMenu.classList.remove('visible');
+            }
+        }
+
+        updateLevelButtonsStyle() {
+            // 高亮当前关卡
+            const buttons = document.querySelectorAll('.level-btn');
+            buttons.forEach((btn, idx) => {
+                if (idx === this.currentLevelIdx) {
+                    btn.classList.add('current');
+                } else {
+                    btn.classList.remove('current');
+                }
+            });
+        }
+        // ---------------------
+
+        bindTouchControls() {
+            const bindBtn = (id, action) => {
+                const btn = document.getElementById(id);
+                const handler = (e) => {
+                    e.preventDefault(); 
+                    if (!this.isMenuOpen) action(); // 菜单打开时禁用触摸控制
+                };
+                btn.addEventListener('touchstart', handler, {passive: false});
+                btn.addEventListener('mousedown', handler);
+            };
+
+            bindBtn('btn-up', () => this.tryMove(0, -1));
+            bindBtn('btn-down', () => this.tryMove(0, 1));
+            bindBtn('btn-left', () => this.tryMove(-1, 0));
+            bindBtn('btn-right', () => this.tryMove(1, 0));
+            bindBtn('btn-switch', () => this.switchTurn());
+        }
+
+        loadLevel(index) {
+            this.currentLevelIdx = index;
+            const mapData = LEVELS[index];
+            this.rows = mapData.length;
+            this.cols = mapData[0].length;
+            
+            this.canvas.width = this.cols * TILE_SIZE;
+            this.canvas.height = this.rows * TILE_SIZE;
+            
+            this.uiLayer.classList.remove('visible');
+            this.levelText.innerText = `Level ${index + 1} / ${LEVELS.length}`;
+            this.gameWon = false;
+            this.turn = 'black'; 
+            this.particles = []; 
+            this.updateBackground();
+
+            this.grid = [];
+            this.endPoints = [];
+            
+            for (let y = 0; y < this.rows; y++) {
+                let row = [];
+                for (let x = 0; x < this.cols; x++) {
+                    const char = mapData[y][x];
+                    let type = 'wall'; 
+                    
+                    if (char === '#') type = 'wall';
+                    else if (char === 'W' || char === ' ') type = 'white';
+                    else if (char === 'B') type = 'black';
+                    else if (char === '1') {
+                        type = 'black'; 
+                        this.pWhite = new Player(x, y, 'white');
+                    } 
+                    else if (char === '2') {
+                        type = 'white'; 
+                        this.pBlack = new Player(x, y, 'black');
+                        this.pBlack.active = true;
+                    }
+                    else if (char === '$') {
+                        type = 'black';
+                        this.endPoints.push({x, y, owner: 'white'});
+                    }
+                    else if (char === '@') {
+                        type = 'white';
+                        this.endPoints.push({x, y, owner: 'black'});
+                    }
+                    row.push(type);
+                }
+                this.grid.push(row);
+            }
+        }
+
+        restartLevel() { this.loadLevel(this.currentLevelIdx); }
+        
+        nextLevel() {
+            let nextIdx = this.currentLevelIdx + 1;
+            if (nextIdx >= LEVELS.length) nextIdx = 0;
+            this.loadLevel(nextIdx);
+        }
+
+        handleInput(e) {
+            if (this.gameWon || this.isMenuOpen) return; // 菜单打开时禁用键盘
+            
+            if(["Space","ArrowUp","ArrowDown","ArrowLeft","ArrowRight"].indexOf(e.code) > -1) {
+                e.preventDefault();
+            }
+            if (e.code === 'Space') this.switchTurn();
+            else if (e.code === 'ArrowUp') this.tryMove(0, -1);
+            else if (e.code === 'ArrowDown') this.tryMove(0, 1);
+            else if (e.code === 'ArrowLeft') this.tryMove(-1, 0);
+            else if (e.code === 'ArrowRight') this.tryMove(1, 0);
+        }
+
+        switchTurn() {
+            if (this.gameWon) return;
+            this.turn = (this.turn === 'white') ? 'black' : 'white';
+            this.pWhite.active = (this.turn === 'white');
+            this.pBlack.active = (this.turn === 'black');
+            this.updateBackground();
+        }
+
+        updateBackground() {
+            const body = document.body;
+            if (this.turn === 'black') {
+                body.style.backgroundColor = '#050505'; 
+            } else {
+                body.style.backgroundColor = '#F5F5F5'; 
+            }
+        }
+
+        tryMove(dx, dy) {
+            if (this.gameWon) return;
+            const currP = (this.turn === 'white') ? this.pWhite : this.pBlack;
+            const otherP = (this.turn === 'white') ? this.pBlack : this.pWhite;
+
+            if (currP.isMoving()) return; 
+
+            const targetX = currP.gridX + dx;
+            const targetY = currP.gridY + dy;
+            let collision = false;
+
+            if (targetX < 0 || targetX >= this.cols || targetY < 0 || targetY >= this.rows) {
+                collision = true;
+            } else {
+                const tileType = this.grid[targetY][targetX];
+                if (tileType === 'wall') {
+                    collision = true;
+                } else {
+                    const isOccupiedByOther = (targetX === otherP.gridX && targetY === otherP.gridY);
+                    let canMove = false;
+
+                    if (this.turn === 'white') {
+                        if (tileType === 'black' || isOccupiedByOther) {
+                            canMove = true;
+                            if (tileType === 'white' && !isOccupiedByOther) canMove = false;
+                        }
+                    } else {
+                        if (tileType === 'white' || isOccupiedByOther) {
+                            canMove = true;
+                            if (tileType === 'black' && !isOccupiedByOther) canMove = false;
+                        }
+                    }
+
+                    if (canMove) {
+                        currP.gridX = targetX;
+                        currP.gridY = targetY;
+                        this.checkWin();
+                    } else {
+                        collision = true;
+                    }
+                }
+            }
+
+            if (collision) {
+                currP.bumpX = dx * BUMP_FORCE;
+                currP.bumpY = dy * BUMP_FORCE;
+            }
+        }
+
+        checkWin() {
+            let whiteWin = false;
+            let blackWin = false;
+            this.endPoints.forEach(ep => {
+                if (ep.owner === 'white' && this.pWhite.gridX === ep.x && this.pWhite.gridY === ep.y) whiteWin = true;
+                if (ep.owner === 'black' && this.pBlack.gridX === ep.x && this.pBlack.gridY === ep.y) blackWin = true;
+            });
+            if (whiteWin && blackWin) {
+                this.gameWon = true;
+                this.createFireworks();
+                setTimeout(() => {
+                    this.uiLayer.classList.add('visible');
+                    const nextBtn = document.querySelector('.btn-next');
+                    nextBtn.innerText = (this.currentLevelIdx === LEVELS.length - 1) ? "回到开始" : "下一关";
+                }, 800);
+            }
+        }
+
+        createFireworks() {
+            const cx = this.canvas.width / 2;
+            const cy = this.canvas.height / 2;
+            for (let i = 0; i < 250; i++) {
+                this.particles.push({
+                    x: cx, y: cy,
+                    vx: (Math.random() - 0.5) * 18,
+                    vy: (Math.random() - 0.5) * 18,
+                    life: 1.0,
+                    color: `hsl(${Math.random() * 360}, 100%, 60%)`
+                });
+            }
+        }
+
+        loop() {
+            if(this.pWhite) this.pWhite.update();
+            if(this.pBlack) this.pBlack.update();
+            
+            for (let i = this.particles.length - 1; i >= 0; i--) {
+                let p = this.particles[i];
+                p.x += p.vx; p.y += p.vy;
+                p.vy += 0.2; p.life -= 0.015;
+                if (p.life <= 0) this.particles.splice(i, 1);
+            }
+
+            this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            if(this.grid.length > 0) this.drawMap();
+            
+            if(this.pWhite && this.pBlack) {
+                if (this.turn === 'white') {
+                    this.drawPlayer(this.pBlack);
+                    this.drawPlayer(this.pWhite);
+                } else {
+                    this.drawPlayer(this.pWhite);
+                    this.drawPlayer(this.pBlack);
+                }
+            }
+
+            this.particles.forEach(p => {
+                this.ctx.globalAlpha = p.life;
+                this.ctx.fillStyle = p.color;
+                this.ctx.beginPath(); this.ctx.arc(p.x, p.y, 4, 0, Math.PI * 2); this.ctx.fill();
+            });
+            this.ctx.globalAlpha = 1.0;
+
+            requestAnimationFrame(this.loop);
+        }
+
+        drawMap() {
+            for (let y = 0; y < this.rows; y++) {
+                for (let x = 0; x < this.cols; x++) {
+                    const type = this.grid[y][x];
+                    const px = x * TILE_SIZE;
+                    const py = y * TILE_SIZE;
+
+                    if (type === 'wall') {
+                        this.ctx.fillStyle = COLORS.wall;
+                        this.ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+                        this.ctx.strokeStyle = '#444';
+                        this.ctx.lineWidth = 1;
+                        this.ctx.strokeRect(px, py, TILE_SIZE, TILE_SIZE);
+                    }
+                    else if (type === 'white') {
+                        this.ctx.fillStyle = COLORS.floorWhite;
+                        this.ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+                    }
+                    else if (type === 'black') {
+                        this.ctx.fillStyle = COLORS.floorBlack;
+                        this.ctx.fillRect(px, py, TILE_SIZE, TILE_SIZE);
+                    }
+                }
+            }
+
+            this.endPoints.forEach(ep => {
+                const cx = ep.x * TILE_SIZE + TILE_SIZE / 2;
+                const cy = ep.y * TILE_SIZE + TILE_SIZE / 2;
+                
+                this.ctx.save();
+                this.ctx.beginPath();
+                this.ctx.arc(cx, cy, TILE_SIZE * 0.35, 0, Math.PI * 2);
+                this.ctx.fillStyle = COLORS.endPoint;
+                this.ctx.fill();
+                this.ctx.shadowBlur = 10;
+                this.ctx.shadowColor = COLORS.endPoint;
+                this.ctx.strokeStyle = 'rgba(255,255,255,0.8)';
+                this.ctx.lineWidth = 2;
+                this.ctx.stroke();
+                this.ctx.restore();
+
+                const miniSize = TILE_SIZE * 0.3; 
+                const mx = cx - miniSize / 2;
+                const my = cy - miniSize / 2;
+                const miniColor = (ep.owner === 'white') ? COLORS.pWhite : COLORS.pBlack;
+                const eyeColor = (ep.owner === 'white') ? 'black' : 'white';
+
+                this.ctx.fillStyle = miniColor;
+                this.ctx.beginPath();
+                this.ctx.roundRect(mx, my, miniSize, miniSize, 2);
+                this.ctx.fill();
+
+                this.ctx.fillStyle = eyeColor;
+                const eyeY = my + miniSize * 0.4;
+                const offset = miniSize * 0.25;
+                this.ctx.beginPath(); this.ctx.arc(mx + miniSize/2 - offset, eyeY, 1.5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.arc(mx + miniSize/2 + offset, eyeY, 1.5, 0, Math.PI*2); this.ctx.fill();
+            });
+        }
+
+        drawPlayer(player) {
+            const renderX = player.visX + player.bumpX;
+            const renderY = player.visY + player.bumpY;
+            const size = TILE_SIZE; 
+            
+            this.ctx.save();
+            this.ctx.shadowBlur = 15;
+            this.ctx.shadowColor = 'rgba(180, 180, 180, 0.6)';
+            
+            this.ctx.fillStyle = (player.color === 'white') ? COLORS.pWhite : COLORS.pBlack;
+            this.ctx.fillRect(renderX, renderY, size, size);
+            
+            this.ctx.strokeStyle = (player.color === 'white') ? '#CCC' : '#333';
+            this.ctx.lineWidth = 1;
+            this.ctx.strokeRect(renderX, renderY, size, size);
+            this.ctx.restore();
+
+            const eyeColor = (player.color === 'white') ? 'black' : 'white';
+            this.ctx.fillStyle = eyeColor;
+            this.ctx.strokeStyle = eyeColor;
+            this.ctx.lineWidth = 4;
+
+            const leftEyeX = renderX + TILE_SIZE * 0.3;
+            const rightEyeX = renderX + TILE_SIZE * 0.7;
+            const eyeY = renderY + TILE_SIZE * 0.4;
+
+            if (player.active) {
+                this.ctx.beginPath(); this.ctx.arc(leftEyeX, eyeY, 5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.arc(rightEyeX, eyeY, 5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.fillStyle = (player.color === 'white') ? 'white' : 'black';
+                this.ctx.beginPath(); this.ctx.arc(leftEyeX+1.5, eyeY-1.5, 1.5, 0, Math.PI*2); this.ctx.fill();
+                this.ctx.beginPath(); this.ctx.arc(rightEyeX+1.5, eyeY-1.5, 1.5, 0, Math.PI*2); this.ctx.fill();
+            } else {
+                this.ctx.beginPath(); 
+                this.ctx.moveTo(leftEyeX - 6, eyeY); this.ctx.lineTo(leftEyeX + 6, eyeY);
+                this.ctx.moveTo(rightEyeX - 6, eyeY); this.ctx.lineTo(rightEyeX + 6, eyeY);
+                this.ctx.stroke();
+            }
+        }
+    }
+
+    class Player {
+        constructor(gridX, gridY, colorType) {
+            this.gridX = gridX; 
+            this.gridY = gridY;
+            this.visX = gridX * TILE_SIZE; 
+            this.visY = gridY * TILE_SIZE;
+            this.bumpX = 0; 
+            this.bumpY = 0;
+            this.active = false;
+            this.color = colorType;
+        }
+
+        update() {
+            const targetX = this.gridX * TILE_SIZE;
+            const targetY = this.gridY * TILE_SIZE;
+            this.visX += (targetX - this.visX) * ANIM_SPEED;
+            this.visY += (targetY - this.visY) * ANIM_SPEED;
+            this.bumpX *= 0.6;
+            this.bumpY *= 0.6;
+            if(Math.abs(targetX - this.visX) < 0.5) this.visX = targetX;
+            if(Math.abs(targetY - this.visY) < 0.5) this.visY = targetY;
+        }
+
+        isMoving() {
+            return Math.abs(this.gridX * TILE_SIZE - this.visX) > 4 || 
+                   Math.abs(this.gridY * TILE_SIZE - this.visY) > 4;
+        }
+    }
+
+    const game = new GameEngine();
+
+</script>
+</body>
+</html>

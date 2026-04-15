@@ -415,7 +415,7 @@
             } catch(e) {
                 thinkingRow.querySelector('.chat-bubble').innerHTML = `⚠️ 信号中断：${e.message}`;
             }
-            if(isTheaterRunning) mainTimer = setTimeout(theaterTick, 5000);
+            if(isTheaterRunning) mainTimer = setTimeout(theaterTick, 10000);
         }
 
         // 启动

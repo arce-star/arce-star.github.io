@@ -385,7 +385,7 @@
             const sysPrompt = `${character.prompt}
 【当前案件】${currentCase.title} 【阶段】${phase.name}
 【背景】${currentCase.background} 【阶段描述】${phase.description}
-【任务】根据阶段线索推理，不要直接说出最终真相，符合人设。字数500以内`;
+【任务】根据阶段线索推理，不要直接说出最终真相，符合人设。字数200以内`;
             const payload = {
                 model: "deepseek-chat",
                 messages: [{ role: "system", content: sysPrompt }, ...history.slice(-6)],

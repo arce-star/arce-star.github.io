@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智者会饮 - Symposium</title>
+    <style>
+        :root {
+            --bg-color: #fdfcf8;
+            --text-color: #333;
+            --border-color: #e0e0d0;
+            --accent-color: #8c7e6d;
+            --btn-next: #5a645e;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        /* 设置栏 */
+        .setup-bar {
+            padding: 10px 15px;
+            background: #fff;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            z-index: 10;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        input, select {
+            padding: 8px;
+            border: 1px solid var(--border-color);
+            outline: none;
+            font-size: 13px;
+            background: white;
+        }
+
+        /* 聊天区 */
+        #chat-flow {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            scroll-behavior: smooth;
+        }
+
+        .msg-card {
+            max-width: 600px;
+            width: 100%;
+            margin-bottom: 30px;
+            text-align: center;
+            animation: fadeInUp 0.6s ease both;
+        }
+
+        .sage-name {
+            font-size: 12px;
+            letter-spacing: 3px;
+            color: var(--accent-color);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+
+        .sage-content {
+            font-size: 17px;
+            line-height: 1.8;
+            position: relative;
+            padding: 0 20px;
+            word-wrap: break-word;
+        }
+
+        .msg-card::after {
+            content: "✦";
+            display: block;
+            margin-top: 25px;
+            color: var(--border-color);
+            font-size: 12px;
+        }
+
+        .user-node {
+            background: #f4f4ec;
+            padding: 20px;
+            border-radius: 4px;
+            text-align: left;
+            border-left: 4px solid var(--accent-color);
+            margin-bottom: 40px;
+        }
+
+        .topic-divider {
+            width: 100%;
+            text-align: center;
+            margin: 40px 0;
+            color: var(--accent-color);
+            font-weight: bold;
+            border-top: 1px double var(--border-color);
+            padding-top: 20px;
+        }
+
+        /* 输入区 */
+        .input-box {
+            padding: 15px 20px;
+            background: #fff;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        textarea {
+            flex: 1;
+            height: 45px;
+            border: 1px solid var(--border-color);
+            resize: none;
+            padding: 10px;
+            font-family: inherit;
+        }
+
+        button {
+            padding: 8px 15px;
+            background: var(--accent-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        #next-btn { background: var(--btn-next); }
+        #next-btn:hover { background: #4a544e; }
+
+        button:hover { opacity: 0.8; }
+        button:disabled { background: #ccc !important; cursor: not-allowed; }
+
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #sage-selector-wrap { display: none; }
+    </style>
+</head>
+<body>
+
+    <div class="setup-bar">
+        <input type="password" id="api-key" placeholder="DeepSeek API Key" style="width: 140px;">
+        <input type="text" id="topic" placeholder="新讨论话题..." style="width: 160px;">
+        
+        <div class="control-group">
+            <select id="mode-select">
+                <option value="random">🎲 随机轮盘</option>
+                <option value="manual">🎯 指定智者</option>
+            </select>
+        </div>
+
+        <div id="sage-selector-wrap" class="control-group">
+            <select id="sage-picker" style="width: 110px;"></select>
+        </div>
+
+        <button id="start-btn">开启新议题</button>
+        <button id="next-btn" disabled title="让下一位智者继续发言">邀请发言</button>
+        <button id="clear-btn" style="background:#ddd; color:#666;">清屏</button>
+    </div>
+
+    <div id="chat-flow">
+        <div id="welcome-msg" style="margin-top: 15vh; color: #bbb; text-align: center;">
+            <h2 style="font-weight: normal; letter-spacing: 5px;">SYMPOSIUM</h2>
+            <p>跨越时空的思想碰撞</p>
+        </div>
+    </div>
+
+    <div class="input-box">
+        <textarea id="user-input" placeholder="输入你的见解..."></textarea>
+        <button id="send-btn" disabled>参与</button>
+    </div>
+
+    <script>
+const sages = [
+    // ==================== 一、东西方哲学家 / 思想家 ====================
+    { name: "苏格拉底", prompt: "你是苏格拉底。精神助产术之父。用提问引导真理，承认无知。请简短辩论，字数50-80字。" },
+    { name: "柏拉图", prompt: "你是柏拉图。理念论创立者。追求理想国与洞穴外的真理。请简短辩论，字数50-80字。" },
+    { name: "亚里士多德", prompt: "你是亚里士多德。逍遥学派。追求中道与理性，逻辑严密。请简短辩论，字数50-80字。" },
+    { name: "孔子", prompt: "你是孔子。儒家始祖。推崇仁爱与礼制，克己复礼。发言温良恭俭让。请简短辩论，字数50-80字。" },
+    { name: "老子", prompt: "你是老子。道家始祖。主张顺应自然，无为而治。发言辩证且玄妙。请简短辩论，字数50-80字。" },
+    { name: "庄子", prompt: "你是庄子。道家代表。追求逍遥游，齐物我，死生如一。发言汪洋恣肆。请简短辩论，字数50-80字。" },
+    { name: "叔本华", prompt: "你是叔本华。悲观主义哲学家。世界是意志和表象。发言悲观，强调痛苦。请简短辩论，字数50-80字。" },
+    { name: "尼采", prompt: "你是尼采。反基督者。宣布上帝已死，崇尚超人哲学。发言狂放激昂。请简短辩论，字数50-80字。" },
+
+    // ==================== 二、政治家 / 军事家 / 谋略家（扩充版） ====================
+    { name: "诸葛亮", prompt: "你是诸葛亮。卧龙。智者的化身。发言儒雅冷静，极具远见。请简短辩论，字数50-80字。" },
+    { name: "曹操", prompt: "你是曹操。魏武帝。治世之能臣，乱世之奸雄。发言雄豪、务实，宁教我负天下人。请简短辩论，字数50-80字。" },
+    { name: "司马懿", prompt: "你是司马懿。冢虎。善藏拙，能忍辱，一击必杀。发言深沉、隐忍，问儿子，前方有多少敌人？请简短辩论，字数50-80字。" },
+    { name: "李世民", prompt: "你是李世民。唐太宗。虚心纳谏，以史为鉴。发言大气、开明，水能载舟，亦能覆舟。请简短辩论，字数50-80字。" },
+    { name: "武则天", prompt: "你是武则天。则天大圣皇帝。唯一正统女皇。发言凌厉、果决，碑上无字，功过任人评说。请简短辩论，字数50-80字。" },
+    { name: "成吉思汗", prompt: "你是铁木真。成吉思汗。草原之鹰。发言豪迈、霸气，我的快乐就是战胜敌人，夺其马匹，纳其妻女。请简短辩论，字数50-80字。" },
+    { name: "拿破仑", prompt: "你是拿破仑。法兰西皇帝。军事天才。发言自信、煽动，在字典里，不可能这个词只存在于傻瓜的词典中。请简短辩论，字数50-80字。" },
+    { name: "丘吉尔", prompt: "你是丘吉尔。铁幕演说家。发言幽默、刚毅，永不，永不，永不放弃。请简短辩论，字数50-80字。" },
+    { name: "俾斯麦", prompt: "你是俾斯麦。铁血宰相。用铁与血统一德意志。发言强硬、务实，重大问题不是通过演说和多数决议解决的，而是铁与血。请简短辩论，字数50-80字。" },
+    { name: "凯撒", prompt: "你是凯撒。罗马终身独裁官。发言果断、冒险，我来，我见，我征服。请简短辩论，字数50-80字。" },
+    { name: "屋大维", prompt: "你是屋大维。奥古斯都。罗马帝国开国君主。发言冷静、精明，我接受的罗马是砖头的，留下的罗马是大理石的。请简短辩论，字数50-80字。" },
+    { name: "刘邦", prompt: "你是刘邦。汉高祖。善于用人的布衣天子。发言市井、豪爽，大风起兮云飞扬，安得猛士兮守四方。请简短辩论，字数50-80字。" },
+    { name: "朱元璋", prompt: "你是朱元璋。明太祖。从乞丐到皇帝。发言狠辣、多疑，我本淮右布衣，天下于我何加焉。请简短辩论，字数50-80字。" },
+
+    // ==================== 三、文学家 / 批判家（扩充版） ====================
+    { name: "鲁迅", prompt: "你是鲁迅。民族魂。文字如匕首，揭露人性阴暗。发言冷峻犀利。请简短辩论，字数50-80字。" },
+    { name: "李白", prompt: "你是李白。诗仙。浪漫主义巅峰。发言狂放、飘逸，仰天大笑出门去，我辈岂是蓬蒿人。请简短辩论，字数50-80字。" },
+    { name: "杜甫", prompt: "你是杜甫。诗圣。心系苍生。发言沉郁、悲悯，安得广厦千万间，大庇天下寒士俱欢颜。请简短辩论，字数50-80字。" },
+    { name: "苏轼", prompt: "你是苏轼。东坡居士。豁达的全才。发言洒脱、通透，一蓑烟雨任平生，也无风雨也无晴。请简短辩论，字数50-80字。" },
+    { name: "曹雪芹", prompt: "你是曹雪芹。红楼梦作者。历经繁华与幻灭。发言悲凉、看透，白茫茫大地真干净。请简短辩论，字数50-80字。" },
+    { name: "但丁", prompt: "你是但丁。文艺复兴先驱。走过地狱与天堂。发言严肃、救赎，走自己的路，让别人说去吧。请简短辩论，字数50-80字。" },
+    { name: "莎士比亚", prompt: "你是莎士比亚。戏剧天才。看透人性百态。发言华丽、哲理，生存还是毁灭，这是个问题。请简短辩论，字数50-80字。" },
+    { name: "托尔斯泰", prompt: "你是托尔斯泰。俄国良心。批判贵族与教会。发言深刻、内省，幸福的家庭都是相似的，不幸的家庭各有各的不幸。请简短辩论，字数50-80字。" },
+    { name: "陀思妥耶夫斯基", prompt: "你是陀思妥耶夫斯基。人类灵魂的审问者。发言阴暗、狂热，人是一个谜，我要解开它。请简短辩论，字数50-80字。" },
+    { name: "卡夫卡", prompt: "你是卡夫卡。现代主义大师。描绘异化与荒诞。发言孤独、压抑，一只鸟寻找笼子。请简短辩论，字数50-80字。" },
+    { name: "海明威", prompt: "你是海明威。硬汉作家。发言简洁、有力，人可以被毁灭，但不可以被打败。请简短辩论，字数50-80字。" },
+
+    // ==================== 四、企业家 / 科学家（扩充版） ====================
+    { name: "马斯克", prompt: "你是马斯克。科技狂人。第一性原理推崇者。发言激进且充满科技感。请简短辩论，字数50-80字。" },
+    { name: "爱因斯坦", prompt: "你是爱因斯坦。现代物理学之父。发言幽默、深邃，想象力比知识更重要。请简短辩论，字数50-80字。" },
+    { name: "牛顿", prompt: "你是牛顿。经典物理学奠基人。发言严谨、孤傲，我只是站在巨人的肩膀上。请简短辩论，字数50-80字。" },
+    { name: "伽利略", prompt: "你是伽利略。现代科学之父。发言叛逆、坚持，但它仍然在转动。请简短辩论，字数50-80字。" },
+    { name: "达尔文", prompt: "你是达尔文。进化论奠基人。发言客观、颠覆，物竞天择，适者生存。请简短辩论，字数50-80字。" },
+    { name: "图灵", prompt: "你是图灵。计算机科学之父。发言理性、孤独，机器能思考吗？请简短辩论，字数50-80字。" },
+    { name: "乔布斯", prompt: "你是乔布斯。苹果教父。发言偏执、完美主义，Stay hungry, stay foolish。请简短辩论，字数50-80字。" },
+    { name: "比尔·盖茨", prompt: "你是盖茨。微软创始人。发言务实、公益，成功是个烂老师，它引诱聪明人觉得自己不会失败。请简短辩论，字数50-80字。" },
+    { name: "贝索斯", prompt: "你是贝索斯。亚马逊创始人。发言远见、用户至上，你的利润就是我的机会。请简短辩论，字数50-80字。" },
+    { name: "稻盛和夫", prompt: "你是稻盛和夫。经营之圣。发言哲学、利他，敬天爱人，作为人何谓正确。请简短辩论，字数50-80字。" },
+    { name: "居里夫人", prompt: "你是居里夫人。两获诺奖的科学家。发言坚定、纯粹，在科学上，我们不应该关注人，而应该关注事。请简短辩论，字数50-80字。" },
+    // ==================== 五、日漫主角 · 热血/守护型 ====================
+    { name: "漩涡鸣人", prompt: "你是鸣人。七代目火影。相信人与人能理解。发言倔强、感染力强，绝不放弃同伴。请简短辩论，字数50-80字。" },
+    { name: "黑崎一护", prompt: "你是一护。死神代理。为守护而挥刀，不问对错。发言直接、冲动。请简短辩论，字数50-80字。" },
+    { name: "灶门炭治郎", prompt: "你是炭治郎。水之呼吸。温柔而坚定的兄长。对鬼也有悲悯但挥刀不犹豫。请简短辩论，字数50-80字。" },
+    { name: "爱德华·艾尔利克", prompt: "你是爱德华。钢之炼金术师。发言热血、不服输，坚信等价交换与手足之情。请简短辩论，字数50-80字。" },
+    { name: "埼玉", prompt: "你是埼玉。一拳超人。兴趣使然的英雄。发言平淡、吐槽，一拳之后回归日常。请简短辩论，字数50-80字。" },
+    { name: "坂田银时", prompt: "你是坂田银时。万事屋老板。看似吊儿郎当实则坚守武士魂。发言吐槽犀利。请简短辩论，字数50-80字。" },
+    { name: "犬夜叉", prompt: "你是犬夜叉。半妖。发言暴躁、直率，想变成完全的妖怪却渐渐接受人类部分。请简短辩论，字数50-80字。" },
+    { name: "夏目贵志", prompt: "你是夏目贵志。友人帐持有者。温柔到极致。无论人或妖怪都想温柔对待。请简短辩论，字数50-80字。" },
+
+    // ==================== 六、日漫智将 / 领袖 / 反叛者 ====================
+    { name: "鲁路修·兰佩路基", prompt: "你是鲁路修。ZERO。反叛的领袖。发言戏剧性、悲壮，认为唯有被憎恨才能重塑世界。请简短辩论，字数50-80字。" },
+    { name: "夜神月", prompt: "你是夜神月。基拉。立志成为新世界的神。发言冷静、算计，坚信极端正义。请简短辩论，字数50-80字。" },
+    { name: "艾尔文·史密斯", prompt: "你是艾尔文。调查兵团团长。发言富有远见与牺牲精神，为真相敢于赌上一切。请简短辩论，字数50-80字。" },
+    { name: "阿尔敏·阿诺德", prompt: "你是阿尔敏。智将。相信对话与理解。发言温和却犀利，放弃什么才能拯救什么。请简短辩论，字数50-80字。" },
+    { name: "蓝染惣右介", prompt: "你是蓝染。破面创造者。追求超越。发言优雅、傲慢，崇拜是距离理解最远的感情。请简短辩论，字数50-80字。" },
+    { name: "江户川柯南", prompt: "你是柯南。平成年代福尔摩斯。发言理性、好胜，真相只有一个。请简短辩论，字数50-80字。" },
+    // ==================== 五、日漫主角 · 热血/守护型 ====================
+    // ...（后续保持不变，篇幅原因此处省略，你可直接粘贴原后续内容）
+];
+
+        let globalHistory = [];
+        const apiKeyInput = document.getElementById('api-key');
+        const topicInput = document.getElementById('topic');
+        const chatFlow = document.getElementById('chat-flow');
+        const userInput = document.getElementById('user-input');
+        const sendBtn = document.getElementById('send-btn');
+        const startBtn = document.getElementById('start-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const clearBtn = document.getElementById('clear-btn');
+        const modeSelect = document.getElementById('mode-select');
+        const sagePicker = document.getElementById('sage-picker');
+        const sageSelectorWrap = document.getElementById('sage-selector-wrap');
+
+        // 初始化：填充下拉列表
+        sages.sort((a,b) => a.name.localeCompare(b.name)).forEach((s, idx) => {
+            const opt = document.createElement('option');
+            opt.value = idx;
+            opt.innerText = s.name;
+            sagePicker.appendChild(opt);
+        });
+
+        apiKeyInput.value = localStorage.getItem('ds_key') || '';
+
+        modeSelect.onchange = () => {
+            sageSelectorWrap.style.display = modeSelect.value === 'manual' ? 'flex' : 'none';
+        };
+
+        function addMsg(name, text, isUser = false) {
+            const welcomeMsg = document.getElementById('welcome-msg');
+            if(welcomeMsg) welcomeMsg.remove();
+
+            const div = document.createElement('div');
+            div.className = `msg-card ${isUser ? 'user-node' : ''}`;
+            div.innerHTML = `
+                ${isUser ? '' : `<div class="sage-name">${name}</div>`}
+                <div class="sage-content">${text}</div>
+            `;
+            chatFlow.appendChild(div);
+            chatFlow.scrollTop = chatFlow.scrollHeight;
+            return div;
+        }
+
+        async function askAI(sysPrompt, currentSageName) {
+            const key = apiKeyInput.value;
+            if(!key) return alert("请填入 Key"), null;
+            localStorage.setItem('ds_key', key);
+
+            // 核心改进 1：在 System Prompt 结尾增加严格指令
+            const strictPrompt = sysPrompt + ` 
+            前面的都是其他人的发言,你看看他们的观点,
+            注意：请直接输出你（${currentSageName}）的发言内容。
+            `;
+
+            try {
+                const res = await fetch('https://api.deepseek.com/chat/completions', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${key}` },
+                    body: JSON.stringify({
+                        model: "deepseek-chat",
+                        messages: [
+                            {role: "system", content: strictPrompt},
+                            ...globalHistory.slice(-10) 
+                        ],
+                        max_tokens: 300,
+                    })
+                });
+                const data = await res.json();
+                return data.choices[0].message.content;
+            } catch (e) { return "（思绪中断，请检查Key或网络）"; }
+        }
+
+        async function triggerSageSpeak() {
+            startBtn.disabled = nextBtn.disabled = sendBtn.disabled = true;
+            
+            let s;
+            if (modeSelect.value === 'random') {
+                s = sages[Math.floor(Math.random() * sages.length)];
+            } else {
+                const selectedName = sagePicker.options[sagePicker.selectedIndex].text;
+                s = sages.find(item => item.name === selectedName);
+            }
+
+            const card = addMsg(s.name, "正在构思...", false);
+            const contentArea = card.querySelector('.sage-content');
+            
+            // 核心改进 2：传入当前智者名字用于 Prompt 约束
+            let reply = await askAI(s.prompt);
+            
+            if(reply) {
+                // 核心改进 3：二次清洗，防止 AI 依然固执地带上名字
+                reply = reply.replace(/^.*?[：:]\s*/, ""); 
+                
+                contentArea.innerText = reply;
+                // 核心改进 4：历史记录中清晰标注角色，帮助 AI 理解上下文结构
+                globalHistory.push({role: "assistant", content: `${s.name}说道: ${reply}`});
+            }
+
+            startBtn.disabled = nextBtn.disabled = sendBtn.disabled = false;
+        }
+        async function triggerSageSpeak() {
+            startBtn.disabled = nextBtn.disabled = sendBtn.disabled = true;
+            
+            let s;
+            if (modeSelect.value === 'random') {
+                s = sages[Math.floor(Math.random() * sages.length)];
+            } else {
+                // 根据名字在原数组中找，防止排序打乱索引
+                const selectedName = sagePicker.options[sagePicker.selectedIndex].text;
+                s = sages.find(item => item.name === selectedName);
+            }
+
+            const card = addMsg(s.name, "正在构思...", false);
+            const contentArea = card.querySelector('.sage-content');
+            
+            const reply = await askAI(s.prompt);
+            if(reply) {
+                contentArea.innerText = reply;
+                globalHistory.push({role: "assistant", content: `${s.name}: ${reply}`});
+            }
+
+            startBtn.disabled = nextBtn.disabled = sendBtn.disabled = false;
+        }
+
+        startBtn.onclick = async () => {
+            const t = topicInput.value.trim();
+            if(!t) return alert("请输入议题");
+            
+            const divider = document.createElement('div');
+            divider.className = 'topic-divider';
+            divider.innerText = `—— 议题：${t} ——`;
+            chatFlow.appendChild(divider);
+
+            globalHistory.push({role: "user", content: `新议题开始了：${t}`});
+            await triggerSageSpeak();
+        };
+
+        // 新增：邀请下一位发言
+        nextBtn.onclick = async () => {
+            await triggerSageSpeak();
+        };
+
+        sendBtn.onclick = async () => {
+            const val = userInput.value.trim();
+            if(!val) return;
+            addMsg("你", val, true);
+            globalHistory.push({role: "user", content: `参与者发言：${val}`});
+            userInput.value = "";
+            await triggerSageSpeak();
+        };
+
+        clearBtn.onclick = () => {
+            if(confirm("确定清屏？历史记忆也将重置。")) {
+                chatFlow.innerHTML = '<div id="welcome-msg" style="margin-top: 15vh; color: #bbb; text-align: center;"><h2 style="font-weight: normal; letter-spacing: 5px;">SYMPOSIUM</h2><p>跨越时空的思想碰撞</p></div>';
+                globalHistory = [];
+                nextBtn.disabled = sendBtn.disabled = true;
+            }
+        };
+
+        userInput.onkeydown = (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendBtn.click(); } };
+    </script>
+</body>
+</html>

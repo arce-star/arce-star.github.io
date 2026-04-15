@@ -113,6 +113,11 @@
                     <div class="nav-icon" style="color: #8c7e6d;"><i class="fas fa-university"></i></div>
                     <div class="nav-text">智者会饮</div>
                 </a>
+                
+                <a class="nav-link" onclick="showPage('conan-page')">
+                    <div class="nav-icon" style="color: #4c4bc0;"><i class="fas fa-search"></i></div>
+                    <div class="nav-text">真相只有一个</div>
+                </a>
                 <a class="nav-link" onclick="showPage('frontend-page')">
                     <div class="nav-icon" style="color: #3498db;"><i class="fas fa-code"></i></div>
                     <div class="nav-text">前端网页</div>
@@ -161,6 +166,15 @@
         <div class="content-frame-container">
             <div class="display-area">
                 <iframe src="symposium.html"></iframe>
+            </div>
+        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
+    </div>
+    <div id="conan-page" class="page">
+        <div class="page-header"><h2>米花町推理沙龙</h2><p>真相只有一个！</p></div>
+        <div class="content-frame-container">
+            <div class="display-area">
+                <iframe src="conan.html"></iframe> <!-- 这里指向新文件 -->
             </div>
         </div>
         <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>

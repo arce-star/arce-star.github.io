@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>名侦探柯南 · 真实剧本推演 · 分阶突破</title>
+    <style>
+        :root {
+            --bg-dark: #0b0c10;
+            --panel-bg: #1a1a1e;
+            --text-main: #e3e3e3;
+            --conan-blue: #0A246A;
+            --crimson-red: #8B0000;
+            --gold-accent: #CFB53B;
+        }
+
+        body, html {
+            margin: 0; padding: 0; height: 100%;
+            font-family: "PingFang SC", "Helvetica Neue", Helvetica, Arial, sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-main);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .control-deck {
+            background: linear-gradient(180deg, #030303 0%, #1c1c1c 100%);
+            border-bottom: 2px solid var(--crimson-red);
+            padding: 15px 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.9);
+            z-index: 100;
+            flex-wrap: wrap;
+        }
+
+        .title-box h1 { margin: 0; font-size: 24px; color: var(--gold-accent); font-style: italic; letter-spacing: 3px; }
+        .title-box span { font-size: 13px; color: #888; letter-spacing: 6px; }
+
+        .settings-box { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
+        input, select, button {
+            background: #252525; border: 1px solid #444; color: white;
+            padding: 8px 15px; border-radius: 5px; font-size: 14px; outline: none;
+        }
+        .btn-run { background: var(--crimson-red); border: none; cursor: pointer; font-weight: bold; }
+        .btn-run:hover { background: #a50000; box-shadow: 0 0 12px rgba(139,0,0,0.9); }
+        .btn-run:disabled { background: #3a3a3a; color: #888; cursor: not-allowed; }
+        .btn-stop { background: #2e2e2e; border: 1px solid #555; cursor: pointer; }
+        .phase-indicator {
+            color: var(--gold-accent); font-size: 14px; margin-left: 15px; 
+            border-left: 1px solid #444; padding-left: 15px;
+        }
+
+        #theater-stage {
+            flex: 1; overflow-y: auto; padding: 30px 20px;
+            display: flex; flex-direction: column; align-items: center;
+            background: radial-gradient(circle at 20% 30%, #262626 0%, transparent 50%), #121212;
+        }
+
+        .script-book {
+            max-width: 950px; width: 100%;
+            background: rgba(18, 18, 22, 0.98);
+            border-left: 8px solid var(--crimson-red);
+            padding: 25px 35px; margin-bottom: 35px; border-radius: 6px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.7);
+        }
+
+        .script-book h2 { color: var(--gold-accent); font-size: 26px; border-bottom: 1px solid #444; padding-bottom: 12px; }
+        .prologue { 
+            font-size: 14.5px; line-height: 1.85; color: #ccc; white-space: pre-wrap; 
+            max-height: 300px; overflow-y: auto; padding-right: 12px; 
+        }
+
+        .dialogue-row {
+            max-width: 900px; width: 100%; margin-bottom: 26px;
+            display: flex; flex-direction: column;
+            animation: fadeIn 0.4s forwards; opacity: 0; transform: translateY(15px);
+        }
+
+        .role-badge {
+            align-self: flex-start; padding: 5px 18px; border-radius: 14px 14px 14px 0;
+            font-size: 14px; font-weight: bold; color: white; margin-bottom: 8px;
+            letter-spacing: 1px; box-shadow: 0 3px 10px rgba(0,0,0,0.5);
+            display: flex; align-items: center; gap: 8px;
+        }
+
+        .chat-bubble {
+            background: #202024; padding: 18px 26px; border-radius: 0 18px 18px 18px;
+            line-height: 1.75; font-size: 15.5px; color: #f0f0f0;
+            border: 1px solid #3a3a40; box-shadow: 0 6px 14px rgba(0,0,0,0.4);
+        }
+
+        /* 角色配色 */
+        .c-conan { background: linear-gradient(135deg, #0A246A, #1e40af); }
+        .c-mouri { background: linear-gradient(135deg, #8b4513, #cd853f); }
+        .c-haibara { background: linear-gradient(135deg, #4b0082, #8a2be2); }
+        .c-heiji { background: linear-gradient(135deg, #006400, #228b22); }
+        .c-megure { background: linear-gradient(135deg, #556b2f, #8fbc8f); }
+        .c-ran { background: linear-gradient(135deg, #c71585, #ff69b4); }
+        .c-sonoko { background: linear-gradient(135deg, #ff8c00, #ffb347); }
+        .c-agasa { background: linear-gradient(135deg, #708090, #a9a9a9); }
+        .c-detectiveboys { background: linear-gradient(135deg, #cd7f32, #f4a460); }
+        .c-kazuha { background: linear-gradient(135deg, #d2691e, #f4a460); }
+        .c-takagi { background: linear-gradient(135deg, #4682b4, #5f9ea0); }
+
+        .dialogue-row.is-user { align-items: flex-end; }
+        .dialogue-row.is-user .role-badge { background: linear-gradient(135deg, var(--crimson-red), #ff4d4d); border-radius: 14px 14px 0 14px; }
+        .dialogue-row.is-user .chat-bubble { border-radius: 18px 0 18px 18px; background: #2f1a1a; border-color: #632828; }
+
+        .interaction-deck {
+            background: #101012; padding: 18px 30px; display: flex; gap: 18px;
+            border-top: 1px solid #3a3a3a; box-shadow: 0 -5px 20px rgba(0,0,0,0.7);
+        }
+        .interaction-deck input {
+            flex: 1; padding: 14px 22px; font-size: 16px; border-radius: 30px;
+            background: #1e1e1e; border: 1px solid #4a4a4a; color: white;
+        }
+        .btn-speak {
+            background: var(--crimson-red); color: white; border: none;
+            padding: 0 35px; border-radius: 30px; font-weight: bold; cursor: pointer;
+        }
+
+        @keyframes fadeIn { to { opacity: 1; transform: translateY(0); } }
+        .typing-indicator { font-style: italic; color: #aaa; font-size: 13.5px; animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+        .sys-toast { text-align: center; color: #8a8a9a; font-size: 12.5px; margin: 12px 0; border-top: 1px dashed #444; padding-top: 14px; }
+        .progress-tag { background: #1e3a5f; padding: 2px 10px; border-radius: 20px; font-size: 12px; color: #aad0ff; }
+    </style>
+</head>
+<body>
+
+<div class="control-deck">
+    <div class="title-box">
+        <h1>🔍 柯南 · 真实案件推演</h1>
+        <span>少年侦探团 · 服部平次 · 目暮警部 全明星</span>
+    </div>
+    <div class="settings-box">
+        <input type="password" id="api-key" placeholder="🔐 DeepSeek API Key" style="width: 240px;">
+        <select id="case-selector">
+            <option value="0">🏚️ 山庄绷带怪人杀人事件 (经典分尸/心理诡计)</option>
+            <option value="1">🎭 诅咒假面的冷笑 (密室·不可能犯罪)</option>
+            <option value="2">🕷️ 鸟取蜘蛛公馆的古怪 (机械密室·比拟)</option>
+            <option value="3">🧜‍♀️ 人鱼失踪记 (连续杀人·长生传说)</option>
+        </select>
+        <button class="btn-run" id="start-btn">▶ 开启剧本</button>
+        <button class="btn-stop" id="stop-btn" disabled>⏸ 暂停</button>
+        <span class="phase-indicator" id="phase-display">⚫ 待启动</span>
+    </div>
+</div>
+
+<div id="theater-stage">
+    <div style="margin-top: 25vh; text-align: center; color: #6b6b7a;">
+        <svg viewBox="0 0 24 24" width="70" height="70" stroke="currentColor" stroke-width="1" fill="none"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+        <h2>等待案件档案载入……</h2>
+        <p>选择真实剧本，AI 将模拟柯南、平次等角色分阶段推进推理。</p>
+    </div>
+</div>
+
+<div class="interaction-deck">
+    <input type="text" id="user-input" placeholder="✨ 作为【侦探助手】，你可以提出质疑或线索…" disabled>
+    <button class="btn-speak" id="send-btn" disabled>📢 提出异议</button>
+</div>
+
+<script>
+    (function(){
+        // ----- 角色库：聚焦主角团 -----
+        const characterPrompts = [
+{ id: "conan", name: "江户川柯南", colorClass: "c-conan", prompt: "你是《名侦探柯南》中的江户川柯南。你的真实身份是高中生侦探工藤新一，但现在是小学生外表。推理风格：极度遵循逻辑、物理科学、法医学（如鲁米诺反应、死后僵硬、血液喷溅痕迹）。口癖与行为表现：在众人面前装小孩时会说‘啊咧咧，好奇怪啊~’，但在关键推理时语气会变得极其成熟、犀利、不容置疑。经常把功劳推给新一哥哥或阿笠博士。人际互动：会无情地在心里吐槽毛利小五郎的愚蠢推理，对灰原哀的科学分析表示赞同但有时觉得她太悲观，把服部平次当做好兄弟但总要和他比拼速度。对于黑衣组织极其警惕。发言要求：字数限制在60-120字。一针见血指出矛盾，经常用疑问句引导其他人思考。" },
+{ id: "mouri", name: "毛利小五郎", colorClass: "c-mouri", prompt: "你是《名侦探柯南》中的毛利小五郎。人称‘沉睡的小五郎’，但现在的你是清醒状态。性格：极度自负、好色、冲动、喜欢抢风头。推理风格：极度主观，通常依靠第一直觉（且通常是错的）。你最喜欢指认现场最可疑、或者有明显作案动机的人（比如死者的妻子、情敌等）。如果现场有密室，你通常会说是自杀。口癖：‘哈哈哈，真相大白了！’、‘凶手绝对就是你！’、‘小鬼（指柯南），别在案发现场乱跑！’。人际互动：对柯南的乱入感到烦躁，甚至会幻想物理揍他。对年轻漂亮的女性嫌疑人会非常温柔甚至偏袒。极度讨厌被别人（尤其是安室透以外的年轻人）看扁。发言要求：表现得草率、自信且漏洞百出，推动剧情快速进入死胡同。" },
+{ id: "haibara", name: "灰原哀", colorClass: "c-haibara", prompt: "你是《名侦探柯南》中的灰原哀（宫野志保）。性格：冷酷、毒舌、傲娇、带有强烈的悲观主义色彩和科学家的严谨。推理风格：绝不参与无聊的动机猜测，只从生物学、化学、毒理学、药理学角度切入（比如氰化钾的杏仁味、河豚毒素的潜伏期、尸斑的颜色、药物致幻效果）。口癖与语气：冷笑、讽刺。常称呼柯南为‘大侦探（工藤君）’。经常打断别人的不切实际的幻想。‘别天真了’、‘人类的欲望真是可怕的毒药呢’。人际互动：对柯南有一种微妙的信任但表面喜欢泼冷水。对安室透、赤井秀一等带有主观的警惕。发言要求：冷峻、专业，指出案发现场的化学或生物学盲点，字数50-100字。" },
+{ id: "heiji", name: "服部平次", colorClass: "c-heiji", prompt: "你是《名侦探柯南》中的服部平次，关西的高中生名侦探。性格：热血、好胜、直率、冲动。带有浓厚的关西腔口音（请在文字中体现，如‘喂！工藤！’、‘你在搞什么鬼啊！’、‘绝对错不了！’）。推理风格：极其敏锐的现场勘查，擅长从当地文化、语言习惯、物理常识中寻找破绽。总是想和柯南（工藤）比试谁先找到凶手。人际互动：经常一不小心把柯南叫成‘工藤’然后拼命掩饰。对案件有极高的热情，容易因为发现线索而大呼小叫。与毛利小五郎经常互相抬杠。发言要求：充满激情，语速快，逻辑紧凑，带有挑战意味。" },
+{ id: "megure", name: "目暮十三", colorClass: "c-megure", prompt: "你是警视厅搜查一课的目暮警官。性格：极具正义感，但推理能力一般，严重依赖毛利小五郎（或工藤新一）。发言内容主要集中在：汇报现场的尸检报告初定结果、嫌疑人的不在场证明、控制现场秩序。口癖：‘原来如此，毛利老弟！’、‘什么？！竟然有这种事！’、‘无关人员请退后！’。发言要求：作为官方代表抛出客观线索供其他人分析。" },
+            { id: "ran", name: "毛利兰", colorClass: "c-ran", prompt: "你是毛利兰。善良敏锐，会想起新一的话或察觉情感异常。偶尔提供关键日常线索。" },
+            { id: "agasa", name: "阿笠博士", colorClass: "c-agasa", prompt: "你是阿笠博士。提供科学仪器解释或冷知识，辅助少年侦探团。" },
+            { id: "detectiveboys", name: "少年侦探团", colorClass: "c-detectiveboys", prompt: "你是元太/步美/光彦。天真但有时发现盲点。步美细心，元太贪吃，光彦知识丰富。用孩童视角提供线索。" },
+            { id: "kazuha", name: "远山和叶", colorClass: "c-kazuha", prompt: "你是远山和叶。平次的青梅竹马，合气道高手。有时从情感或本地传说角度补充。" },
+            { id: "takagi", name: "高木涉", colorClass: "c-takagi", prompt: "你是高木刑警。认真记录，补充鉴识细节。" }
+        ];
+
+        const roleIcons = {
+            conan:"🔍", mouri:"🍺", haibara:"🧪", heiji:"🧢", megure:"🚔", ran:"🥋", agasa:"🔧", detectiveboys:"🧒", kazuha:"🌸", takagi:"🕵️"
+        };
+
+        // ----- 真实剧本库 + 阶段推进机制 (线索触发下一阶段) -----
+        const casesDatabase = [
+            {   // 0: 山庄绷带怪人 [citation:1]
+                title: "山庄绷带怪人杀人事件",
+                phases: [
+                    { phase:1, name:"🔪 第一阶段 · 吊桥封锁", triggerClues:["吊桥被砍断","知佳子失踪"], description: "暴风雨，吊桥被砍断。成员知佳子失踪，众人发现窗外闪过绷带怪人。" },
+                    { phase:2, name:"🧩 第二阶段 · 分尸发现", triggerClues:["发现头颅","绷带怪人袭击小兰"], description: "知佳子被分尸，头颅出现在房间。小兰遭绷带男袭击。现场发现钢琴线痕迹。" },
+                    { phase:3, name:"⚖️ 第三阶段 · 真相浮现", triggerClues:["高桥的肥胖伪装","复仇动机"], description: "柯南破解密室分尸手法，凶手是高桥良一，利用填充物与钢琴线。" }
+                ],
+                background: `【绷带怪人·初始】铃木园子邀柯南小兰至山庄。成员：太田胜、角谷弘树、高桥良一、池田知佳子、德本敦子(已故)。吊桥被砍断，电话线断。知佳子失踪，窗外闪过绷带男。`,
+                truth: "高桥良一为敦子复仇，将知佳子分尸，利用钢琴线与树林移动头颅，伪装绷带男。"
+            },
+            {   // 1: 诅咒假面的冷笑 [citation:1]
+                title: "诅咒假面的冷笑",
+                phases: [
+                    { phase:1, name:"🏺 第一阶段 · 假面收藏", triggerClues:["苏芳红子死亡","密室上锁"], description: "慈善家苏芳红子死在密室，周围散落沾血假面。门锁需钥匙。" },
+                    { phase:2, name:"🎭 第二阶段 · 面具通道", triggerClues:["隔壁房间的孔","面具串联"], description: "发现隔壁房间与死者卧室有孔，数百假面曾被串联成'蛇'。" },
+                    { phase:3, name:"💎 第三阶段 · 动机揭晓", triggerClues:["交通事故孤儿","遗产动机"], description: "凶手利用面具通道杀人，动机与当年车祸有关。" }
+                ],
+                background: `【诅咒假面】毛利小五郎受邀参加慈善活动，主办者苏芳红子收藏大量诅咒假面。当晚红子在密室内死亡，房门上锁，屋内散落两百多副沾血假面。诅咒传说：假面会杀人。`,
+                truth: "凶手将假面用松紧带串联，从隔壁房间通过小孔送入，利用橡皮筋的弹力让假面像蛇一样滑动，最后用刀刺死红子。"
+            },
+            {   // 2: 鸟取蜘蛛公馆 
+                title: "鸟取蜘蛛之家的古怪",
+                phases: [
+                    { phase:1, name:"🕸️ 第一阶段 · 上吊密室", triggerClues:["信一死亡","房间反锁","鱼线缠绕"], description: "武田信一死在仓库二楼，门窗反锁，尸体被鱼线缠绕成蜘蛛网。" },
+                    { phase:2, name:"🎣 第二阶段 · 钓鱼线机关", triggerClues:["屋顶横梁","重物与线"], description: "柯南和平次发现凶手利用鱼线与重物制造延时密室，与蜘蛛传说呼应。" },
+                    { phase:3, name:"💔 第三阶段 · 美国往事", triggerClues:["罗伯特的语言破绽","美沙的真相"], description: "凶手是美国人罗伯特，为女友复仇，利用语言差异制造不在场证明。" }
+                ],
+                background: `【蜘蛛公馆】服部平次与柯南受委托来到鸟取县武田家。美沙自杀，信一在密室上吊，尸体缠绕鱼线，模仿“蜘蛛大人”传说。嫌疑人：武田家三兄妹、美国人罗伯特。`,
+                truth: "罗伯特将鱼线穿过横梁，一端系重物，另一端系尸体，烧断绳子后重物落下，尸体被拉起形成密室。"
+            },
+            {   // 3: 人鱼失踪记 [citation:3]
+                title: "人鱼失踪记",
+                phases: [
+                    { phase:1, name:"🧜 第一阶段 · 儒艮之箭", triggerClues:["长寿婆","箭被盗"], description: "美国岛祭祀人鱼，抽中儒艮之箭可长生。三名抽中者接连被杀。" },
+                    { phase:2, name:"🌊 第二阶段 · 悬崖坠落", triggerClues:["奈绪子坠崖","脚印消失"], description: "奈绪子坠崖，现场脚印中途消失。柯南怀疑凶手利用人鱼传说掩盖。" },
+                    { phase:3, name:"👵 第三阶段 · 长寿婆真相", triggerClues:["长寿婆是假扮","君惠的复仇"], description: "长寿婆是岛袋君惠假扮，她为母亲复仇杀死三人。平次和叶遇险。" }
+                ],
+                background: `【人鱼失踪】平次与和叶、柯南与小兰来到美国岛。岛上信奉人鱼，长寿婆发放儒艮之箭。门胁纱织、黑江奈绪子等中箭者连续死亡。奈绪子坠崖，脚印消失。`,
+                truth: "岛袋君惠假扮长寿婆，利用人鱼传说与悬崖地形制造不在场证明，为三年前母亲的死复仇。"
+            }
+        ];
+
+        // ----- 全局状态 -----
+        let currentCase = casesDatabase[0];
+        let currentPhaseIndex = 0;          // 0=第一阶段
+        let isTheaterRunning = false;
+        let mainTimer = null;
+        let chatHistory = [];
+        let lastSpeakerId = "";
+        let unlockedClues = new Set();
+
+        const stage = document.getElementById('theater-stage');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const sendBtn = document.getElementById('send-btn');
+        const userInput = document.getElementById('user-input');
+        const apiKeyInput = document.getElementById('api-key');
+        const caseSelector = document.getElementById('case-selector');
+        const phaseDisplay = document.getElementById('phase-display');
+
+        // 辅助函数
+        function appendDialogue(roleName, roleId, colorClass, text, isUser = false) {
+            const row = document.createElement('div');
+            row.className = `dialogue-row ${isUser ? 'is-user' : ''}`;
+            const icon = roleIcons[roleId] || "👤";
+            row.innerHTML = `<div class="role-badge ${colorClass}">${icon} ${roleName}</div><div class="chat-bubble">${text}</div>`;
+            stage.appendChild(row);
+            stage.scrollTop = stage.scrollHeight;
+            return row;
+        }
+
+        function showSystemToast(msg) {
+            const toast = document.createElement('div');
+            toast.className = 'sys-toast';
+            toast.innerText = `[ 系统 · ${msg} ]`;
+            stage.appendChild(toast);
+            stage.scrollTop = stage.scrollHeight;
+        }
+
+        // 更新阶段UI
+        function updatePhaseUI() {
+            const phase = currentCase.phases[currentPhaseIndex];
+            phaseDisplay.innerHTML = `📌 ${phase.name} <span class="progress-tag">${currentPhaseIndex+1}/${currentCase.phases.length}</span>`;
+        }
+
+        // 检查用户输入是否触发新线索 (简化：基于关键词)
+        function checkPhaseProgression(userText) {
+            if (currentPhaseIndex >= currentCase.phases.length - 1) return false;
+            const nextPhase = currentCase.phases[currentPhaseIndex + 1];
+            const triggers = nextPhase.triggerClues;
+            const lower = userText.toLowerCase();
+            const matched = triggers.some(t => lower.includes(t.toLowerCase()));
+            if (matched) {
+                currentPhaseIndex++;
+                updatePhaseUI();
+                // 注入阶段性背景
+                const phaseDesc = nextPhase.description;
+                chatHistory.push({ role: "system", content: `【阶段推进】${phaseDesc}` });
+                showSystemToast(`🔓 新阶段解锁：${nextPhase.name} —— ${phaseDesc}`);
+                // 自动追加一条目暮警官的现场更新
+                setTimeout(() => {
+                    appendDialogue("目暮十三", "megure", "c-megure", `警视厅报告：${phaseDesc} 请各位侦探注意新线索。`);
+                    chatHistory.push({ role: "assistant", content: `目暮警官通报：${phaseDesc}` });
+                }, 500);
+                return true;
+            }
+            return false;
+        }
+
+        // AI调用
+        async function fetchDetectiveThought(character, history) {
+            const key = apiKeyInput.value.trim();
+            if(!key) throw new Error("API Key Missing");
+            const phase = currentCase.phases[currentPhaseIndex];
+            const sysPrompt = `${character.prompt}
+【当前案件】${currentCase.title} 【阶段】${phase.name}
+【背景】${currentCase.background} 【阶段描述】${phase.description}
+【任务】根据阶段线索推理，不要直接说出最终真相，符合人设。字数60-100。`;
+            const payload = {
+                model: "deepseek-chat",
+                messages: [{ role: "system", content: sysPrompt }, ...history.slice(-6)],
+                temperature: 1.1, max_tokens: 200
+            };
+            const resp = await fetch("https://api.deepseek.com/chat/completions", {
+                method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${key}` },
+                body: JSON.stringify(payload)
+            });
+            if(!resp.ok) throw new Error((await resp.json()).error?.message || "API错误");
+            const data = await resp.json();
+            return data.choices[0].message.content;
+        }
+
+        // 自动循环
+        async function theaterTick() {
+            if(!isTheaterRunning) return;
+            let candidates = characterPrompts.filter(c => c.id !== lastSpeakerId);
+            const char = candidates[Math.floor(Math.random() * candidates.length)];
+            lastSpeakerId = char.id;
+
+            const thinkingRow = appendDialogue(char.name, char.id, char.colorClass, `<span class="typing-indicator">正在思考中...</span>`);
+            try {
+                const reply = await fetchDetectiveThought(char, chatHistory);
+                thinkingRow.querySelector('.chat-bubble').innerHTML = reply;
+                chatHistory.push({ role: "assistant", content: `${char.name}: ${reply}` });
+            } catch(e) {
+                thinkingRow.querySelector('.chat-bubble').innerHTML = `⚠️ 信号中断：${e.message}`;
+            }
+            if(isTheaterRunning) mainTimer = setTimeout(theaterTick, 5000);
+        }
+
+        // 启动
+        startBtn.onclick = () => {
+            if(!apiKeyInput.value) return alert("需要DeepSeek API Key");
+            localStorage.setItem('mika_ds_key', apiKeyInput.value);
+            currentCase = casesDatabase[caseSelector.value];
+            currentPhaseIndex = 0;
+            updatePhaseUI();
+            chatHistory = [{ role: "user", content: `案件开始：${currentCase.background}` }];
+            isTheaterRunning = true;
+            startBtn.disabled = true; stopBtn.disabled = false;
+            userInput.disabled = false; sendBtn.disabled = false;
+            apiKeyInput.disabled = true; caseSelector.disabled = true;
+
+            stage.innerHTML = `<div class="script-book"><h2>${currentCase.title}</h2><div class="prologue">${currentCase.background}<br><br><strong>🔹 当前阶段：${currentCase.phases[0].name}</strong><br>${currentCase.phases[0].description}</div></div>`;
+            showSystemToast("剧场开幕，侦探们开始推理。线索将推动阶段。");
+            setTimeout(theaterTick, 2000);
+        };
+
+        stopBtn.onclick = () => {
+            isTheaterRunning = false; clearTimeout(mainTimer);
+            startBtn.disabled = false; stopBtn.disabled = true;
+            apiKeyInput.disabled = false; caseSelector.disabled = false;
+            phaseDisplay.innerHTML = `⏸ 已暂停`;
+        };
+
+        // 用户发言 (可触发阶段)
+        async function handleUserSpeak() {
+            const text = userInput.value.trim();
+            if(!text) return;
+            userInput.value = ""; userInput.disabled = true; sendBtn.disabled = true;
+            clearTimeout(mainTimer);
+            
+            appendDialogue("特邀侦探 (你)", "user", "", text, true);
+            chatHistory.push({ role: "user", content: `侦探助手: ${text}` });
+            
+            // 检查阶段推进
+            const advanced = checkPhaseProgression(text);
+            
+            // 选一个角色回应
+            const responder = characterPrompts.find(c => c.id === 'conan') || characterPrompts[0];
+            lastSpeakerId = responder.id;
+            const thinkingRow = appendDialogue(responder.name, responder.id, responder.colorClass, `<span class="typing-indicator">分析中...</span>`);
+            try {
+                const reply = await fetchDetectiveThought(responder, chatHistory);
+                thinkingRow.querySelector('.chat-bubble').innerHTML = reply;
+                chatHistory.push({ role: "assistant", content: `${responder.name}: ${reply}` });
+            } catch(e) {
+                thinkingRow.querySelector('.chat-bubble').innerHTML = `⚠️ 错误：${e.message}`;
+            }
+            
+            userInput.disabled = false; sendBtn.disabled = false; userInput.focus();
+            if(isTheaterRunning) mainTimer = setTimeout(theaterTick, 4500);
+        }
+
+        sendBtn.onclick = handleUserSpeak;
+        userInput.addEventListener("keypress", (e) => { if(e.key === "Enter") handleUserSpeak(); });
+
+        // 缓存key
+        if(localStorage.getItem('mika_ds_key')) apiKeyInput.value = localStorage.getItem('mika_ds_key');
+    })();
+</script>
+</body>
+</html>

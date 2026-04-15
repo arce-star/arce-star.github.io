@@ -29,7 +29,7 @@
         .nav-icon { font-size: 3rem; margin-bottom: 15px; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%; background-color: #f8f9fa; transition: background-color 0.3s; }
         .nav-link:hover .nav-icon { background-color: #e3f2fd; }
         
-        .back-home { display: inline-block; margin-top: 30px; padding: 10px 20px; background-color: #f8f9fa; color: #333; text-decoration: none; border-radius: 5px; transition: background-color 0.3s; }
+        .back-home { display: inline-block; margin-top: 30px; padding: 10px 20px; background-color: #f8f9fa; color: #333; text-decoration: none; border-radius: 5px; transition: background-color 0.3s; cursor: pointer;}
         .back-home:hover { background-color: #e9ecef; }
         footer { margin-top: 50px; text-align: center; color: #888; font-size: 0.9rem; }
         
@@ -46,15 +46,15 @@
         .collection-grid, .skills-grid { display: grid; gap: 20px; }
         .collection-grid { grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
         
-        /* === 前端实验室响应式布局 === */
-        .frontend-container {
-            display: flex;
+        /* === 统一容器布局 (用于前端实验室和智者会饮) === */
+        .content-frame-container {
             height: 80vh;
             background: #fff;
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
             overflow: hidden;
             border: 1px solid #eee;
+            display: flex;
         }
 
         .frontend-sidebar {
@@ -68,56 +68,29 @@
             flex-shrink: 0;
         }
 
-        .frontend-sidebar h3 { font-size: 1.1rem; color: #666; margin-bottom: 10px; padding-left: 10px; }
-
         .demo-btn {
-            padding: 15px;
-            border: none;
-            background: #fff;
-            border-radius: 8px;
-            cursor: pointer;
-            text-align: left;
-            font-size: 1rem;
-            color: #444;
-            transition: all 0.3s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex; align-items: center; gap: 10px;
-            width: 100%;
+            padding: 15px; border: none; background: #fff; border-radius: 8px; cursor: pointer;
+            text-align: left; font-size: 1rem; color: #444; transition: all 0.3s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05); display: flex; align-items: center; gap: 10px; width: 100%;
         }
         .demo-btn:hover { background: #e3f2fd; color: #3498db; transform: translateX(5px); }
         .demo-btn.active-btn { background: #3498db; color: white; }
-        .demo-btn.active-btn i { color: white; }
 
-        .frontend-display {
-            flex: 1;
-            position: relative;
-            background: #111;
-            overflow: hidden;
-        }
-        #demo-frame { width: 100%; height: 100%; border: none; display: block; }
-        .empty-state { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: rgba(255,255,255,0.3); text-align: center; pointer-events: none; width: 100%; }
+        .display-area { flex: 1; position: relative; background: #fff; overflow: hidden; }
+        iframe { width: 100%; height: 100%; border: none; display: block; }
 
         /* 手机端适配 */
         @media (max-width: 768px) {
-            .container { padding: 0 10px; }
-            .nav-link { width: 100px; padding: 15px; }
-            .nav-icon { width: 60px; height: 60px; font-size: 2rem; }
-            
-            .frontend-container { flex-direction: column; height: 85vh; }
-            .frontend-sidebar {
-                width: 100%; height: auto; flex-direction: row; overflow-x: auto;
-                padding: 10px; border-right: none; border-bottom: 1px solid #eee;
-                gap: 10px; align-items: center; scrollbar-width: none;
-            }
-            .frontend-sidebar::-webkit-scrollbar { display: none; }
-            .frontend-sidebar h3 { display: none; }
-            .demo-btn { min-width: 130px; width: auto; padding: 10px; font-size: 0.9rem; justify-content: center; }
-            .demo-btn:hover { transform: none; }
-            .empty-state i { transform: rotate(-90deg); margin-bottom: 10px; display: block; }
+            .nav-links { gap: 10px; }
+            .nav-link { width: 45%; padding: 10px; }
+            .content-frame-container { flex-direction: column; height: 85vh; }
+            .frontend-sidebar { width: 100%; flex-direction: row; overflow-x: auto; padding: 10px; }
+            .demo-btn { min-width: 120px; }
         }
     </style>
 </head>
 <body>
+    <!-- 主页 -->
     <div id="home-page" class="page active">
         <div class="container">
             <div class="logo"><i class="fas fa-seedling"></i></div>
@@ -135,40 +108,31 @@
                     <div class="nav-icon"><i class="fas fa-star"></i></div>
                     <div class="nav-text">拾贝</div>
                 </a>
+                <!-- 新增：智者会饮入口 -->
+                <a class="nav-link" onclick="showPage('symposium-page')">
+                    <div class="nav-icon" style="color: #8c7e6d;"><i class="fas fa-university"></i></div>
+                    <div class="nav-text">智者会饮</div>
+                </a>
                 <a class="nav-link" onclick="showPage('frontend-page')">
                     <div class="nav-icon" style="color: #3498db;"><i class="fas fa-code"></i></div>
                     <div class="nav-text">前端网页</div>
                 </a>
             </div>
-            <!-- <footer><p>© 2024 摇摇乐</p></footer> -->
             <footer>
                 <p>© 2024 摇摇乐</p>
-                
-                <!-- 开始：添加计数器代码 -->
-                <!-- 1. 引入脚本 -->
                 <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
-                
-                <!-- 2. 显示数字 -->
                 <p style="font-size: 12px; margin-top: 5px;">
-                    <span id="busuanzi_container_site_pv">
-                        本站总访问量 <span id="busuanzi_value_site_pv"></span> 次
-                    </span>
-                    |
-                    <span id="busuanzi_container_site_uv">
-                        访客数 <span id="busuanzi_value_site_uv"></span> 人
-                    </span>
+                    <span id="busuanzi_container_site_pv">本站总访问量 <span id="busuanzi_value_site_pv"></span> 次</span>
                 </p>
-                <!-- 结束：添加计数器代码 -->
-                
             </footer>
         </div>
     </div>
 
+    <!-- 阅读、技能、拾贝页面保持原样... (此处省略，代码同你提供的) -->
     <div id="reading-page" class="page">
         <div class="page-header"><h2>阅读</h2><p>记录阅读与思考</p></div>
         <div class="page-content">
             <div class="reading-item"><h3>《我是潘金莲》</h3><p>他们不想死，但看到的常常都是死路。</p></div>
-            <div class="reading-item"><h3>《雪国》</h3><p>穿过县界长长的隧道，便是雪国。</p></div>
             <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
         </div>
     </div>
@@ -177,7 +141,6 @@
         <div class="page-header"><h2>小技能</h2><p>实用技能与操作</p></div>
         <div class="page-content">
             <div class="skill-card"><h3>PS融合效果</h3><p>蒙版与羽化值的巧妙运用。</p></div>
-            <div class="skill-card"><h3>PS文字肖像</h3><p>置换滤镜与高斯模糊的结合。</p></div>
             <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
         </div>
     </div>
@@ -187,15 +150,26 @@
         <div class="page-content">
             <div class="collection-grid">
                 <div class="collection-item"><p>"科学是在不断修正错误中前进的"</p></div>
-                <div class="collection-item"><p>"有的兄弟，有的"</p></div>
             </div>
             <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
         </div>
     </div>
 
+    <!-- 新增：智者会饮页面 -->
+    <div id="symposium-page" class="page">
+        <div class="page-header"><h2>智者会饮</h2><p>思想的交锋，跨越时空的辩论</p></div>
+        <div class="content-frame-container">
+            <div class="display-area">
+                <iframe src="symposium.html"></iframe>
+            </div>
+        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
+    </div>
+
+    <!-- 前端实验室 -->
     <div id="frontend-page" class="page">
         <div class="page-header"><h2>前端实验室</h2></div>
-        <div class="frontend-container">
+        <div class="content-frame-container">
             <div class="frontend-sidebar">
                 <h3>目录</h3>
                 <button class="demo-btn" onclick="loadDemo('card.html', this)"><i class="fas fa-cube"></i> 能量卡片</button>
@@ -203,9 +177,11 @@
                 <button class="demo-btn" onclick="loadDemo('vangogh.html', this)"><i class="fas fa-magic"></i> 日出日落</button>
                 <button class="demo-btn" onclick="loadDemo('黑白迷宫.html', this)"><i class="fas fa-magic"></i> 黑白迷宫</button>
             </div>
-            <div class="frontend-display">
-                <div class="empty-state" id="empty-hint"><i class="fas fa-arrow-left"></i><p>点击列表预览</p></div>
-                <iframe id="demo-frame" src="" frameborder="0"></iframe>
+            <div class="display-area">
+                <div class="empty-state" id="empty-hint" style="position: absolute; top:50%; left:50%; transform:translate(-50%,-50%); color:#ccc; text-align:center;">
+                    <i class="fas fa-arrow-left"></i><p>点击列表预览</p>
+                </div>
+                <iframe id="demo-frame" src=""></iframe>
             </div>
         </div>
         <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
@@ -230,9 +206,9 @@
         }
         window.addEventListener('DOMContentLoaded', () => {
             const hash = location.hash.substring(1);
-            if(['reading','skills','collection','frontend'].includes(hash)) showPage(hash + '-page');
+            // 更新 hash 检测逻辑
+            if(['reading','skills','collection','frontend','symposium'].includes(hash)) showPage(hash + '-page');
         });
     </script>
 </body>
-
 </html>

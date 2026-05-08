@@ -122,6 +122,14 @@
                     <div class="nav-icon" style="color: #3498db;"><i class="fas fa-code"></i></div>
                     <div class="nav-text">前端网页</div>
                 </a>
+                <a class="nav-link" onclick="showPage('fish-page')">
+                    <div class="nav-icon" style="color: #8363c7;"><i class="fas fa-fish"></i></div>
+                    <div class="nav-text">大鱼吃小鱼</div>
+                </a>
+                <a class="nav-link" onclick="showPage('shoucang-page')">
+                    <div class="nav-icon" style="color: #7f8adb;"><i class="fas fa-cube"></i></div>
+                    <div class="nav-text">抽卡收藏</div>
+                </a>
             </div>
             <footer>
                 <p>© 2024 摇摇乐</p>
@@ -175,6 +183,24 @@
         <div class="content-frame-container">
             <div class="display-area">
                 <iframe src="conan.html"></iframe> <!-- 这里指向新文件 -->
+            </div>
+        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
+    </div>
+    <div id="fish-page" class="page">
+        <div class="page-header"><h2>4399经典小游戏</h2><p>大鱼吃小鱼！</p></div>
+        <div class="content-frame-container">
+            <div class="display-area">
+                <iframe src="fish.html"></iframe> <!-- 这里指向新文件 -->
+            </div>
+        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
+    </div>
+    <div id="shoucang-page" class="page">
+        <div class="page-header"><h2>抽卡小游戏</h2><p>快来抽吧!</p></div>
+        <div class="content-frame-container">
+            <div class="display-area">
+                <iframe src="shoucang.html"></iframe> <!-- 这里指向新文件 -->
             </div>
         </div>
         <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>

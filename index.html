@@ -130,6 +130,14 @@
                     <div class="nav-icon" style="color: #7f8adb;"><i class="fas fa-cube"></i></div>
                     <div class="nav-text">抽卡收藏</div>
                 </a>
+                <a class="nav-link" onclick="showPage('photos-page')">
+                    <div class="nav-icon" style="color: #d4a574;"><i class="fas fa-images"></i></div>
+                    <div class="nav-text">照片墙</div>
+                </a>
+                <a class="nav-link" onclick="showPage('fun-page')">
+                    <div class="nav-icon" style="color: #e07b5a;"><i class="fas fa-magic"></i></div>
+                    <div class="nav-text">趣味小工具</div>
+                </a>
             </div>
             <footer>
                 <p>© 2024 摇摇乐</p>
@@ -206,6 +214,28 @@
         <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
     </div>
 
+    <!-- 新增：照片墙页面 -->
+    <div id="photos-page" class="page">
+        <div class="page-header"><h2>照片墙</h2><p>定格美好瞬间</p></div>
+        <div class="content-frame-container">
+            <div class="display-area">
+                <iframe src="photos.html"></iframe>
+            </div>
+        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
+    </div>
+
+    <!-- 新增：趣味小工具 -->
+    <div id="fun-page" class="page">
+        <div class="page-header"><h2>趣味小工具</h2><p>几个解闷的小玩意儿</p></div>
+        <div class="content-frame-container">
+            <div class="display-area">
+                <iframe src="fun.html"></iframe>
+            </div>
+        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
+    </div>
+
     <!-- 前端实验室 -->
     <div id="frontend-page" class="page">
         <div class="page-header"><h2>前端实验室</h2></div>
@@ -247,7 +277,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const hash = location.hash.substring(1);
             // 更新 hash 检测逻辑
-            if(['reading','skills','collection','frontend','symposium'].includes(hash)) showPage(hash + '-page');
+            if(['reading','skills','collection','frontend','symposium','conan','fish','shoucang','photos','fun'].includes(hash)) showPage(hash + '-page');
         });
     </script>
 </body>

@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>趣味小工具</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #fdf8f0; --card: #fffef9; --ink: #3b3226; --muted: #8c8072;
+            --a1: #e07b5a; --a2: #5a9e8f; --a3: #d4a843; --a4: #7b6bae;
+            --a5: #4a90b8; --a6: #c7645c; --a7: #8b6f5a; --a8: #5c9e6f;
+            --a9: #e89840; --a10: #4b8bbe; --a11: #9b7eb8; --a12: #c08060;
+            --a13: #5088a0; --a14: #d08090; --a15: #8a9b5a; --a16: #b87060;
+            --border: #e8dccf; --shadow: 0 2px 12px rgba(60,40,20,0.06); --shadow-lg: 0 8px 32px rgba(60,40,20,0.1); --radius: 12px;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family:"Noto Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+            background:var(--paper);
+            background-image:radial-gradient(ellipse at 20% 20%, rgba(224,180,120,0.08) 0%, transparent 60%), radial-gradient(ellipse at 80% 80%, rgba(120,180,160,0.06) 0%, transparent 60%);
+            color:var(--ink); min-height:100vh; line-height:1.6; -webkit-font-smoothing:antialiased;
+        }
+        .top-bar { max-width:1000px; margin:0 auto; padding:36px 28px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+        .top-bar h1 { font-family:"Ma Shan Zheng","Noto Sans SC",cursive; font-size:2.6rem; font-weight:400; color:var(--ink); letter-spacing:0.06em; }
+        .top-bar h1 i { color:var(--a3); margin-right:6px; }
+        .back-btn { display:inline-flex; align-items:center; gap:8px; padding:10px 20px; border:1px solid var(--border); border-radius:999px; color:var(--muted); text-decoration:none; font-size:0.9rem; transition:all 0.25s; background:var(--card); }
+        .back-btn:hover { border-color:var(--a1); color:var(--a1); box-shadow:0 2px 8px rgba(224,120,90,0.1); }
+        .widgets { max-width:1000px; margin:0 auto; padding:0 20px 60px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        @media (max-width:680px) { .widgets { grid-template-columns:1fr; } }
+        .widget { background:var(--card); border-radius:var(--radius); padding:26px 22px 22px; border:1px solid var(--border); box-shadow:var(--shadow); transition:box-shadow 0.35s; display:flex; flex-direction:column; }
+        .widget:hover { box-shadow:var(--shadow-lg); }
+        .w-title { font-size:1rem; font-weight:600; color:var(--ink); margin-bottom:16px; display:flex; align-items:center; gap:10px; letter-spacing:0.03em; }
+        .w-dot { width:8px; height:8px; border-radius:50%; display:inline-block; flex-shrink:0; }
+        .pill { padding:7px 18px; border:1px solid var(--border); border-radius:999px; background:var(--card); color:var(--muted); cursor:pointer; font-size:0.82rem; font-family:inherit; transition:all 0.2s; letter-spacing:0.03em; }
+        .pill:hover { border-color:var(--a2); color:var(--a2); }
+        .actions { display:flex; gap:10px; justify-content:center; margin-top:10px; }
+        .btn-main { display:inline-flex; align-items:center; gap:8px; padding:10px 28px; background:var(--a1); color:#fff; border:none; border-radius:999px; font-size:0.95rem; cursor:pointer; letter-spacing:0.04em; transition:all 0.2s; font-family:inherit; }
+        .btn-main:hover { filter:brightness(0.9); transform:translateY(-1px); }
+        .btn-main:active { transform:scale(0.96); }
+        .toast { position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(80px); background:var(--ink); color:#fff; padding:10px 24px; border-radius:999px; font-size:0.85rem; letter-spacing:0.04em; opacity:0; pointer-events:none; transition:all 0.35s cubic-bezier(0.175,0.885,0.32,1.275); z-index:999; }
+        .toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
+        /* ── 1. Fortune ─────────────────── */
+        .fortune-body { flex:1; display:flex; flex-direction:column; align-items:center; gap:16px; }
+        .fortune-display { min-height:100px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; gap:8px; transition:opacity 0.2s; }
+        .fortune-emoji { font-size:3.5rem; transition:transform 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+        .fortune-text { font-size:1.05rem; color:var(--ink); letter-spacing:0.03em; line-height:1.7; }
+        .fortune-hint { color:#ccc; font-size:0.85rem; }
+        @keyframes shake { 0%,100%{transform:translateX(0) rotate(0)} 10%{transform:translateX(-6px) rotate(-3deg)} 20%{transform:translateX(6px) rotate(3deg)} 30%{transform:translateX(-8px) rotate(-4deg)} 40%{transform:translateX(8px) rotate(4deg)} 50%{transform:translateX(-5px) rotate(-2deg)} 60%{transform:translateX(5px) rotate(2deg)} 70%{transform:translateX(-3px) rotate(-1deg)} 80%{transform:translateX(3px) rotate(1deg)} }
+        .shaking { animation:shake 0.7s ease; }
+
+        /* ── 2. Palette ─────────────────── */
+        .palette-row { display:flex; gap:0; border-radius:var(--radius); overflow:hidden; height:70px; margin-bottom:6px; cursor:pointer; }
+        .palette-swatch { flex:1; display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px; font-size:0.65rem; font-weight:500; color:rgba(255,255,255,0.85); letter-spacing:0.04em; transition:flex 0.35s cubic-bezier(0.25,0.46,0.45,0.94); user-select:none; }
+        .palette-swatch:hover { flex:1.8; }
+        .palette-swatch .hex { opacity:0; transition:opacity 0.25s; }
+        .palette-swatch:hover .hex { opacity:1; }
+        .palette-name { text-align:center; font-size:0.82rem; color:var(--muted); margin-bottom:4px; letter-spacing:0.04em; min-height:1.4em; }
+
+        /* ── 3. Memory ──────────────────── */
+        .mem-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:7px; max-width:260px; margin:0 auto; }
+        .mem-card { aspect-ratio:1; perspective:600px; cursor:pointer; }
+        .mem-card.flipped .minner, .mem-card.matched .minner { transform:rotateY(180deg); }
+        .mem-card.matched { pointer-events:none; }
+        .minner { width:100%; height:100%; position:relative; transform-style:preserve-3d; transition:transform 0.45s; border-radius:8px; }
+        .mfront, .mback { position:absolute; inset:0; border-radius:8px; display:flex; align-items:center; justify-content:center; font-size:1.6rem; backface-visibility:hidden; }
+        .mfront { background:#f0ebe0; border:1px solid var(--border); color:#ccc; font-size:0.9rem; }
+        .mback { background:#fff; border:1px solid var(--border); transform:rotateY(180deg); }
+        .mem-stats { display:flex; justify-content:center; gap:20px; margin-top:12px; font-size:0.82rem; color:var(--muted); }
+        .mem-stats span { font-weight:600; color:var(--ink); }
+        .win-msg { display:none; text-align:center; padding:8px 0 0; color:var(--a2); font-weight:600; font-size:0.9rem; }
+        .win-msg.show { display:block; }
+
+        /* ── 4. Pixel ───────────────────── */
+        .pixel-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
+        .pixel-grid { display:grid; grid-template-columns:repeat(8,1fr); gap:2px; background:var(--border); padding:3px; border-radius:6px; width:fit-content; }
+        .pixel-cell { width:26px; height:26px; background:#fff; border-radius:2px; cursor:pointer; transition:background 0.1s; }
+        @media (max-width:380px) { .pixel-cell { width:22px; height:22px; } }
+        .color-picker { display:flex; gap:7px; align-items:center; }
+        .color-dot { width:22px; height:22px; border-radius:50%; cursor:pointer; border:2px solid transparent; transition:all 0.2s; }
+        .color-dot.active { border-color:var(--ink); transform:scale(1.15); }
+        .color-dot.erase { background:#fff; border:2px dashed #ccc; display:flex; align-items:center; justify-content:center; font-size:0.65rem; color:#ccc; }
+
+        /* ── 5. Pomodoro ────────────────── */
+        .pomo-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+        .pomo-ring { width:140px; height:140px; border-radius:50%; background:conic-gradient(var(--a5) 0deg,#f0ebe0 0deg); display:flex; align-items:center; justify-content:center; transition:background 0.5s; }
+        .pomo-ring.br { background:conic-gradient(var(--a8) 0deg,#f0ebe0 0deg); }
+        .pomo-inner { width:112px; height:112px; border-radius:50%; background:var(--card); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:1px; }
+        .pomo-time { font-size:2.2rem; font-weight:700; color:var(--ink); letter-spacing:0.04em; font-variant-numeric:tabular-nums; }
+        .pomo-label { font-size:0.72rem; color:var(--muted); letter-spacing:0.04em; }
+        .pomo-btns { display:flex; gap:8px; }
+
+        /* ── 6. Dice ────────────────────── */
+        .dice-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+        .dice-area { display:flex; gap:14px; flex-wrap:wrap; justify-content:center; min-height:70px; align-items:center; }
+        .die { width:60px; height:60px; background:#fff; border:2px solid var(--border); border-radius:10px; display:grid; grid-template:repeat(3,1fr)/repeat(3,1fr); padding:7px; justify-items:center; align-items:center; }
+        .die.rolling { animation:diceRoll 0.5s ease; }
+        @keyframes diceRoll { 0%{transform:rotate(0) scale(1)} 25%{transform:rotate(90deg) scale(1.1)} 50%{transform:rotate(180deg) scale(0.95)} 75%{transform:rotate(270deg) scale(1.05)} 100%{transform:rotate(360deg) scale(1)} }
+        .pip { width:10px; height:10px; border-radius:50%; background:var(--ink); }
+        .dice-ctrl { display:flex; gap:8px; align-items:center; }
+        .dice-label { font-size:0.85rem; color:var(--muted); min-width:6em; text-align:center; }
+
+        /* ── 7. Mokugyo ─────────────────── */
+        .mokugyo-wrap { display:flex; flex-direction:column; align-items:center; gap:8px; position:relative; }
+        .mokugyo-target { width:110px; height:110px; border-radius:50%; background:radial-gradient(circle at 40% 35%,#f5e6d3,#c4a27a); box-shadow:0 4px 20px rgba(140,100,60,0.2),inset 0 -6px 12px rgba(0,0,0,0.08); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:2.5rem; transition:transform 0.08s; user-select:none; -webkit-tap-highlight-color:transparent; position:relative; }
+        .mokugyo-target:active { transform:scale(0.92); }
+        .merit-num { font-size:1.5rem; font-weight:700; color:var(--a3); }
+        .merit-label { font-size:0.72rem; color:var(--muted); }
+        .merit-pop { position:absolute; pointer-events:none; font-size:0.8rem; font-weight:600; color:var(--a3); animation:popUp 1.2s ease forwards; }
+        @keyframes popUp { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-55px) scale(1.3)} }
+        .ripple { position:absolute; border-radius:50%; border:2px solid rgba(180,140,100,0.4); animation:ripOut 0.7s ease forwards; pointer-events:none; }
+        @keyframes ripOut { 0%{width:40px;height:40px;opacity:0.8} 100%{width:160px;height:160px;opacity:0} }
+
+        /* ── 8. Nickname ────────────────── */
+        .nick-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+        .nick-display { min-height:55px; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:600; color:var(--ink); letter-spacing:0.06em; text-align:center; }
+        .nick-display.spin { animation:nickSpin 0.4s ease; }
+        @keyframes nickSpin { 0%{transform:translateY(-10px);opacity:0} 100%{transform:translateY(0);opacity:1} }
+        .nick-tags { display:flex; gap:5px; flex-wrap:wrap; justify-content:center; }
+        .nick-tag { font-size:0.68rem; padding:3px 10px; border-radius:999px; background:#f5f0e8; color:var(--muted); letter-spacing:0.03em; }
+
+        /* ── 9. Spinner Wheel ───────────── */
+        .spinwheel-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+        .spinwheel-svg { width:200px; height:200px; transition:transform 3.5s cubic-bezier(0.17,0.67,0.12,0.99); }
+        .spinwheel-result { font-size:1.1rem; font-weight:600; color:var(--a9); min-height:1.5em; text-align:center; }
+        .spinwheel-options { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; font-size:0.75rem; color:var(--muted); }
+        .spinwheel-options span { background:#f5f0e8; padding:3px 10px; border-radius:999px; }
+
+        /* ── 10. Number Guess ───────────── */
+        .guess-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
+        .guess-input-row { display:flex; gap:8px; }
+        .guess-input { width:80px; padding:8px 12px; border:1px solid var(--border); border-radius:8px; text-align:center; font-size:1.1rem; font-family:inherit; background:var(--card); color:var(--ink); }
+        .guess-input:focus { outline:none; border-color:var(--a10); }
+        .guess-hint { font-size:0.9rem; min-height:1.4em; text-align:center; }
+        .guess-history { display:flex; gap:6px; flex-wrap:wrap; justify-content:center; font-size:0.75rem; color:var(--muted); }
+
+        /* ── 11. Breathing ──────────────── */
+        .breath-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
+        .breath-circle { width:130px; height:130px; border-radius:50%; background:var(--a11); transition:transform 4s ease, background 4s ease; display:flex; align-items:center; justify-content:center; }
+        .breath-circle.inhale { transform:scale(1.4); background:var(--a4); }
+        .breath-circle.hold { transform:scale(1.4); background:var(--a4); }
+        .breath-circle.exhale { transform:scale(1); background:var(--a11); }
+        .breath-text { font-size:1rem; color:#fff; font-weight:500; letter-spacing:0.05em; }
+
+        /* ── 12. Countdown ──────────────── */
+        .cd-wrap { display:flex; flex-direction:column; align-items:center; gap:10px; }
+        .cd-big { font-size:3rem; font-weight:700; color:var(--a12); letter-spacing:0.03em; line-height:1; }
+        .cd-label { font-size:0.85rem; color:var(--muted); }
+        .cd-date-input { padding:6px 12px; border:1px solid var(--border); border-radius:8px; font-family:inherit; font-size:0.85rem; background:var(--card); color:var(--ink); }
+        .cd-date-input:focus { outline:none; border-color:var(--a12); }
+
+        /* ── 13. Mini Piano ─────────────── */
+        .piano-wrap { display:flex; flex-direction:column; align-items:center; gap:10px; }
+        .piano-keys { display:flex; gap:3px; }
+        .piano-key { width:38px; height:100px; border-radius:0 0 6px 6px; border:1px solid #ddd; background:#fff; cursor:pointer; transition:all 0.08s; display:flex; align-items:flex-end; justify-content:center; padding-bottom:8px; font-size:0.7rem; color:#bbb; user-select:none; -webkit-tap-highlight-color:transparent; }
+        .piano-key:active, .piano-key.pressed { background:#e3f2fd; border-color:#90caf9; transform:scaleY(0.96); color:#666; }
+        .piano-key.black { width:28px; height:62px; background:#3b3226; border:none; margin:0 -8px; z-index:1; color:#888; font-size:0.6rem; }
+        .piano-key.black:active, .piano-key.black.pressed { background:#555; }
+        @media (max-width:680px) { .piano-key { width:32px; height:80px; font-size:0.65rem; } .piano-key.black { width:24px; height:52px; } }
+
+        /* ── 14. Riddles ────────────────── */
+        .riddle-wrap { display:flex; flex-direction:column; align-items:center; gap:12px; }
+        .riddle-q { font-size:0.95rem; color:var(--ink); text-align:center; letter-spacing:0.03em; line-height:1.7; min-height:3em; display:flex; align-items:center; }
+        .riddle-a { font-size:0.9rem; color:var(--a14); text-align:center; font-weight:500; display:none; }
+        .riddle-a.show { display:block; animation:nickSpin 0.4s ease; }
+
+        /* ── 15. Almanac (今日宜忌) ─────── */
+        .almanac-wrap { display:flex; flex-direction:column; align-items:center; gap:10px; }
+        .almanac-row { display:flex; gap:12px; width:100%; }
+        .almanac-box { flex:1; padding:14px; border-radius:8px; text-align:center; }
+        .almanac-box.do { background:#f0f7f0; }
+        .almanac-box.dont { background:#fdf0ee; }
+        .almanac-box .al-title { font-size:0.82rem; font-weight:600; margin-bottom:6px; letter-spacing:0.04em; }
+        .almanac-box.do .al-title { color:var(--a15); }
+        .almanac-box.dont .al-title { color:var(--a6); }
+        .almanac-box .al-items { font-size:0.78rem; color:var(--muted); line-height:1.8; }
+
+        /* ── 16. Random Challenge ────────── */
+        .challenge-wrap { display:flex; flex-direction:column; align-items:center; gap:14px; }
+        .challenge-display { min-height:60px; display:flex; align-items:center; justify-content:center; font-size:1.05rem; color:var(--ink); text-align:center; letter-spacing:0.03em; line-height:1.7; transition:opacity 0.2s; }
+        .challenge-emoji { font-size:2.5rem; }
+
+        .page-footer { text-align:center; padding:0 20px 40px; color:#c8bfb0; font-size:0.78rem; letter-spacing:0.04em; }
+    </style>
+</head>
+<body>
+
+<div class="top-bar">
+    <h1><i class="fas fa-magic"></i>趣味小工具</h1>
+    <a class="back-btn" href="index.html"><i class="fas fa-arrow-left"></i> 返回主页</a>
+</div>
+
+<div class="widgets">
+
+<!-- 1. 今日运势 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a1)"></span>今日运势</div>
+<div class="fortune-body">
+    <div class="fortune-display" id="fd"><div class="fortune-hint">点击按钮，摇出今日签运</div></div>
+    <button class="btn-main" style="background:var(--a1)" id="shakeBtn" onclick="drawFortune()"><i class="fas fa-hand-rock"></i> 摇一摇</button>
+</div></div>
+
+<!-- 2. 配色灵感 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a3)"></span>配色灵感</div>
+<div class="palette-name" id="palName">点击色条刷新</div>
+<div class="palette-row" id="palRow" onclick="genPal()"></div>
+<div class="actions"><button class="pill" onclick="genPal()"><i class="fas fa-sync-alt"></i> 换一组</button><span style="font-size:0.72rem;color:#c8bfb0;line-height:2.2;">空格键可刷新</span></div>
+</div></div>
+
+<!-- 3. 翻牌消消乐 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a2)"></span>翻牌消消乐</div>
+<div class="mem-grid" id="memGrid"></div>
+<div class="mem-stats">步数: <span id="moveCnt">0</span></div>
+<div class="win-msg" id="winMsg">全部配对成功！</div>
+<div class="actions" style="margin-top:10px"><button class="pill" onclick="initMem()"><i class="fas fa-redo"></i> 再来一局</button></div>
+</div></div>
+
+<!-- 4. 像素画板 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a4)"></span>像素画板</div>
+<div class="pixel-wrap">
+    <div class="color-picker" id="colorPick"></div>
+    <div class="pixel-grid" id="pixGrid"></div>
+    <div class="actions"><button class="pill" onclick="clearPix()"><i class="fas fa-eraser"></i> 清空</button></div>
+</div></div>
+
+<!-- 5. 番茄钟 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a5)"></span>番茄钟</div>
+<div class="pomo-wrap">
+    <div class="pomo-ring" id="pomoRing"><div class="pomo-inner"><div class="pomo-time" id="pomoTime">25:00</div><div class="pomo-label" id="pomoLbl">专注</div></div></div>
+    <div class="pomo-btns"><button class="pill" id="pomoBtn" onclick="togglePomo()"><i class="fas fa-play"></i> 开始</button><button class="pill" onclick="resetPomo()"><i class="fas fa-undo"></i> 重置</button></div>
+</div></div>
+
+<!-- 6. 掷骰子 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a6)"></span>掷骰子</div>
+<div class="dice-wrap">
+    <div class="dice-area" id="diceArea"></div>
+    <div class="dice-ctrl"><button class="pill" onclick="chDice(-1)"><i class="fas fa-minus"></i></button><span class="dice-label" id="diceLbl">2 个骰子</span><button class="pill" onclick="chDice(1)"><i class="fas fa-plus"></i></button></div>
+    <button class="btn-main" style="background:var(--a6);padding:8px 22px;font-size:0.85rem" onclick="rollDice()"><i class="fas fa-dice"></i> 开掷</button>
+</div></div>
+
+<!-- 7. 敲木鱼 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a7)"></span>敲木鱼</div>
+<div class="mokugyo-wrap" id="mokuWrap">
+    <div class="mokugyo-target" id="moku" onclick="knock(event)"></div>
+    <div style="text-align:center"><div class="merit-num" id="meritCnt">0</div><div class="merit-label">功德</div></div>
+</div></div>
+
+<!-- 8. 昵称生成器 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a8)"></span>随机昵称</div>
+<div class="nick-wrap">
+    <div class="nick-display" id="nickDisp">点下面的按钮试试</div>
+    <div class="nick-tags" id="nickTags"></div>
+    <button class="btn-main" style="background:var(--a8)" onclick="genNick()"><i class="fas fa-random"></i> 换一个</button>
+</div></div>
+
+<!-- 9. 决策转盘 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a9)"></span>决策转盘</div>
+<div class="spinwheel-wrap">
+    <svg class="spinwheel-svg" id="spinwheel" viewBox="0 0 200 200"></svg>
+    <div class="spinwheel-result" id="spinResult"></div>
+    <div class="spinwheel-options" id="spinOpts"></div>
+    <div class="actions"><button class="pill" onclick="spinWheel()"><i class="fas fa-sync-alt"></i> 转一转</button></div>
+</div></div>
+
+<!-- 10. 猜数字 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a10)"></span>猜数字 (1-100)</div>
+<div class="guess-wrap">
+    <div class="guess-hint" id="guessHint">我已经想好了一个数字……</div>
+    <div class="guess-input-row">
+        <input type="number" class="guess-input" id="guessInp" min="1" max="100" placeholder="?">
+        <button class="pill" onclick="makeGuess()">猜</button>
+    </div>
+    <div class="guess-history" id="guessHist"></div>
+    <div class="actions"><button class="pill" onclick="resetGuess()"><i class="fas fa-redo"></i> 再来</button></div>
+</div></div>
+
+<!-- 11. 呼吸引导 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a11)"></span>呼吸引导</div>
+<div class="breath-wrap">
+    <div class="breath-circle" id="breathCir"><div class="breath-text" id="breathTxt">准备</div></div>
+    <div class="actions"><button class="pill" id="breathBtn" onclick="toggleBreath()"><i class="fas fa-play"></i> 开始</button></div>
+</div></div>
+
+<!-- 12. 倒计时日 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a12)"></span>倒计时日</div>
+<div class="cd-wrap">
+    <div class="cd-big" id="cdDays">--</div>
+    <div class="cd-label" id="cdLabel">选择一个日期</div>
+    <input type="date" class="cd-date-input" id="cdInput" onchange="updateCD()">
+</div></div>
+
+<!-- 13. 迷你钢琴 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a13)"></span>迷你钢琴</div>
+<div class="piano-wrap">
+    <div class="piano-keys" id="pianoKeys"></div>
+    <div style="font-size:0.72rem;color:#c8bfb0">点击琴键，用键盘 1-8 也可弹奏</div>
+</div></div>
+
+<!-- 14. 脑筋急转弯 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a14)"></span>脑筋急转弯</div>
+<div class="riddle-wrap">
+    <div class="riddle-q" id="riddleQ"></div>
+    <div class="riddle-a" id="riddleA"></div>
+    <div class="actions">
+        <button class="pill" onclick="showAnswer()">看答案</button>
+        <button class="pill" onclick="nextRiddle()">换一题</button>
+    </div>
+</div></div>
+
+<!-- 15. 今日宜忌 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a15)"></span>今日宜忌</div>
+<div class="almanac-wrap">
+    <div class="almanac-row">
+        <div class="almanac-box do"><div class="al-title">宜</div><div class="al-items" id="alDo"></div></div>
+        <div class="almanac-box dont"><div class="al-title">忌</div><div class="al-items" id="alDont"></div></div>
+    </div>
+    <div class="actions"><button class="pill" onclick="genAlmanac()"><i class="fas fa-sync-alt"></i> 翻黄历</button></div>
+</div></div>
+
+<!-- 16. 随机挑战 -->
+<div class="widget"><div class="w-title"><span class="w-dot" style="background:var(--a16)"></span>随机挑战</div>
+<div class="challenge-wrap">
+    <div class="challenge-display" id="chalDisp"><div class="challenge-emoji">🎯</div><div>点击按钮，接受挑战</div></div>
+    <button class="btn-main" style="background:var(--a16)" onclick="genChallenge()"><i class="fas fa-bolt"></i> 来一个挑战</button>
+</div></div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+<div class="page-footer">&copy; 2024 摇摇乐</div>
+
+<script>
+// ═══ 1. Fortune ═══
+const fortunes=[{e:"🌟",t:"今日宜：大胆尝试新事物，宇宙站在你这边。"},{e:"🎯",t:"目标就在不远处，保持专注，别被小事分心。"},{e:"🍀",t:"幸运数字是 7，幸运方向是东南。不信可以试试。"},{e:"🐱",t:"今日会遇到一只猫（精神上的也算）。"},{e:"☕",t:"一杯咖啡的时间，足以改变一个决定。"},{e:"🌈",t:"今天有人会在背后夸你，可惜你听不到。"},{e:"💡",t:"灵感会在你最不经意的时候闪现，记得随时记录。"},{e:"🌊",t:"潮起潮落都是风景，不必为小事焦虑。"},{e:"🎵",t:"今天听到的某首歌里，藏着你想要的答案。"},{e:"🔥",t:"能量满格的一天！适合完成拖延已久的事。"},{e:"🌙",t:"宜早睡。忌熬夜刷手机——虽然知道你也做不到。"},{e:"🦊",t:"说不上为什么，但今天你看起来特别可爱。"},{e:"🎨",t:"创造力爆棚的一天，去做点不一样的事情吧。"},{e:"🍜",t:"今天吃到的那顿饭，会比平时更好吃。"},{e:"📖",t:"偶然翻开的一页书里，会有意外收获。"},{e:"⭐",t:"许个愿吧，万一实现了呢？"},{e:"🪐",t:"在平行宇宙里，你已经完成今天所有的待办事项了。"},{e:"🌻",t:"向阳而生，今天又是值得的一天。"},{e:"🍃",t:"微风不燥，时光正好。出门走走吧。"},{e:"🎁",t:"今日宜：给自己一个小奖励，你值得。"},{e:"🦄",t:"相信奇迹的人，本身就和奇迹一样了不起。"},{e:"🐝",t:"忙碌的小蜜蜂也有停下来闻花香的权利。"},{e:"🌿",t:"宜深呼吸三次，把烦恼呼出去。"},{e:"🕊️",t:"平静本身就是一种力量。"}];
+function drawFortune(){var d=document.getElementById("fd"),b=document.getElementById("shakeBtn"),f=fortunes[Math.floor(Math.random()*fortunes.length)];b.classList.add("shaking");d.style.opacity="0";setTimeout(function(){d.innerHTML='<div class="fortune-emoji">'+f.e+'</div><div class="fortune-text">'+f.t+'</div>';d.style.opacity="1";var e=d.querySelector(".fortune-emoji");if(e){e.style.transform="scale(1.2)";setTimeout(function(){e.style.transform=""},300)}},350);setTimeout(function(){b.classList.remove("shaking")},700)}
+
+// ═══ 2. Palette ═══
+var palNames=["海盐焦糖","暮光森林","橘子汽水","极光之夜","春日花信","旧物杂货铺","雨后初晴","咖啡馆午后","莫奈花园","赛博朋克","奶油草莓","深海暗流","秋日私语","薄荷清晨","落日飞车","昭和喫茶店","冰川融水","蜜桃乌龙","午夜巴黎","稻城亚丁"];
+function hslHex(h,s,l){s/=100;l/=100;var a=s*Math.min(l,1-l),f=function(n){var k=(n+h/30)%12,c=l-a*Math.max(Math.min(k-3,9-k,1),-1);return Math.round(255*c).toString(16).padStart(2,"0")};return"#"+f(0)+f(8)+f(4)}
+function genPal(){var h=Math.random()*360,cols=[];for(var i=0;i<5;i++){cols.push(hslHex((h+i*(25+Math.random()*45))%360,45+Math.random()*40,28+Math.random()*45))}
+document.getElementById("palRow").innerHTML=cols.map(function(c){return'<div class="palette-swatch" style="background:'+c+'" data-hex="'+c+'"><span class="hex">'+c+'</span></div>'}).join("");document.getElementById("palName").textContent=palNames[Math.floor(Math.random()*palNames.length)];document.querySelectorAll(".palette-swatch").forEach(function(el){el.addEventListener("click",function(e){e.stopPropagation();navigator.clipboard.writeText(el.dataset.hex).then(function(){toast("已复制 "+el.dataset.hex)})})})}
+
+// ═══ 3. Memory ═══
+var emojis=["🐶","🐱","🦊","🐼","🐨","🐸","🐵","🐰"],memCards=[],flipped=[],moves=0,matched=0,lock=false;
+function initMem(){var pairs=emojis.concat(emojis);memCards=pairs.sort(function(){return Math.random()-0.5});flipped=[];moves=0;matched=0;lock=false;document.getElementById("moveCnt").textContent="0";document.getElementById("winMsg").classList.remove("show");document.getElementById("memGrid").innerHTML=memCards.map(function(e,i){return'<div class="mem-card" data-idx="'+i+'" onclick="flipCard(this)"><div class="minner"><div class="mfront"><i class="fas fa-question"></i></div><div class="mback">'+e+"</div></div></div>"}).join("")}
+function flipCard(c){if(lock)return;var i=parseInt(c.dataset.idx);if(flipped.includes(i))return;if(c.classList.contains("flipped")||c.classList.contains("matched"))return;c.classList.add("flipped");flipped.push(i);if(flipped.length===2){moves++;document.getElementById("moveCnt").textContent=moves;lock=true;var a=flipped[0],b=flipped[1];if(memCards[a]===memCards[b]){matched++;document.querySelectorAll('.mem-card[data-idx="'+a+'"], .mem-card[data-idx="'+b+'"]').forEach(function(el){el.classList.add("matched")});flipped=[];lock=false;if(matched===8){setTimeout(function(){document.getElementById("winMsg").classList.add("show")},400)}}else{setTimeout(function(){document.querySelectorAll('.mem-card[data-idx="'+a+'"], .mem-card[data-idx="'+b+'"]').forEach(function(el){el.classList.remove("flipped")});flipped=[];lock=false},700)}}}
+
+// ═══ 4. Pixel ═══
+var pixCols=["#3b3226","#e07b5a","#5a9e8f","#d4a843","#7b6bae","#e8a0b8","#f5f0e8","#fff"],curCol=pixCols[0],isDraw=false;
+function initPix(){document.getElementById("pixGrid").innerHTML=Array.from({length:64},function(){return'<div class="pixel-cell" style="background:#fff"></div>'}).join("");var pick=document.getElementById("colorPick");pick.innerHTML=pixCols.map(function(c,i){if(i===pixCols.length-1)return'<div class="color-dot erase'+(c===curCol?" active":"")+'" style="background:#fff" data-color="'+c+'" title="橡皮"></div>';return'<div class="color-dot'+(c===curCol?" active":"")+'" style="background:'+c+'" data-color="'+c+'"></div>'}).join("");pick.querySelectorAll(".color-dot").forEach(function(d){d.addEventListener("click",function(){curCol=d.dataset.color;pick.querySelectorAll(".color-dot").forEach(function(x){x.classList.remove("active")});d.classList.add("active")})});var isT="ontouchstart" in window;document.querySelectorAll(".pixel-cell").forEach(function(cell){var p=function(){cell.style.background=curCol};cell.addEventListener(isT?"touchstart":"mousedown",function(e){e.preventDefault();isDraw=true;p()});cell.addEventListener(isT?"touchmove":"mouseenter",function(e){if(isDraw){e.preventDefault();p()}});cell.addEventListener(isT?"touchend":"mouseup",function(){isDraw=false})});document.addEventListener("mouseup",function(){isDraw=false});document.addEventListener("touchend",function(){isDraw=false})}
+function clearPix(){document.querySelectorAll(".pixel-cell").forEach(function(c){c.style.background="#fff"})}
+
+// ═══ 5. Pomodoro ═══
+var WORK=1500,BREAK=300,pomoSec=WORK,pomoRun=false,pomoBrk=false,pomoIv=null,pomoTot=WORK;
+function updPomo(){var m=Math.floor(pomoSec/60),s=pomoSec%60;document.getElementById("pomoTime").textContent=String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");var r=document.getElementById("pomoRing"),deg=((pomoTot-pomoSec)/pomoTot)*360,cl=pomoBrk?"var(--a8)":"var(--a5)";r.style.background="conic-gradient("+cl+" "+deg+"deg, #f0ebe0 "+deg+"deg)";if(pomoBrk)r.classList.add("br");else r.classList.remove("br");document.getElementById("pomoLbl").textContent=pomoBrk?"休息":"专注"}
+function togglePomo(){var b=document.getElementById("pomoBtn");if(pomoRun){pomoRun=false;clearInterval(pomoIv);b.innerHTML='<i class="fas fa-play"></i> 继续'}else{pomoRun=true;b.innerHTML='<i class="fas fa-pause"></i> 暂停';pomoIv=setInterval(function(){if(pomoSec<=0){pomoBrk=!pomoBrk;pomoSec=pomoBrk?BREAK:WORK;pomoTot=pomoSec;updPomo();return}pomoSec--;updPomo()},1000)}}
+function resetPomo(){pomoRun=false;clearInterval(pomoIv);pomoBrk=false;pomoSec=WORK;pomoTot=WORK;document.getElementById("pomoBtn").innerHTML='<i class="fas fa-play"></i> 开始';updPomo()}
+
+// ═══ 6. Dice ═══
+var diceCnt=2,pipMap={1:[5],2:[1,9],3:[1,5,9],4:[1,3,7,9],5:[1,3,5,7,9],6:[1,3,4,6,7,9]};
+function renderDice(r){document.getElementById("diceArea").innerHTML=(r||[1,1]).map(function(n,i){var pips=Array.from({length:9},function(_,j){var a=pipMap[n]&&pipMap[n].includes(j+1);return'<div class="pip" style="background:'+(a?"var(--ink)":"transparent")+'"></div>'}).join("");return'<div class="die'+(r?" rolling":"")+'" style="animation-delay:'+(i*0.08)+'s">'+pips+"</div>"}).join("")}
+function rollDice(){var r=Array.from({length:diceCnt},function(){return Math.floor(Math.random()*6)+1});renderDice(r);var s=r.reduce(function(a,b){return a+b},0);if(diceCnt>1){document.getElementById("diceLbl").textContent=diceCnt+" 个骰子 · 点数 "+s;setTimeout(function(){document.getElementById("diceLbl").textContent=diceCnt+" 个骰子"},2500)}}
+function chDice(d){diceCnt=Math.max(1,Math.min(6,diceCnt+d));document.getElementById("diceLbl").textContent=diceCnt+" 个骰子";renderDice(Array(diceCnt).fill(1))}
+
+// ═══ 7. Mokugyo ═══
+var merit=0;
+function knock(e){merit++;document.getElementById("meritCnt").textContent=merit;var t=document.getElementById("moku"),r=t.getBoundingClientRect(),p=document.createElement("div");p.className="merit-pop";p.textContent="功德 +1";p.style.left=(e.clientX-r.left-25)+"px";p.style.top=(e.clientY-r.top-30)+"px";t.appendChild(p);setTimeout(function(){p.remove()},1200);var ri=document.createElement("div");ri.className="ripple";ri.style.left=(e.clientX-r.left-80)+"px";ri.style.top=(e.clientY-r.top-80)+"px";t.appendChild(ri);setTimeout(function(){ri.remove()},700)}
+
+// ═══ 8. Nickname ═══
+var nickAdj=["快乐的","安静的","暴走的","失眠的","退休的","加班的","摸鱼的","干饭的","追光的","发呆的","养生的","嗑瓜子的","隐形的","万能的","熬夜的","躺平的","迷路的","吃草的","会飞的","佛系的","社恐的","野生的","人间的","流浪的"],nickNoun=["小熊猫","程序员","云朵","布丁","泡面","星星","麻薯","奶茶","年糕","豆腐","柠檬","薄荷","鲸鱼","海鸥","松饼","果冻","汤圆","芝士","松鼠","芋头","豆沙","糯米","蘑菇","曲奇"],nickSty=["简约风","可爱风","沙雕风","文艺风","吃货风","动物风"];
+function genNick(){var a=nickAdj[Math.floor(Math.random()*nickAdj.length)],n=nickNoun[Math.floor(Math.random()*nickNoun.length)],name=a+n,d=document.getElementById("nickDisp");d.classList.remove("spin");void d.offsetWidth;d.textContent=name;d.classList.add("spin");var t=document.getElementById("nickTags"),s1=nickSty[Math.floor(Math.random()*nickSty.length)],s2=nickSty[Math.floor(Math.random()*nickSty.length)],f=nickSty.filter(function(s){return s!==s1&&s!==s2}),s3=f[Math.floor(Math.random()*f.length)];t.innerHTML=[s1,s2,s3].map(function(s){return'<span class="nick-tag">'+s+"</span>"}).join("")}
+
+// ═══ 9. Decision Spinner ═══
+var spinOpts=["去吧！","算了","再等等","冲！","问朋友","抛硬币","YES","NO","明天再说","相信自己","换个方案","随机应变"],spinning=false,spinAng=0;
+function drawWheel(){var svg=document.getElementById("spinwheel"),n=spinOpts.length,slice=360/n;svg.innerHTML='<circle cx="100" cy="100" r="95" fill="#f5f0e8" stroke="var(--border)" stroke-width="2"/>'+spinOpts.map(function(o,i){var a=(i*slice-90)*Math.PI/180,x1=100+95*Math.cos(a),y1=100+95*Math.sin(a),a2=((i+1)*slice-90)*Math.PI/180,x2=100+95*Math.cos(a2),y2=100+95*Math.sin(a2),cols=["#fdf0ed","#fef8f0","#f0f7f0","#f5f0f8","#fef6ee","#eef6f8"];return'<path d="M100 100 L'+x1+" "+y1+" A95 95 0 0 1 "+x2+" "+y2+' Z" fill="'+cols[i%cols.length]+'" stroke="var(--border)" stroke-width="0.5"/>'}).join("")+'<circle cx="100" cy="100" r="18" fill="var(--ink)"/><polygon points="100,88 108,96 100,92" fill="#fff"/>';document.getElementById("spinOpts").innerHTML=spinOpts.map(function(o){return"<span>"+o+"</span>"}).join("")}
+function spinWheel(){if(spinning)return;spinning=true;var extra=720+Math.random()*720,slice=360/spinOpts.length;spinAng+=extra;document.getElementById("spinwheel").style.transform="rotate("+spinAng+"deg)";document.getElementById("spinResult").textContent="转动中……";setTimeout(function(){var norm=(spinAng%360+360)%360,i=Math.floor((360-norm)/slice)%spinOpts.length;document.getElementById("spinResult").textContent="👉 "+spinOpts[i];spinning=false},3600)}
+drawWheel();
+
+// ═══ 10. Number Guess ═══
+var guessTarget=Math.floor(Math.random()*100)+1,guessTries=[];
+function makeGuess(){var inp=document.getElementById("guessInp"),v=parseInt(inp.value);if(isNaN(v)||v<1||v>100){document.getElementById("guessHint").textContent="请输入 1-100 之间的数字";return}
+guessTries.push(v);document.getElementById("guessHist").innerHTML=guessTries.map(function(g){var c=g===guessTarget?"var(--a2)":g<guessTarget?"var(--a10)":"var(--a6)";return'<span style="color:'+c+';font-weight:600">'+g+"</span>"}).join(" → ");if(v===guessTarget){document.getElementById("guessHint").textContent="🎉 正确！就是 "+guessTarget+"，用了 "+guessTries.length+" 次"}else if(v<guessTarget){document.getElementById("guessHint").textContent="📈 太小了，往大猜";document.getElementById("guessHint").style.color="var(--a10)"}else{document.getElementById("guessHint").textContent="📉 太大了，往小猜";document.getElementById("guessHint").style.color="var(--a6)"}inp.value="";inp.focus()}
+function resetGuess(){guessTarget=Math.floor(Math.random()*100)+1;guessTries=[];document.getElementById("guessHint").textContent="我已经想好了一个数字……";document.getElementById("guessHint").style.color="var(--muted)";document.getElementById("guessHist").innerHTML="";document.getElementById("guessInp").value=""}
+
+// ═══ 11. Breathing ═══
+var breathRun=false,breathPhase=0,breathTimer=null,breathPhases=["吸气","屏息","呼气","屏息"],breathDurs=[4000,7000,8000,4000];
+function breathCycle(){var c=document.getElementById("breathCir"),t=document.getElementById("breathTxt");c.className="breath-circle";void c.offsetWidth;t.textContent=breathPhases[breathPhase];if(breathPhase===0)c.classList.add("inhale");if(breathPhase===1)c.classList.add("hold");if(breathPhase===2)c.classList.add("exhale");breathPhase=(breathPhase+1)%4;breathTimer=setTimeout(breathCycle,breathDurs[breathPhase])}
+function toggleBreath(){var b=document.getElementById("breathBtn");if(breathRun){breathRun=false;clearTimeout(breathTimer);breathPhase=0;document.getElementById("breathCir").className="breath-circle";document.getElementById("breathTxt").textContent="准备";b.innerHTML='<i class="fas fa-play"></i> 开始'}else{breathRun=true;breathPhase=0;breathTimer=setTimeout(breathCycle,500);b.innerHTML='<i class="fas fa-pause"></i> 停止'}}
+
+// ═══ 12. Countdown ═══
+function updateCD(){var inp=document.getElementById("cdInput"),d=new Date(inp.value+"T00:00:00"),now=new Date();now.setHours(0,0,0,0);var diff=Math.ceil((d-now)/86400000);document.getElementById("cdDays").textContent=diff>=0?diff:"--";var lbl=document.getElementById("cdLabel");if(diff>0)lbl.textContent="距离 "+inp.value+" 还有";else if(diff===0)lbl.textContent="就是今天！";else lbl.textContent="选择一个日期";document.getElementById("cdInput").style.display="none";setTimeout(function(){document.getElementById("cdInput").style.display=""},60000)}
+setInterval(function(){if(document.getElementById("cdInput").value)updateCD()},60000);
+
+// ═══ 13. Mini Piano ═══
+var notes=["C","D","E","F","G","A","B","C2"];
+function noteFreq(n){return 261.63*Math.pow(2,n/12)}
+function initPiano(){var k=document.getElementById("pianoKeys"),html="";notes.forEach(function(n,i){html+='<div class="piano-key" data-note="'+i+'" onmousedown="playNote('+i+',this)" ontouchstart="playNote('+i+',this);event.preventDefault()">'+n+"</div>"});k.innerHTML=html}
+function playNote(i,el){if(el){el.classList.add("pressed");setTimeout(function(){el.classList.remove("pressed")},150)}
+try{var ctx=new(window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.connect(g);g.connect(ctx.destination);o.frequency.value=noteFreq(i*2);o.type="sine";g.gain.value=0.3;o.start();g.gain.exponentialRampToValueAtTime(0.001,ctx.currentTime+0.5);setTimeout(function(){o.stop()},500)}catch(e){}}
+document.addEventListener("keydown",function(e){var k=parseInt(e.key);if(k>=1&&k<=8){playNote(k-1);var key=document.querySelector('.piano-key[data-note="'+(k-1)+'"]');if(key){key.classList.add("pressed");setTimeout(function(){key.classList.remove("pressed")},150)}}});
+initPiano();
+
+// ═══ 14. Riddles ═══
+var riddles=[{q:"什么东西越洗越脏？",a:"水"},{q:"什么东西你越用力握，它越容易从手中溜走？",a:"沙子"},{q:"什么东西有头无脚，有眼无眉？",a:"针"},{q:"小明从10楼跳下来却没有受伤，为什么？",a:"他从一楼跳下来"},{q:"什么床不能睡觉？",a:"河床"},{q:"什么东西打破了大家都说好？",a:"纪录"},{q:"什么东西越晒越湿？",a:"冰"},{q:"什么门永远关不上？",a:"球门"},{q:"什么马不能骑？",a:"海马"},{q:"生日礼物挂在树上，打一个字",a:"果"},{q:"什么东西人人都有，却只能给别人看？",a:"名字"},{q:"什么书买不到？",a:"秘书"},{q:"什么东西往上升，却不掉下来？",a:"年龄"},{q:"什么时候看到的月亮最大？",a:"登月的时候"},{q:"什么东西有五个头，却不奇怪？",a:"手指"}];
+var ridIdx=0;
+function showRiddle(){document.getElementById("riddleA").classList.add("show")}
+function nextRiddle(){ridIdx=Math.floor(Math.random()*riddles.length);document.getElementById("riddleQ").textContent=riddles[ridIdx].q;document.getElementById("riddleA").textContent="答案："+riddles[ridIdx].a;document.getElementById("riddleA").classList.remove("show")}
+
+// ═══ 15. Almanac ═══
+var alDo=[["读书写字","整理房间","吃顿好的","给家人打电话","早睡早起","种一盆植物","写日记","拍照记录","泡杯热茶","做拉伸运动"],["出门散步","约朋友吃饭","学个小技能","听一首新歌","收拾桌面","发一条朋友圈","做几个深呼吸","看一部好电影","换条新路线走","给自己买花"]];
+var alDont=[["熬夜到凌晨","冲动消费","和人吵架","不吃早餐","久坐不动","刷手机到天亮","暴饮暴食","乱扔东西","背后说人坏话","拖延重要的事"],["频繁看手机","喝太多咖啡","穿太少出门","胡思乱想","与人攀比","吃过期食品","跷二郎腿","口是心非","忘带钥匙出门","扫兴"]];
+function genAlmanac(){var d=alDo[Math.floor(Math.random()*alDo.length)],nt=alDont[Math.floor(Math.random()*alDont.length)],di=Math.floor(Math.random()*d.length),ni=Math.floor(Math.random()*nt.length);document.getElementById("alDo").innerHTML=d.slice(di,di+3).join("<br>");document.getElementById("alDont").innerHTML=nt.slice(ni,ni+3).join("<br>")}
+
+// ═══ 16. Random Challenge ═══
+var challenges=[{e:"💪",t:"做 20 个深蹲，就在现在！"},{e:"📸",t:"拍一张窗外的照片，记录此刻的风景。"},{e:"✍️",t:"在纸上写下今天最开心的一件事。"},{e:"🎵",t:"唱一首你最喜欢的歌，完整唱完。"},{e:"🧹",t:"整理你身边 1 平方米的范围，拍照留念。"},{e:"☎️",t:"给一个很久没联系的朋友发条消息。"},{e:"📖",t:"随手翻开一本书，读第 42 页。"},{e:"💧",t:"喝一杯水，认真的，慢慢喝完。"},{e:"🪴",t:"给植物浇水，没有植物就给自己浇点水（字面意思）。"},{e:"🕺",t:"站起来，原地跳 10 下。不要找借口。"},{e:"🍳",t:"尝试做一道你从没做过的菜。"},{e:"🎨",t:"用 3 分钟画一个自画像，不管好不好看。"},{e:"🗣️",t:"对着镜子大声说三遍：我很棒！"},{e:"🧘",t:"闭眼冥想 2 分钟，什么都不要想。"},{e:"📝",t:"列出今天让你感恩的 5 件事。"},{e:"🌿",t:"出门走 10 分钟，不拿手机。"},{e:"🎯",t:"设定一个一周内能完成的小目标。"},{e:"🤝",t:"今天找一个机会真心地夸奖一个人。"}];
+function genChallenge(){var d=document.getElementById("chalDisp"),c=challenges[Math.floor(Math.random()*challenges.length)];d.style.opacity="0";setTimeout(function(){d.innerHTML='<div class="challenge-emoji">'+c.e+'</div><div>'+c.t+"</div>";d.style.opacity="1"},200)}
+
+// ═══ Toast ═══
+var tt;
+function toast(m){var t=document.getElementById("toast");t.textContent=m;t.classList.add("show");clearTimeout(tt);tt=setTimeout(function(){t.classList.remove("show")},1800)}
+
+// ═══ Init ═══
+document.addEventListener("keydown",function(e){if(e.code==="Space"&&document.activeElement===document.body){e.preventDefault();genPal()}});
+genPal();initMem();initPix();renderDice(Array(diceCnt).fill(1));updPomo();genNick();showRiddle();nextRiddle();genAlmanac();
+</script>
+
+</body>
+</html>

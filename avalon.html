@@ -8,11 +8,11 @@
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg: #1a1410; --surface: #2a1f14; --surface2: #342616;
-            --gold: #c9a55c; --gold-light: #e0c97f; --gold-dark: #8b6914;
-            --text: #e8dcc8; --text-dim: #a09680; --text-bright: #f5efe0;
-            --good: #4caf50; --good-glow: #81c784;
-            --evil: #c0392b; --evil-glow: #e57373;
+            --bg: #f5f0e8; --surface: #fffef9; --surface2: #ede6d8;
+            --gold: #b8942e; --gold-light: #c9a84c; --gold-dark: #7a6018;
+            --text: #3b3020; --text-dim: #8c7d65; --text-bright: #1a1008;
+            --good: #4caf50; --good-glow: #388e3c;
+            --evil: #c0392b; --evil-glow: #a93226;
             --accent: #5c8dc9;
             --radius: 8px; --radius-lg: 14px;
             --font-title: 'Cinzel', serif; --font-body: 'Noto Sans SC', -apple-system, sans-serif;
@@ -23,7 +23,7 @@
             color: var(--text); min-height: 100vh;
             display: flex; flex-direction: column; align-items: center;
             -webkit-font-smoothing: antialiased;
-            background-image: radial-gradient(ellipse at 50% 30%, #2a1a0a 0%, #0d0a06 70%);
+            background-image: linear-gradient(180deg, #faf7f0 0%, #f0ebe0 40%, #e8e0d0 100%);
         }
 
         /* ═══════════════ SETUP SCREEN ═══════════════ */
@@ -267,6 +267,47 @@
             animation: spin 0.8s linear infinite;
         }
 
+        /* ═══════════════ VOTE DETAIL MODAL ═══════════════ */
+        .detail-modal {
+            max-width: 600px; width: 95%; max-height: 80vh; overflow-y: auto;
+            background: var(--surface); border: 2px solid var(--gold);
+            border-radius: var(--radius-lg); padding: 24px 22px;
+            text-align: left; box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+        }
+        .detail-modal h3 {
+            font-family: var(--font-title); color: var(--gold); text-align: center;
+            font-size: 1.2rem; margin-bottom: 16px; letter-spacing: 0.05em;
+        }
+        .detail-round {
+            background: var(--bg); border-radius: 8px; padding: 14px 16px; margin-bottom: 12px;
+            border-left: 3px solid var(--gold);
+        }
+        .detail-round.Q-success { border-left-color: var(--good); }
+        .detail-round.Q-fail { border-left-color: var(--evil); }
+        .detail-round-header {
+            font-weight: 700; font-size: 0.9rem; margin-bottom: 8px;
+            color: var(--text-bright);
+        }
+        .detail-table {
+            width: 100%; font-size: 0.8rem; border-collapse: collapse;
+        }
+        .detail-table td {
+            padding: 3px 8px; border-bottom: 1px solid rgba(0,0,0,0.06);
+            vertical-align: top;
+        }
+        .detail-table .label { color: var(--text-dim); width: 50px; white-space: nowrap; }
+        .detail-table .val { color: var(--text); }
+        .detail-vote-approve { color: var(--good); }
+        .detail-vote-reject { color: var(--evil); }
+        .detail-quest-result { font-weight: 700; }
+        .detail-close-btn {
+            display: block; margin: 16px auto 0; padding: 10px 30px;
+            border: 1px solid var(--gold); border-radius: 6px;
+            background: transparent; color: var(--gold); cursor: pointer;
+            font-family: var(--font-body); font-size: 0.9rem; transition: all 0.3s;
+        }
+        .detail-close-btn:hover { background: rgba(201,165,92,0.15); }
+
         /* ═══════════════ OVERLAYS ═══════════════ */
         .overlay {
             position: fixed; top:0; left:0; width:100%; height:100%;
@@ -359,7 +400,7 @@
 <!-- ═══════════════ SETUP SCREEN ═══════════════ -->
 <div id="setup-screen">
     <h1>AVALON</h1>
-    <p class="subtitle">阿 瓦 隆 · AI 六 人 局</p>
+    <p class="subtitle">阿瓦隆 · AI 六人局</p>
     <div class="setup-card">
         <label><i class="fas fa-key"></i> DeepSeek API Key</label>
         <input type="password" class="setup-input" id="apiKeyInput" placeholder="sk-...">
@@ -367,12 +408,12 @@
         <input type="text" class="setup-input" id="playerNameInput" placeholder="输入昵称" maxlength="8">
         <label><i class="fas fa-chair"></i> 选择座位</label>
         <div class="seat-grid" id="seatGrid">
-            <button class="seat-btn" data-seat="0"><span class="seat-num">①</span><span class="seat-hint">首位</span></button>
-            <button class="seat-btn" data-seat="1"><span class="seat-num">②</span></button>
-            <button class="seat-btn" data-seat="2"><span class="seat-num">③</span></button>
-            <button class="seat-btn" data-seat="3"><span class="seat-num">④</span></button>
-            <button class="seat-btn" data-seat="4"><span class="seat-num">⑤</span></button>
-            <button class="seat-btn" data-seat="5"><span class="seat-num">⑥</span></button>
+            <button class="seat-btn" data-seat="0"><span class="seat-num">1号</span><span class="seat-hint">首位</span></button>
+            <button class="seat-btn" data-seat="1"><span class="seat-num">2号</span></button>
+            <button class="seat-btn" data-seat="2"><span class="seat-num">3号</span></button>
+            <button class="seat-btn" data-seat="3"><span class="seat-num">4号</span></button>
+            <button class="seat-btn" data-seat="4"><span class="seat-num">5号</span></button>
+            <button class="seat-btn" data-seat="5"><span class="seat-num">6号</span></button>
         </div>
         <button class="btn-primary" id="startBtn" disabled>开 始 游 戏</button>
     </div>
@@ -402,7 +443,10 @@
     <div class="log-section">
         <div class="log-header">
             <span><i class="fas fa-scroll"></i> 事件记录</span>
-            <button class="btn-export" onclick="exportLog()"><i class="fas fa-download"></i> 导出</button>
+            <div style="display:flex;gap:8px;">
+                <button class="btn-export" onclick="showVoteDetail()"><i class="fas fa-list"></i> 各轮详情</button>
+                <button class="btn-export" onclick="exportLog()"><i class="fas fa-download"></i> 导出</button>
+            </div>
         </div>
         <div class="game-log" id="gameLog"></div>
     </div>
@@ -427,9 +471,9 @@ const ROLE_TEAM = {
     merlin:'good', percival:'good', servant:'good', morgana:'evil', assassin:'evil'
 };
 const ROLE_ICONS = {
-    merlin:'🧙‍♂️', percival:'🏰', servant:'⚜️', morgana:'🐍', assassin:'🗡️'
+    merlin:'[梅]', percival:'[派]', servant:'[忠]', morgana:'[莫]', assassin:'[刺]'
 };
-const SEAT_EMOJIS = ['①','②','③','④','⑤','⑥'];
+const SEAT_NAMES_SHORT = ['1号','2号','3号','4号','5号','6号'];
 
 // ═══════════════ STATE ═══════════════
 let state = null;
@@ -472,6 +516,84 @@ function exportLog() {
     a.download = `avalon-log-${new Date().toISOString().slice(0,10)}.txt`;
     a.click();
     URL.revokeObjectURL(a.href);
+}
+
+function showVoteDetail() {
+    if (!state) return;
+    let html = '<div class="detail-modal"><h3>各轮投票与任务详情</h3>';
+
+    for (let r = 0; r < 5; r++) {
+        const qResult = state.questResults[r];
+        const qTeam = state.questTeams[r];
+        const rLeader = state.roundLeaders[r];
+        const qCls = qResult === true ? 'Q-success' : qResult === false ? 'Q-fail' : '';
+
+        html += `<div class="detail-round ${qCls}">`;
+        html += `<div class="detail-round-header">第${r+1}轮 (${QUEST_SIZES[r]}人任务)</div>`;
+        html += '<table class="detail-table">';
+
+        if (rLeader !== undefined) {
+            const ld = state.players[rLeader];
+            html += `<tr><td class="label">队长</td><td class="val">玩家${ld.idx+1}(${ld.name})</td></tr>`;
+        }
+        if (qTeam) {
+            html += `<tr><td class="label">队员</td><td class="val">${qTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、')}</td></tr>`;
+        }
+
+        // Show the approved vote for this round
+        const approvedVotes = (state.voteHistory || []).filter(v => v.approved);
+        const thisVote = approvedVotes[r];
+        if (thisVote) {
+            html += `<tr><td class="label">投票</td><td class="val"><span class="detail-vote-approve">赞成 ${thisVote.approves}</span> / <span class="detail-vote-reject">反对 ${thisVote.rejects}</span> [通过]</td></tr>`;
+        } else if (!qTeam) {
+            html += `<tr><td class="label">投票</td><td class="val" style="color:var(--text-dim)">---</td></tr>`;
+        }
+
+        // Show all rejected votes before the approved one
+        const rejectedBefore = [];
+        for (const vh of (state.voteHistory || [])) {
+            if (vh.approved && rejectedBefore.length === r) break; // this is the approved vote for round r
+            if (!vh.approved && rejectedBefore.length < r + 1) {
+                // This rejected vote belongs to a previous round's rejected attempts
+            }
+            // Simpler: count all rejected votes that occurred before the r-th approved vote
+        }
+        // Count rejections before this round's approved vote
+        let rejectionCount = 0;
+        let approvedCount = 0;
+        for (const vh of (state.voteHistory || [])) {
+            if (approvedCount === r && !vh.approved) rejectionCount++;
+            if (vh.approved) approvedCount++;
+            if (approvedCount > r) break;
+        }
+        if (rejectionCount > 0) {
+            html += `<tr><td class="label">否决</td><td class="val" style="color:var(--text-dim)">本轮共否决 ${rejectionCount} 次</td></tr>`;
+        }
+
+        // Quest result
+        if (qResult !== null && qResult !== undefined) {
+            html += `<tr><td class="label">结果</td><td class="val"><span class="detail-quest-result" style="color:${qResult ? 'var(--good)' : 'var(--evil)'}">${qResult ? '任务成功' : '任务失败'}</span></td></tr>`;
+        } else if (!qTeam) {
+            html += `<tr><td class="label">结果</td><td class="val" style="color:var(--text-dim)">未开始</td></tr>`;
+        }
+
+        // Speeches
+        const roundSpeeches = (state.speechLog || []).filter(s => s.round === r);
+        if (roundSpeeches.length > 0) {
+            html += `<tr><td class="label">发言</td><td class="val">`;
+            roundSpeeches.forEach(s => {
+                const typeTag = s.type === 'opening' ? '[开场] ' : s.type === 'summary' ? '[总结] ' : '';
+                html += `<div style="margin:2px 0;font-size:0.75rem;">玩家${s.playerIdx+1}(${state.players[s.playerIdx].name})${typeTag}: "${s.content}"</div>`;
+            });
+            html += '</td></tr>';
+        }
+
+        html += '</table></div>';
+    }
+
+    html += '<button class="detail-close-btn" onclick="hideOverlay()">关闭</button>';
+    html += '</div>';
+    showOverlay(html);
 }
 
 // ═══════════════ API ═══════════════
@@ -543,27 +665,110 @@ function buildPlayerKnowledge(playerIdx) {
 function buildSystemPrompt(playerIdx) {
     const p = state.players[playerIdx];
     const knowledge = buildPlayerKnowledge(playerIdx);
-    const rules = `
-=== 阿瓦隆6人局规则 ===
-阵营：4个好人(梅林、派西维尔、2忠臣) vs 2个坏人(莫甘娜、刺客)。
-5轮任务所需人数：第1轮2人、第2轮3人、第3轮4人、第4轮3人、第5轮4人。
-任何任务只要有1张失败票即判定失败。
-每轮队长提议队员，全体投票。赞成票>=4(多数)通过，否则否决。
-同一轮连续5次否决，坏人直接获胜。
-好人队员必须投成功票。坏人队员可投成功或失败。
-好人先完成3个任务→进入刺杀阶段(刺客刺梅林，刺中则坏人翻盘)。
-坏人先完成3个任务或5连否→坏人直接获胜。`;
+    const team = ROLE_TEAM[p.role];
+    const roleName = ROLE_NAMES[p.role];
+    const roleIcon = ROLE_ICONS[p.role];
 
-    return `你正在参与一局6人阿瓦隆桌游。你是 玩家${p.idx+1}(${p.name})，你的角色是${ROLE_NAMES[p.role]}(${ROLE_TEAM[p.role] === 'good' ? '好人阵营' : '坏人阵营'})。
+    const roleStrategies = {
+        merlin: `【梅林策略】
+- 暗中引导队伍避开坏人，发言多用"我感觉"、"可能"、"不太对"等模糊词，绝不能说"我知道"。
+- 投票是重要信号：对含坏人的队伍投反对，对纯好人队伍投赞成。
+- 必要时"倒钩"一次坏人队伍（投赞成含坏人的队）以隐藏自己。
+- 避免成为全场焦点，多跟随主流意见，让别人替你说话。
+- 鼓励忠臣主动排水和分析，你只需要偶尔轻轻点一下方向。`,
+
+        percival: `【派西维尔策略】
+- 你看到两个"梅林候选人"（一真一假），通过观察他们的发言和投票差异来分辨。
+- 主动组队试探两位候选人的反应：真梅林会避开坏人，莫甘娜可能会"不小心"拉上坏人。
+- 可以假装已经掌握了信息，引诱莫甘娜附和你，暴露她的虚假信息。
+- 确定真梅林后，暗中保护他，可以用"挡刀"方式吸引刺客注意。
+-  可以说"我感觉某人像梅林"或"我怀疑某人传递了信息"，但绝不能暴露你派西维尔的身份。`,
+
+        servant: `【忠臣策略】
+- 积极排水：记录每次组队和投票结果，分析异常模式，公开分享你的分析。
+- 多发言、多提问，迫使坏人出现逻辑矛盾。
+- 不要盲目跟风，应有自己的判断；后期可以主动挡刀（假装有信息）。
+- 如果觉得某两人中有一个梅林，可以主动说"我觉得XX在传递信息"，帮助派西维尔确认。
+- 你是好人的主力分析力量，你的推理对团队至关重要。`,
+
+        morgana: `【莫甘娜策略】
+- 悍跳梅林：主动报出"信息"，但要故意包含错误来干扰派西维尔（比如说一个好人可疑）。
+- 与刺客默契配合：让刺客假装信任你的假信息，增加可信度。
+- 投票时尽量模仿真梅林的行为模式，避免被排水。
+- 如果队伍仅有你一个坏人，可以投成功隐藏身份（打"倒钩"）。
+-  你假扮梅林时可以"暗跳"，可以说"我感觉某些人不太对"，但绝不能说出"我是梅林"。`,
+
+        assassin: `【刺客策略】
+- 前期做高自己好人面：多投赞成、支持合理队伍、积极参与讨论。
+- 暗中观察谁在引导队伍避开坏人——那很可能是梅林。
+- 记录每个人的发言和投票模式，特别注意那些"总是恰好避开坏人队伍"的人。
+- 讨论中保持适中活跃，避免极端沉默或过于高调。
+- 在刺杀阶段前，整理一份"梅林嫌疑人名单"，综合所有信息做出判断。`
+    };
+
+    return `你是一名资深《阿瓦隆》桌游玩家，现在正在参与一局6人标准局（4好人 vs 2坏人）。你必须完全沉浸在自己的角色中，运用游戏黑话和常规套路进行发言与决策。
+
+## 你的身份信息
+你是 **玩家${p.idx+1}(${p.name})**，你的角色是 **${roleIcon} ${roleName}**，属于 **${team === 'good' ? '好人阵营（蓝方）' : '坏人阵营（红方）'}**。
 
 ${knowledge}
 
-${rules}
+${roleStrategies[p.role] || ''}
 
-你必须根据自己的角色和阵营利益做出决策。发言时不要暴露你的具体角色身份（如"我是梅林"），要用推理来支撑你的观点。
+## 游戏规则（关键点）
+- 任务人数：第1轮2人，第2轮3人，第3轮4人，第4轮3人，第5轮4人。
+- 任何任务只要有1张失败票即判定任务失败。
+- 组队投票：赞成票≥4票（多数）通过；平局或少于4票否决。同一轮连续5次否决，坏人直接获胜。
+- **好人必须投成功票**（没有选择），坏人可以自由选择投成功或失败。
+- 好人先完成3个任务则进入刺杀阶段：刺客指认梅林，刺中则坏人翻盘，刺错则好人胜利。
+- 坏人先完成3个失败任务或5连否→坏人直接获胜。
+
+## 阿瓦隆常用黑话与术语
+- **排水**：通过多次组队和投票排除可疑玩家，缩小坏人范围。
+- **跳车**：投票阶段临时改变态度（原赞同改反对）。
+- **抬车**：故意拉上可疑玩家组队来观察反应。
+- **压票**：犹豫或最后才表态以隐藏立场。
+- **明水**：公认的好人，身份清白。
+- **暗跳**：梅林或派西维尔在不暴露身份的前提下隐晦给出信息。
+- **挡刀**：好人故意表现出可疑，吸引刺客误刺自己以保护梅林。
+- **交牌**：承认自己是坏人。
+- **悍跳**：坏人假扮梅林或派西维尔报出虚假信息。
+- **倒钩**：投票行为与阵营利益相反，用于混淆身份（坏人投赞成好人队/好人投反对好人队）。
+- **全票**：全体赞成或全体反对，往往在关键轮次出现。
+- **试错**：前两轮故意放行或否决以收集情报。
+- **盲区**：某个玩家完全不被怀疑的区域。
+- **爆水**：好人身份过于明显，容易被刺客锁定。
+
+## 通用战术套路
+- 第一轮可以适当放水（坏人投成功）伪装身份。
+- 注意连续投票模式：三连反对的人可能是梅林或坏人。
+- 多坏人出征时，协调好由谁投失败票，避免重复浪费。
+- 第五轮需4人，好人倾向组"大车"稀释坏人票。
+- 故意让一个任务失败来获取下一轮投票的信息（信息轮策略）。
+- 坏人可制造3:3平票来消耗否决次数。
+- 刺杀阶段前，好人可以适时暗示身份来统一投票，但风险极大。
+
+##  身份保密规则（极其重要！）
+- **你绝对不能在任何发言中透露你的真实角色身份。** 例如绝不可以说"我是梅林"、"我是派西维尔"、"我是莫甘娜"、"我是刺客"、"我是忠臣"。
+- **你不能说"我知道XX是坏人"**——只有梅林知道坏人是谁，这样说等于暴露你是梅林。
+- **你也不能说"我是闭眼玩家"、"我没有信息"之类暗示身份的话。**
+- 你可以说"我感觉"、"我怀疑"、"根据投票和发言我认为"——用推理而非特权信息来支撑观点。
+- 好人可以说"我觉得XX传递了梅林的信息"来暗跳，但不能说"我是派西维尔，我看到XX和XX中有梅林"。
+- 坏人（莫甘娜）可以假扮梅林"暗跳"，但不能说"我是梅林"——真正的梅林不会这样暴露自己。
+- 派西维尔可以假装有信息来诱导莫甘娜出错，但同样不能说破自己身份。
+- 违反以上规则会导致游戏逻辑崩溃，请严格遵守。
+
+## 发言风格要求
+- 使用第一人称，像真人玩家一样自然说话。
+- 自然融入以上黑话和战术术语（排水、倒钩、挡刀、暗跳等）。
+- 发言长度控制在2~4句话，符合桌游讨论节奏。
+- 根据局势表达怀疑、信任、分析或试探，避免机械回复。
+- 可以质疑他人的发言，也可以支持你认为合理的观点。
+
+现在，请基于以上所有设定，做出符合你角色和阵营利益的决定。
 回复必须包含一个JSON代码块(\`\`\`json)，其中包含：
-- reasoning: 你的思考过程(1-3句话)
-- decision: 你的决定（根据具体场景，格式见每次的提示）`;
+- reasoning: 你的内心思考过程(1-3句话，这部分不会被其他玩家看到)
+- decision: 你的决定（具体格式见每次提示）`;
 }
 
 async function aiDecide(playerIdx, decisionType, context) {
@@ -578,42 +783,42 @@ async function aiDecide(playerIdx, decisionType, context) {
     switch (decisionType) {
         case 'pick_team':
             const pickCount = questSizes[state.round] - 1;
-            userMsg = `${roundInfo}\n${history}\n你是队长（你已在队伍中），请从其他5名玩家中选择${pickCount}人加入队伍。\n请回复JSON：{"reasoning":"...", "decision":{"team":[1,3]}} (数组中是玩家编号0-5，不要包含自己，刚好${pickCount}人)`;
+            userMsg = `${roundInfo}\n${history}\n你是队长（你已在队伍中），请从其他5名玩家中选择${pickCount}人加入队伍。\n考虑因素：排水结果、发言可信度、投票历史。如果有可疑玩家，可以"抬车"拉进来测试。\n请回复JSON：{"reasoning":"你的选人思路", "decision":{"team":[1,3]}} (数组中是玩家编号0-5，不要包含自己，刚好${pickCount}人)`;
             break;
         case 'vote_team':
             const teamNames = state.currentTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、');
-            userMsg = `${roundInfo}\n${history}\n讨论已结束，现在是投票时间。\n队长提议的队员是：${teamNames}。\n请根据讨论内容和你自己的判断投票。\n请回复JSON：{"reasoning":"...", "decision":{"vote":"approve"}} 或 {"decision":{"vote":"reject"}}`;
+            userMsg = `${roundInfo}\n${history}\n讨论已结束，现在是投票时间。\n队长提议的队员：${teamNames}。\n请根据讨论内容和你自己的判断投票。考虑：这个队伍里有没有你怀疑的人？队长的选人逻辑是否合理？\n请回复JSON：{"reasoning":"你的投票理由", "decision":{"vote":"approve"}} 或 {"decision":{"vote":"reject"}}`;
             break;
         case 'quest':
-            userMsg = `${roundInfo}\n${history}\n你是本次任务的队员。请决定投成功还是失败。\n注意：如果你是好人，你必须投成功。如果你是坏人，你可以选择投成功(隐藏身份)或失败(破坏任务)。\n回复JSON：{"reasoning":"...", "decision":{"quest":"success"}} 或 {"decision":{"quest":"fail"}}`;
+            userMsg = `${roundInfo}\n${history}\n你是本次任务的队员。请决定投成功还是失败。\n [注意] 好人必须投成功，没有选择。坏人可以选择投成功（隐藏身份打"倒钩"）或投失败（破坏任务）。\n请回复JSON：{"reasoning":"你的选择理由", "decision":{"quest":"success"}} 或 {"decision":{"quest":"fail"}}`;
             break;
         case 'assassinate':
             const goodPlayers = state.players.filter(pl => ROLE_TEAM[pl.role] === 'good');
             const goodList = goodPlayers.map(pl => `玩家${pl.idx+1}(${pl.name})`).join('、');
-            userMsg = `好人成功完成了3个任务！现在进入刺杀阶段。你是刺客，必须选择一名好人玩家进行刺杀。如果刺中梅林，坏人获胜。\n可选目标：${goodList}\n${history}\n请选择。回复JSON：{"reasoning":"...", "decision":{"target":2}} (目标玩家的编号)`;
+            userMsg = `好人成功完成了3个任务！现在进入刺杀阶段。\n你是刺客，必须从好人中选出一名玩家刺杀。如果刺中梅林，坏人翻盘获胜！\n可选目标：${goodList}\n\n${history}\n\n分析要点：谁在发言中隐晦地引导避开坏人？谁的投票总是恰好反对含坏人的队伍？谁表现得太低调不像忠臣？派西维尔可能在保护谁？\n请选择你认为最可能是梅林的玩家。\n回复JSON：{"reasoning":"为什么你认为他是梅林", "decision":{"target":2}} (目标玩家的编号)`;
             break;
         case 'speak':
             const speechType = context.speechType || 'normal';
             const prevSpeeches = context.previousSpeeches || [];
             let speechPrompt = `${roundInfo}\n${history}\n`;
-            speechPrompt += `当前队伍：${state.currentTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、')}。\n`;
+            speechPrompt += `当前队伍：${state.currentTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、')}。\n\n`;
             if (speechType === 'opening') {
-                speechPrompt += `你是队长，请开场发言，说明你选择这个队伍的理由，尽量说服大家。`;
+                speechPrompt += `你是队长，请开场发言。说明你选择这个队伍的理由，可以说说你为什么信任/不信任某些人。使用"排水"、"试错"等术语自然表达。\n`;
             } else if (speechType === 'summary') {
-                speechPrompt += `你是队长，请做总结发言。综合所有人的意见后，最后陈述为什么大家应该赞成这个队伍。`;
+                speechPrompt += `你是队长，请做总结发言。综合所有人的发言后，最后陈述为什么大家应该赞成（或反对）这个队伍。可以回应对你的质疑。\n`;
             } else {
-                speechPrompt += `现在轮到你发言。请对当前队伍发表看法（赞成或反对均可），可以质疑或支持前面的发言。`;
+                speechPrompt += `现在轮到你发言。请对当前队伍发表看法，可以表态赞成或反对，可以质疑或支持前面发言的人。用"倒钩"、"抬车"等术语分析局势。\n`;
             }
             if (prevSpeeches.length > 0) {
-                speechPrompt += `\n前面的人已经发言，内容如下：\n`;
+                speechPrompt += `\n前面的人已经发言：\n`;
                 prevSpeeches.forEach(s => {
                     const sp = state.players[s.playerIdx];
-                    speechPrompt += `玩家${sp.idx+1}(${sp.name})${s.type==='opening'?'(队长开场)':s.type==='summary'?'(队长总结)':''}: "${s.content}"\n`;
+                    speechPrompt += `- 玩家${sp.idx+1}(${sp.name})${s.type==='opening'?'【队长开场】':s.type==='summary'?'【队长总结】':''}: "${s.content}"\n`;
                 });
-                speechPrompt += `\n你的发言需要考虑前面各人的观点。`;
+                speechPrompt += `\n请针对前面的发言进行回应（同意/反对/补充/质疑）。`;
             }
-            speechPrompt += `\n注意：发言时不要暴露你的具体角色身份（如"我是梅林"），要用推理来支撑你的观点。`;
-            speechPrompt += `\n回复JSON：{"reasoning":"你的思考(1-2句话，不公开)", "decision":{"speech":"你的发言内容(2-4句话，会公开展示给所有人)"}}`;
+            speechPrompt += `\n\n 再次提醒：发言中绝不能暴露你的真实角色身份。用推理、感觉和观察来表达，不要说"我知道"或暗示自己有特殊信息。`;
+            speechPrompt += `\n回复JSON：{"reasoning":"你的内心思考(1-3句，不会被别人看到，可以写真实想法)", "decision":{"speech":"你的公开发言(2-4句话，符合桌游讨论风格)"}}`;
             userMsg = speechPrompt;
             break;
         case 'discuss':
@@ -637,7 +842,7 @@ function buildGameHistory() {
     let h = '已完成的回合：\n';
     for (let r = 0; r < state.round; r++) {
         if (state.questResults[r] !== null) {
-            h += `第${r+1}轮：${state.questResults[r] ? '✅成功' : '❌失败'} (队员: ${(state.questTeams[r]||[]).map(i=>`玩家${i+1}(${state.players[i].name})`).join('、')})\n`;
+            h += `第${r+1}轮：[${state.questResults[r] ? '成功' : '失败'}] (队员: ${(state.questTeams[r]||[]).map(i=>`玩家${i+1}(${state.players[i].name})`).join('、')})\n`;
         }
     }
     if (state.speechLog && state.speechLog.length > 0) {
@@ -729,6 +934,7 @@ function initGameState(humanSeat, humanName) {
         currentTeam: [],
         voteHistory: [],
         speechLog: [],
+        roundLeaders: [],
         currentSpeaker: null,
         phase: 'night',
         goodWins: 0,
@@ -768,21 +974,21 @@ function getVisibleRoleTag(playerIdx) {
     const hRole = humanPlayer.role;
     if (hRole === 'merlin') {
         if (ROLE_TEAM[p.role] === 'evil') {
-            return `<span class="player-role-tag role-evil">👁️ 坏人</span>`;
+            return `<span class="player-role-tag role-evil">坏人</span>`;
         }
     }
     if (hRole === 'percival') {
         if (p.role === 'merlin' || p.role === 'morgana') {
-            return `<span class="player-role-tag role-good">❓ 梅林/莫甘娜</span>`;
+            return `<span class="player-role-tag role-good">梅林/莫甘娜</span>`;
         }
     }
     if (hRole === 'morgana' || hRole === 'assassin') {
         const evils = state.players.filter(pl => ROLE_TEAM[pl.role] === 'evil');
         if (evils.find(e => e.idx === playerIdx) && playerIdx !== humanPlayer.idx) {
-            return `<span class="player-role-tag role-evil">👁️ 队友</span>`;
+            return `<span class="player-role-tag role-evil">队友</span>`;
         }
     }
-    return `<span class="role-unknown">?</span>`;
+    return `<span class="role-unknown">---</span>`;
 }
 
 function getVisibleKnowledge(playerIdx) {
@@ -804,8 +1010,8 @@ function renderQuestTracker() {
         const size = QUEST_SIZES[i];
         let cls = 'quest-circle';
         let icon = size;
-        if (state.questResults[i] === true) { cls += ' done-good'; icon = '✓'; }
-        else if (state.questResults[i] === false) { cls += ' done-evil'; icon = '✗'; }
+        if (state.questResults[i] === true) { cls += ' done-good'; icon = 'V'; }
+        else if (state.questResults[i] === false) { cls += ' done-evil'; icon = 'X'; }
         else if (i === state.round && state.phase !== 'night') { cls += ' current'; }
         html += `<div class="quest-item"><div class="${cls}">${icon}</div><span class="quest-label">Q${i+1}·${size}人</span></div>`;
     }
@@ -833,7 +1039,7 @@ function renderPlayerCards() {
             ${isLeader ? `<div class="crown-badge"><i class="fas fa-crown"></i></div>` : ''}
             ${state.currentTeam.includes(i) && state.phase === 'quest_exec' ? `<div class="quest-badge"><i class="fas fa-shield-alt"></i></div>` : ''}
             ${state.lastVoteResults && state.lastVoteResults[i] !== undefined ? `<div class="vote-badge" style="color:${state.lastVoteResults[i]==='approve'?'#4caf50':'#c0392b'}"><i class="fas fa-${state.lastVoteResults[i]==='approve'?'check':'times'}-circle"></i></div>` : ''}
-            <div class="player-seat-num">${SEAT_EMOJIS[i]}</div>
+            <div class="player-seat-num">${SEAT_NAMES_SHORT[i]}</div>
             <div class="player-name">${p.name}</div>
             ${visibleRole}
             ${knowledge ? `<div class="player-knowledge">${knowledge}</div>` : ''}
@@ -854,7 +1060,7 @@ function renderVoteTrack() {
     let html = '<span class="vote-track-label">否决:</span>';
     for (let i = 0; i < 5; i++) {
         const cls = i < state.voteTrack ? 'vote-slot rejected' : 'vote-slot';
-        html += `<div class="${cls}">${i < state.voteTrack ? '✗' : i+1}</div>`;
+        html += `<div class="${cls}">${i < state.voteTrack ? '' : i+1}</div>`;
     }
     container.innerHTML = html;
 }
@@ -891,20 +1097,20 @@ function hideOverlay() {
 async function runNightPhase() {
     state.phase = 'night';
     renderAll();
-    updateCenterPanel(`<div class="center-title">🌙 夜色降临</div><div class="center-info">正在分配身份...</div>`);
-    addLog('🌙 游戏开始，进入夜晚阶段', 'gold');
+    updateCenterPanel(`<div class="center-title">夜色降临</div><div class="center-info">正在分配身份...</div>`);
+    addLog('[开始] 游戏开始，进入夜晚阶段', 'gold');
 
     await sleep(1500);
 
     // Evil mutual recognition
     const evils = state.players.filter(p => ROLE_TEAM[p.role] === 'evil');
-    addLog('👁️ 坏人互相确认身份', 'evil');
+    addLog('[坏人] 互相确认身份', 'evil');
     for (const ep of evils) {
         if (ep.isHuman) {
             const teammate = evils.find(e => e.idx !== ep.idx);
             showOverlay(`
                 <div class="overlay-card">
-                    <div class="icon-huge">👁️</div>
+                    <div class="icon-huge">[坏人]</div>
                     <h2>你是 ${ROLE_NAMES[ep.role]}</h2>
                     <p class="role-name evil-role">${ROLE_ICONS[ep.role]} ${ROLE_NAMES[ep.role]}</p>
                     <p class="knowledge-text">你的队友是 <strong>玩家${teammate.idx+1}(${teammate.name})</strong></p>
@@ -921,10 +1127,10 @@ async function runNightPhase() {
     // Merlin sees evils
     const merlin = state.players.find(p => p.role === 'merlin');
     if (merlin && merlin.isHuman) {
-        addLog('🧙‍♂️ 梅林查看坏人', 'gold');
+        addLog('梅林查看坏人', 'gold');
         showOverlay(`
             <div class="overlay-card">
-                <div class="icon-huge">🧙‍♂️</div>
+                <div class="icon-huge">[梅林]</div>
                 <h2>你是梅林</h2>
                 <p class="knowledge-text">坏人是：<strong>${evils.map(e => `玩家${e.idx+1}(${e.name})`).join(' 和 ')}</strong></p>
                 <p style="color:#e57373;font-size:0.85rem;">隐藏好自己，不要被刺客发现！</p>
@@ -940,10 +1146,10 @@ async function runNightPhase() {
     const percival = state.players.find(p => p.role === 'percival');
     if (percival && percival.isHuman) {
         const mAndM = state.players.filter(p => p.role === 'merlin' || p.role === 'morgana');
-        addLog('🏰 派西维尔查看梅林和莫甘娜', 'gold');
+        addLog('派西维尔查看梅林和莫甘娜', 'gold');
         showOverlay(`
             <div class="overlay-card">
-                <div class="icon-huge">🏰</div>
+                <div class="icon-huge">[派西维尔]</div>
                 <h2>你是派西维尔</h2>
                 <p class="knowledge-text"><strong>玩家${mAndM[0].idx+1}(${mAndM[0].name})</strong> 和 <strong>玩家${mAndM[1].idx+1}(${mAndM[1].name})</strong> 中，一个是真梅林，一个是莫甘娜。</p>
                 <p style="color:#ff9800;font-size:0.85rem;">你无法分辨谁真谁假，需要自己判断！</p>
@@ -958,10 +1164,10 @@ async function runNightPhase() {
     // Servant
     const humanPlayer = state.players.find(p => p.isHuman);
     if (humanPlayer && humanPlayer.role === 'servant') {
-        addLog(`⚜️ ${humanPlayer.name} 是忠臣，没有特殊信息`, '');
+        addLog(` ${humanPlayer.name} 是忠臣，没有特殊信息`, '');
         showOverlay(`
             <div class="overlay-card">
-                <div class="icon-huge">⚜️</div>
+                <div class="icon-huge">[忠臣]</div>
                 <h2>你是亚瑟的忠臣</h2>
                 <p class="knowledge-text">你没有特殊信息。观察每个人的行为，找出坏人！</p>
                 <button class="btn-primary" onclick="hideOverlay();window._nightResolve&&window._nightResolve()">出发！</button>
@@ -971,9 +1177,9 @@ async function runNightPhase() {
         window._nightResolve = null;
     }
 
-    addLog('☀️ 天亮，游戏正式开始', 'gold');
+    addLog('天亮，游戏正式开始', 'gold');
     state.phase = 'team_pick';
-    updateCenterPanel(`<div class="center-title">☀️ 天亮了</div><div class="center-info">准备开始第1轮任务</div>`);
+    updateCenterPanel(`<div class="center-title"> 天亮了</div><div class="center-info">准备开始第1轮任务</div>`);
     renderAll();
     await sleep(1000);
 }
@@ -983,7 +1189,7 @@ async function runLeaderPick() {
     state.phase = 'team_pick';
     state.currentTeam = [];
     renderAll();
-    addLog(`👑 Q${state.round+1} 队长: 玩家${leader.idx+1}(${leader.name})，需选${QUEST_SIZES[state.round]}人组队`, 'gold');
+    addLog(` Q${state.round+1} 队长: 玩家${leader.idx+1}(${leader.name})，需选${QUEST_SIZES[state.round]}人组队`, 'gold');
     updateCenterPanel(`
         <div class="center-title"><i class="fas fa-crown"></i> 队长选人</div>
         <div class="center-info">玩家${leader.idx+1}(${leader.name}) 正在挑选 ${QUEST_SIZES[state.round]} 名队员...</div>
@@ -1027,7 +1233,7 @@ async function runLeaderPick() {
         }
         renderTeamPicker();
         await waitForHumanDecision();
-        updateCenterPanel(`<div class="center-title">✅ 队伍已选定</div>`);
+        updateCenterPanel(`<div class="center-title">队伍已选定</div>`);
     } else {
         const result = await aiDecide(leader.idx, 'pick_team', {});
         const decision = result.decision || {};
@@ -1049,14 +1255,14 @@ async function runLeaderPick() {
         await sleep(2000);
     }
     const teamStr = state.currentTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、');
-    addLog(`📋 队长选定队员: ${teamStr}`, '');
+    addLog(` 队长选定队员: ${teamStr}`, '');
 }
 
 async function runSpeechPhase() {
     state.phase = 'speech';
     const leader = state.players[state.currentLeader];
     const teamNames = state.currentTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、');
-    addLog(`💬 发言阶段 — 队长${leader.name}组队: ${teamNames}`, 'gold');
+    addLog(` 发言阶段 — 队长${leader.name}组队: ${teamNames}`, 'gold');
 
     const speechOrder = [];
     speechOrder.push({ playerIdx: state.currentLeader, type: 'opening' });
@@ -1092,7 +1298,7 @@ async function runSpeechPhase() {
                 <div class="center-info">第${state.round+1}轮 · 队伍: ${teamNames}</div>
                 ${speechHistoryHTML}
                 <div class="speech-prompt">
-                    <span style="color:var(--gold-light);font-size:1rem;">🎤 轮到你发言 (${typeLabel})</span>
+                    <span style="color:var(--gold-light);font-size:1rem;"> 轮到你发言 (${typeLabel})</span>
                     <input type="text" class="speech-input" id="speechInput" placeholder="输入你的发言..." maxlength="200">
                     <button class="btn-action btn-confirm" onclick="submitSpeech()" style="margin-top:8px;">提交发言</button>
                 </div>`);
@@ -1116,7 +1322,7 @@ async function runSpeechPhase() {
             const speechContent = decision.speech;
             roundSpeeches.push({ playerIdx, type, content: speechContent });
             state.speechLog.push({ round: state.round, playerIdx, type, content: speechContent });
-            addLog(`💬 玩家${p.idx+1}(${p.name})${typeLabel}: "${speechContent}"`, '');
+            addLog(` 玩家${p.idx+1}(${p.name})${typeLabel}: "${speechContent}"`, '');
             window.submitSpeech = null;
         } else {
             const prevList = previousSpeeches.map(s =>
@@ -1135,7 +1341,7 @@ async function runSpeechPhase() {
 
             roundSpeeches.push({ playerIdx, type, content: speechContent });
             state.speechLog.push({ round: state.round, playerIdx, type, content: speechContent });
-            addLog(`💬 玩家${p.idx+1}(${p.name})${typeLabel}: "${speechContent}"`, '');
+            addLog(` 玩家${p.idx+1}(${p.name})${typeLabel}: "${speechContent}"`, '');
 
             let speechHistoryHTML = roundSpeeches.map(s => {
                 const sp = state.players[s.playerIdx];
@@ -1153,7 +1359,7 @@ async function runSpeechPhase() {
     }
 
     state.currentSpeaker = null;
-    addLog('💬 发言阶段结束，进入投票', 'gold');
+    addLog('发言阶段结束，进入投票', 'gold');
     renderAll();
 }
 
@@ -1162,7 +1368,7 @@ async function runTeamVote() {
     state.lastVoteResults = null;
     renderAll();
     const teamNames = state.currentTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、');
-    addLog('🗳️ 全体玩家同时投票', 'gold');
+    addLog('全体玩家同时投票', 'gold');
 
     // Show all AI players as "thinking"
     state.aiThinking = state.players.filter(p => !p.isHuman).map(p => p.idx);
@@ -1215,17 +1421,17 @@ async function runTeamVote() {
     // Build vote reveal display
     const votesDisplay = votes.map(v => {
         const vp = state.players[v.playerIdx];
-        const icon = v.vote === 'approve' ? '✅' : '❌';
-        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:0.95rem;border-bottom:1px solid rgba(255,255,255,0.04);">
+        const icon = v.vote === 'approve' ? '[赞成]' : '[反对]';
+        return `<div style="display:flex;align-items:center;justify-content:space-between;padding:4px 0;font-size:0.95rem;border-bottom:1px solid rgba(0,0,0,0.06);">
             <span>玩家${vp.idx+1}(${vp.name})</span>
-            <span>${icon} ${v.vote === 'approve' ? '赞成' : '反对'}</span>
+            <span style="color:${v.vote==='approve'?'var(--good)':'var(--evil)'}">${icon}</span>
         </div>`;
     }).join('');
 
     updateCenterPanel(`
         <div class="center-title"><i class="fas fa-vote-yea"></i> 投票结果</div>
         <div style="width:100%;text-align:left;margin:8px 0;">${votesDisplay}</div>
-        <div class="center-highlight">${approved ? '✅ 通过' : '❌ 否决'} (赞成${approves} 反对${rejects})</div>`);
+        <div class="center-highlight">${approved ? '通过' : '否决'} (赞成${approves} 反对${rejects})</div>`);
     await sleep(2000);
 
     // Log detailed results
@@ -1233,8 +1439,8 @@ async function runTeamVote() {
         const vp = state.players[v.playerIdx];
         return `玩家${vp.idx+1}(${vp.name}): ${v.vote === 'approve' ? '赞成' : '反对'}`;
     }).join(', ');
-    addLog(`📊 投票: ${voteDetails}`, '');
-    addLog(`📊 结果：赞成${approves}票 反对${rejects}票 → ${approved ? '✅通过' : '❌否决'}`, approved ? 'good' : 'evil');
+    addLog(` 投票: ${voteDetails}`, '');
+    addLog(` 结果：赞成${approves}票 反对${rejects}票 → ${approved ? '通过' : '否决'}`, approved ? 'good' : 'evil');
 
     state.voteHistory.push({
         leader: state.currentLeader,
@@ -1250,7 +1456,7 @@ async function runTeamVote() {
         state.voteTrack++;
         state.currentLeader = (state.currentLeader + 1) % 6;
         if (state.voteTrack >= 5) {
-            addLog('💀 连续5次否决！坏人直接获胜！', 'evil');
+            addLog('连续5次否决！坏人直接获胜！', 'evil');
             return 'evil_veto';
         }
     }
@@ -1264,7 +1470,7 @@ async function runTeamVote() {
 async function runQuest() {
     state.phase = 'quest_exec';
     renderAll();
-    addLog('⚔️ 队员执行任务', 'gold');
+    addLog('队员执行任务', 'gold');
     updateCenterPanel(`
         <div class="center-title"><i class="fas fa-shield-alt"></i> 执行任务</div>
         <div class="center-info">队员秘密投票中...</div>
@@ -1279,16 +1485,16 @@ async function runQuest() {
             const isGood = ROLE_TEAM[p.role] === 'good';
             if (isGood) {
                 updateCenterPanel(`
-                    <div class="center-title">⚔️ 任务执行</div>
+                    <div class="center-title"> 任务执行</div>
                     <div class="center-info">你是好人，<strong>必须投成功</strong></div>
-                    <button class="btn-action btn-approve" onclick="humanDecide({quest:'success'})" style="margin-top:10px;">✅ 投成功</button>`);
+                    <button class="btn-action btn-approve" onclick="humanDecide({quest:'success'})" style="margin-top:10px;">投成功</button>`);
             } else {
                 updateCenterPanel(`
-                    <div class="center-title">⚔️ 任务执行</div>
+                    <div class="center-title"> 任务执行</div>
                     <div class="center-info">你是坏人，可以选择成功或失败</div>
                     <div style="display:flex;gap:20px;margin-top:10px;">
-                        <button class="btn-action btn-approve" onclick="humanDecide({quest:'success'})">✅ 成功</button>
-                        <button class="btn-action btn-reject" onclick="humanDecide({quest:'fail'})">❌ 失败</button>
+                        <button class="btn-action btn-approve" onclick="humanDecide({quest:'success'})">成功</button>
+                        <button class="btn-action btn-reject" onclick="humanDecide({quest:'fail'})">失败</button>
                     </div>`);
             }
             const decision = await waitForHumanDecision();
@@ -1307,7 +1513,7 @@ async function runQuest() {
     state.questResults[state.round] = questSuccess;
     state.questTeams[state.round] = [...state.currentTeam];
 
-    const resultIcon = questSuccess ? '✅' : '❌';
+    const resultIcon = questSuccess ? '' : '';
     const resultText = questSuccess ? '任务成功！' : '任务失败！';
     const resultCls = questSuccess ? 'good' : 'evil';
     const teamStr = state.currentTeam.map(i => `玩家${i+1}(${state.players[i].name})`).join('、');
@@ -1325,8 +1531,8 @@ async function runQuest() {
 async function runAssassination() {
     state.phase = 'assassination';
     renderAll();
-    addLog('🗡️ 好人完成3个任务！进入刺杀阶段', 'gold');
-    addLog('🗡️ 坏人讨论：谁是真梅林？', 'evil');
+    addLog('好人完成3个任务！进入刺杀阶段', 'gold');
+    addLog('坏人讨论：谁是真梅林？', 'evil');
 
     const assassin = state.players.find(p => p.role === 'assassin');
     const goodPlayers = state.players.filter(p => ROLE_TEAM[p.role] === 'good');
@@ -1340,7 +1546,7 @@ async function runAssassination() {
     if (assassin.isHuman) {
         showOverlay(`
             <div class="overlay-card">
-                <div class="icon-huge">🗡️</div>
+                <div class="icon-huge">[刺客]</div>
                 <h2>你是刺客！</h2>
                 <p>选择一名好人玩家刺杀：</p>
                 <div class="assassin-targets" id="assassinTargets">
@@ -1364,13 +1570,13 @@ async function runAssassination() {
     const targetPlayer = state.players[target];
     const isMerlin = targetPlayer.role === 'merlin';
 
-    addLog(`🗡️ 刺客${assassin.name}选择刺杀 玩家${target+1}(${targetPlayer.name})`, isMerlin ? 'evil' : 'good');
+    addLog(` 刺客${assassin.name}选择刺杀 玩家${target+1}(${targetPlayer.name})`, isMerlin ? 'evil' : 'good');
     await sleep(1000);
 
     if (isMerlin) {
-        addLog('💀 刺中了梅林！坏人翻盘获胜！', 'evil');
+        addLog('刺中了梅林！坏人翻盘获胜！', 'evil');
     } else {
-        addLog('🎉 刺杀失败！好人获得最终胜利！', 'good');
+        addLog('刺杀失败！好人获得最终胜利！', 'good');
     }
     await sleep(1000);
 
@@ -1384,7 +1590,7 @@ async function runAssassination() {
 function showGameOver(winner, reason) {
     const goodWin = winner === 'good';
     const bannerCls = goodWin ? 'good-win' : 'evil-win';
-    const bannerText = goodWin ? '⚜️ 好人胜利！' : '🐍 坏人胜利！';
+    const bannerText = goodWin ? ' 好人胜利！' : ' 坏人胜利！';
     const reasonText = reason === 'evil_quests' ? '坏人完成3个失败任务' :
                        reason === 'evil_veto' ? '连续5次否决' :
                        reason === 'assassin' ? '刺客成功刺杀梅林' :
@@ -1439,8 +1645,8 @@ async function startGame() {
     document.getElementById('game-screen').style.display = 'flex';
     document.getElementById('gameLog').innerHTML = '';
 
-    addLog('🛡️ 阿瓦隆 6人局 开始', 'gold');
-    addLog(`👤 你选择座位 ${selectedSeat+1}，角色待揭晓...`, '');
+    addLog('阿瓦隆 6人局 开始', 'gold');
+    addLog(` 你选择座位 ${selectedSeat+1}，角色待揭晓...`, '');
 
     await runNightPhase();
 
@@ -1449,7 +1655,7 @@ async function startGame() {
         if (gameEnd === 'evil_quests') {
             state.phase = 'game_over';
             state.evilWins++;
-            addLog('🐍 坏人完成3个失败任务，坏人获胜！', 'evil');
+            addLog('坏人完成3个失败任务，坏人获胜！', 'evil');
             showGameOver('evil', 'evil_quests');
             return;
         }
@@ -1473,7 +1679,7 @@ async function startGame() {
             if (voteResult === 'approved') {
                 teamApproved = true;
             } else {
-                addLog(`🔄 队伍被否决（${state.voteTrack}/5），队长轮换`, '');
+                addLog(` 队伍被否决（${state.voteTrack}/5），队长轮换`, '');
                 updateCenterPanel(`
                     <div class="center-title"><i class="fas fa-redo"></i> 队伍被否决</div>
                     <div class="center-info">第${state.voteTrack}次否决，队长传给玩家${state.currentLeader+1}(${state.players[state.currentLeader].name})</div>`);
@@ -1487,7 +1693,7 @@ async function startGame() {
         if (endCheck === 'evil_quests') {
             state.phase = 'game_over';
             state.evilWins++;
-            addLog('🐍 坏人完成3个失败任务，坏人获胜！', 'evil');
+            addLog('坏人完成3个失败任务，坏人获胜！', 'evil');
             showGameOver('evil', 'evil_quests');
             return;
         }
@@ -1496,11 +1702,12 @@ async function startGame() {
             return;
         }
 
+        state.roundLeaders.push(state.currentLeader); // record leader for completed round
         state.round++;
         state.currentLeader = (state.currentLeader + 1) % 6;
         if (state.round < 5) {
-            addLog(`➡️ 进入第${state.round+1}轮任务`, 'gold');
-            updateCenterPanel(`<div class="center-title">📋 第${state.round+1}轮</div><div class="center-info">队长: 玩家${state.currentLeader+1}(${state.players[state.currentLeader].name})</div>`);
+            addLog(` 进入第${state.round+1}轮任务`, 'gold');
+            updateCenterPanel(`<div class="center-title"> 第${state.round+1}轮</div><div class="center-info">队长: 玩家${state.currentLeader+1}(${state.players[state.currentLeader].name})</div>`);
             await sleep(1500);
         }
     }
@@ -1509,7 +1716,7 @@ async function startGame() {
     if (evils >= 3) {
         state.phase = 'game_over';
         state.evilWins++;
-        addLog('🐍 坏人完成3个失败任务，坏人获胜！', 'evil');
+        addLog('坏人完成3个失败任务，坏人获胜！', 'evil');
         showGameOver('evil', 'evil_quests');
     } else if (goods >= 3) {
         await runAssassination();

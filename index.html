@@ -150,6 +150,18 @@
                     <div class="nav-icon" style="color: #1a1008;"><i class="fas fa-khanda"></i></div>
                     <div class="nav-text">江湖行</div>
                 </a>
+                <a class="nav-link" href="academic-writing.html">
+                    <div class="nav-icon" style="color: #3b5998;"><i class="fas fa-pen-fancy"></i></div>
+                    <div class="nav-text">学术写作</div>
+                </a>
+                <a class="nav-link" href="zha-jinhua.html">
+                    <div class="nav-icon" style="color: #d4a843;"><i class="fas fa-dice"></i></div>
+                    <div class="nav-text">炸金花</div>
+                </a>
+                <a class="nav-link" href="avalon.html">
+                    <div class="nav-icon" style="color: #c9a55c;"><i class="fas fa-chess-rook"></i></div>
+                    <div class="nav-text">阿瓦隆</div>
+                </a>
             </div>
             <footer>
                 <p>© 2024 摇摇乐</p>
@@ -263,6 +275,17 @@
         <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
     </div>
 
+    <!-- 阿瓦隆 AI桌游 -->
+    <div id="avalon-page" class="page">
+        <div class="page-header"><h2>阿瓦隆 · AI桌游</h2><p>1人 + 5 AI，推理与欺骗的较量</p></div>
+        <div class="content-frame-container">
+            <div class="display-area">
+                <iframe src="avalon.html"></iframe>
+            </div>
+        </div>
+        <div style="text-align:center;"><a class="back-home" onclick="showPage('home-page')">返回主页</a></div>
+    </div>
+
     <!-- 前端实验室 -->
     <div id="frontend-page" class="page">
         <div class="page-header"><h2>前端实验室</h2></div>
@@ -304,7 +327,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             const hash = location.hash.substring(1);
             // 更新 hash 检测逻辑
-            if(['reading','skills','collection','frontend','symposium','conan','fish','shoucang','photos','fun','study'].includes(hash)) showPage(hash + '-page');
+            if(['reading','skills','collection','frontend','symposium','conan','fish','shoucang','photos','fun','study','avalon'].includes(hash)) showPage(hash + '-page');
         });
     </script>
 </body>

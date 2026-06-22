@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>诗海拾贝</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&family=ZCOOL+XiaoWei&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --paper: #f6efdc; --paper-dark: #e8dcc4; --paper-light: #fcf7ed;
+            --ink: #2c1f10; --ink-light: #5c4a3a; --ink-muted: #9c8a72;
+            --accent: #8b3a2a; --accent-gold: #b8860b; --accent-jade: #5a7a5a;
+            --accent-blue: #3a5068; --accent-purple: #6a4a7a;
+            --border: #d4c4a8; --border-light: #e4d8c0;
+            --shadow: 0 4px 20px rgba(40,20,5,0.08);
+            --shadow-lg: 0 8px 40px rgba(40,20,5,0.15);
+            --radius: 4px;
+            --font-poem: "Ma Shan Zheng", "ZCOOL XiaoWei", "Noto Serif SC", serif;
+            --font-body: "Noto Serif SC", serif;
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: var(--font-body);
+            background: #2c1f10;
+            background-image:
+                radial-gradient(ellipse at 50% 30%, rgba(139,90,40,0.12) 0%, transparent 70%),
+                radial-gradient(ellipse at 20% 80%, rgba(90,70,40,0.08) 0%, transparent 60%);
+            color: var(--ink); min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            display: flex; justify-content: center;
+        }
+        .desk {
+            width: 100%; max-width: 100%;
+            display: flex; flex-direction: column; min-height: 100vh;
+            background:
+                repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(60,30,10,0.015) 3px, rgba(60,30,10,0.015) 6px),
+                linear-gradient(180deg, #f6efdc 0%, #ede0c4 100%);
+        }
+
+        /* ── Top Bar ────────────────────── */
+        .topbar {
+            background: linear-gradient(180deg, #fcf7ed 0%, #f0e4cc 100%);
+            border-bottom: 2px solid var(--border);
+            padding: 12px 24px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+        .topbar-brand {
+            display: flex; align-items: center; gap: 10px;
+            font-family: "Ma Shan Zheng", var(--font-body); font-size: 1.6rem;
+            font-weight: 400; color: var(--ink);
+            letter-spacing: 0.08em;
+        }
+        .back-link {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: var(--ink-light); text-decoration: none;
+            font-size: 0.85rem; transition: color 0.2s;
+            font-family: var(--font-body);
+        }
+        .back-link:hover { color: var(--accent); }
+
+        /* ── Layout ──────────────────────── */
+        .layout { display: flex; flex: 1; overflow: hidden; }
+
+        /* ── Sidebar ────────────────────── */
+        .sidebar {
+            width: 260px; min-width: 260px;
+            background: linear-gradient(180deg, #fcf7ed 0%, #f2e6d0 100%);
+            border-right: 2px solid var(--border);
+            padding: 0; display: flex; flex-direction: column;
+            overflow-y: auto; box-shadow: 2px 0 12px rgba(0,0,0,0.04);
+        }
+        .sidebar-section {
+            padding: 12px 18px 6px; font-size: 0.7rem;
+            letter-spacing: 0.08em; color: var(--ink-muted);
+            font-family: var(--font-body); border-bottom: 1px dotted var(--border-light);
+        }
+
+        /* Filter area */
+        .filter-area { padding: 14px 16px; display: flex; flex-direction: column; gap: 10px; }
+        .filter-label {
+            font-family: var(--font-body); font-size: 0.78rem; color: var(--ink-light);
+            letter-spacing: 0.05em; margin-bottom: 2px;
+        }
+        .filter-row { display: flex; flex-wrap: wrap; gap: 5px; }
+        .chip {
+            padding: 5px 12px; border-radius: 3px; cursor: pointer;
+            font-family: var(--font-body); font-size: 0.76rem;
+            border: 1px solid var(--border); background: var(--paper-light);
+            color: var(--ink-light); transition: all 0.2s;
+            letter-spacing: 0.03em; white-space: nowrap;
+        }
+        .chip:hover { border-color: var(--accent); color: var(--accent); background: rgba(139,58,42,0.04); }
+        .chip.active { background: var(--accent); color: #f5e8d0; border-color: var(--accent); }
+
+        .filter-select {
+            width: 100%; padding: 7px 10px; border: 1px solid var(--border);
+            border-radius: 3px; font-family: var(--font-body); font-size: 0.82rem;
+            background: var(--paper-light); color: var(--ink); cursor: pointer;
+        }
+        .filter-select:focus { outline: none; border-color: var(--accent); }
+
+        .btn {
+            display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+            padding: 10px 20px; border-radius: 3px; cursor: pointer;
+            font-size: 0.88rem; font-family: var(--font-body); letter-spacing: 0.05em;
+            transition: all 0.25s; border: 1px solid var(--border);
+            background: var(--paper-light); color: var(--ink-light);
+        }
+        .btn:hover { border-color: var(--accent); color: var(--accent); background: #fdf6ea; }
+        .btn-pri {
+            background: linear-gradient(180deg, #8b3a2a 0%, #6a2418 100%);
+            color: #f5e8d0; border: 1px solid #4a1008; width: 100%;
+            font-size: 0.92rem; padding: 12px; letter-spacing: 0.08em;
+        }
+        .btn-pri:hover { background: linear-gradient(180deg, #9b4a3a 0%, #7a3428 100%); color: #fff; border-color: #3a0800; }
+        .btn-pri:disabled { opacity: 0.5; pointer-events: none; }
+
+        .sidebar-collection { flex: 1; overflow-y: auto; }
+        .poem-thumb {
+            padding: 12px 16px; cursor: pointer; border-bottom: 1px solid var(--border-light);
+            transition: all 0.2s; position: relative;
+        }
+        .poem-thumb:hover { background: rgba(139,58,42,0.04); }
+        .poem-thumb.active { background: rgba(139,58,42,0.08); border-left: 3px solid var(--accent); }
+        .poem-thumb .pt-title {
+            font-family: var(--font-poem); font-size: 0.95rem; color: var(--ink);
+            letter-spacing: 0.05em;
+        }
+        .poem-thumb .pt-meta {
+            font-size: 0.7rem; color: var(--ink-muted); margin-top: 2px;
+        }
+        .poem-thumb .pt-del {
+            position: absolute; top: 10px; right: 12px;
+            width: 24px; height: 24px; border-radius: 50%;
+            border: 1px solid transparent; background: transparent;
+            cursor: pointer; color: var(--ink-muted); font-size: 0.65rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s;
+        }
+        .poem-thumb .pt-del:hover { border-color: var(--accent); color: var(--accent); }
+
+        .sidebar-footer {
+            padding: 12px 16px; border-top: 1px solid var(--border-light);
+            font-size: 0.65rem; color: var(--ink-muted);
+            text-align: center; font-family: var(--font-body); letter-spacing: 0.04em;
+        }
+        @media(max-width:720px) {
+            .sidebar { width: 100%; min-width: 100%; border-right: none; border-bottom: 2px solid var(--border); max-height: 40vh; }
+            .layout { flex-direction: column; }
+        }
+
+        /* ── Main Area ──────────────────── */
+        .main-area {
+            flex: 1; overflow-y: auto; display: flex; flex-direction: column;
+            padding: 24px 32px;
+        }
+        @media(max-width:720px) { .main-area { padding: 16px; } }
+
+        /* ── Empty State ────────────────── */
+        .empty-state {
+            flex: 1; display: flex; flex-direction: column; align-items: center;
+            justify-content: center; text-align: center; padding: 40px;
+        }
+        .empty-state .es-icon {
+            font-size: 4rem; margin-bottom: 16px; opacity: 0.5;
+        }
+        .empty-state .es-text {
+            font-family: var(--font-poem); font-size: 1.3rem;
+            color: var(--ink-muted); letter-spacing: 0.08em; margin-bottom: 6px;
+        }
+        .empty-state .es-sub {
+            font-size: 0.85rem; color: var(--ink-muted);
+            font-family: var(--font-body);
+        }
+
+        /* ── Poem Display ───────────────── */
+        .poem-scroll {
+            background: var(--paper-light);
+            border: 2px solid var(--border);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow-lg);
+            padding: 0; overflow: hidden;
+            position: relative;
+        }
+        .poem-scroll::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent-gold), var(--accent), var(--accent-gold), var(--accent), var(--accent-gold));
+        }
+        .poem-header {
+            padding: 28px 32px 16px; text-align: center;
+            border-bottom: 1px double var(--border);
+        }
+        .poem-header .ph-title {
+            font-family: var(--font-poem); font-size: 2rem; color: var(--accent);
+            letter-spacing: 0.1em;
+        }
+        .poem-header .ph-meta {
+            font-size: 0.8rem; color: var(--ink-muted); margin-top: 4px;
+            font-family: var(--font-body); letter-spacing: 0.05em;
+        }
+
+        .poem-tabs {
+            display: flex; gap: 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+        .poem-tab {
+            padding: 10px 22px; border: none; background: none;
+            cursor: pointer; font-family: var(--font-body); font-size: 0.85rem;
+            color: var(--ink-muted); letter-spacing: 0.05em;
+            border-bottom: 2px solid transparent; transition: all 0.2s;
+        }
+        .poem-tab:hover { color: var(--ink); }
+        .poem-tab.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+        .poem-content { padding: 28px 32px; }
+        .poem-pane { display: none; }
+        .poem-pane.active { display: block; animation: fadeIn 0.35s ease; }
+        @keyframes fadeIn { from {opacity:0;transform:translateY(6px)} to {opacity:1;transform:translateY(0)} }
+
+        .poem-original {
+            font-family: var(--font-poem); font-size: 1.35rem; line-height: 2.2;
+            color: var(--ink); letter-spacing: 0.06em; white-space: pre-line;
+            text-align: center; padding: 10px 0;
+        }
+        .poem-translation, .poem-appreciation {
+            font-family: var(--font-body); font-size: 0.95rem; line-height: 2;
+            color: var(--ink-light); white-space: pre-line;
+        }
+        .word-item {
+            display: flex; gap: 12px; padding: 10px 0;
+            border-bottom: 1px dotted var(--border-light);
+            align-items: baseline;
+        }
+        .word-item .wi-word {
+            font-family: var(--font-poem); font-size: 1.1rem; color: var(--accent);
+            min-width: 60px; letter-spacing: 0.04em;
+        }
+        .word-item .wi-expl {
+            font-size: 0.88rem; color: var(--ink-light);
+        }
+
+        .poem-actions {
+            display: flex; gap: 10px; justify-content: center; padding: 0 32px 24px;
+            flex-wrap: wrap;
+        }
+
+        /* ── Loading ─────────────────────── */
+        .loading-overlay {
+            display: none; position: fixed; inset: 0; background: rgba(20,10,5,0.3);
+            z-index: 999; align-items: center; justify-content: center;
+        }
+        .loading-overlay.show { display: flex; }
+        .loading-card {
+            background: var(--paper-light); border: 2px solid var(--border);
+            border-radius: var(--radius); padding: 32px 40px; text-align: center;
+            box-shadow: var(--shadow-lg);
+        }
+        .loading-card .lc-icon {
+            font-size: 2rem; animation: float 2s ease-in-out infinite; margin-bottom: 12px;
+        }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .loading-card .lc-text {
+            font-family: var(--font-poem); font-size: 1rem; color: var(--ink-light);
+            letter-spacing: 0.06em;
+        }
+        .loading-card .lc-sub {
+            font-size: 0.78rem; color: var(--ink-muted); margin-top: 4px;
+        }
+
+        .status-msg { text-align:center; min-height:1.4em; font-size:0.82rem; margin-top:6px; font-family:var(--font-body); }
+        .status-msg.error { color:var(--accent); }
+
+        .footer { text-align:center; padding:8px 20px 20px; color:var(--ink-muted); font-size:0.7rem; font-family:var(--font-body); letter-spacing:0.06em; }
+
+        .api-row { padding: 10px 16px; border-top: 1px solid var(--border-light); }
+        .api-row input { width:100%; padding:5px 8px; font-size:0.72rem; font-family:monospace; border:1px solid var(--border); border-radius:3px; background:var(--paper-light); color:var(--ink); }
+        .api-row input:focus { outline:none; border-color:var(--accent); }
+    </style>
+</head>
+<body>
+<script>
+if(!sessionStorage.getItem('_arce_session')){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:-apple-system,sans-serif;color:#999;text-align:center;"><div><div style="font-size:3rem;margin-bottom:16px;">🔒</div><p>请先通过主页登录</p><p style="font-size:.85rem;margin-top:8px;"><a href="/" style="color:#667eea;">返回主页</a></p></div></div>';
+  throw new Error();
+}
+</script>
+
+
+<div class="desk">
+
+<!-- Top Bar -->
+<div class="topbar">
+    <div class="topbar-brand">📜 诗海拾贝</div>
+    <a class="back-link" href="index.html"><i class="fas fa-arrow-left"></i> 返回主页</a>
+</div>
+
+<div class="layout">
+
+<!-- Sidebar -->
+<div class="sidebar">
+    <div class="sidebar-section">🎋 寻诗问道</div>
+    <div class="filter-area">
+        <div class="filter-label">风格</div>
+        <div class="filter-row" id="styleChips"></div>
+        <div class="filter-label" style="margin-top:6px">题材</div>
+        <div class="filter-row" id="themeChips"></div>
+        <div class="filter-label" style="margin-top:6px">语言</div>
+        <select class="filter-select" id="langSelect">
+            <option value="zh">中文古典</option>
+            <option value="zh-modern">中文现代诗</option>
+            <option value="en">English Poetry</option>
+            <option value="ja">和歌 · 俳句</option>
+        </select>
+        <button class="btn btn-pri" id="findBtn" onclick="findPoem()">
+            <i class="fas fa-feather-alt"></i> 寻 诗
+        </button>
+        <div class="status-msg" id="findStatus"></div>
+    </div>
+
+    <div class="sidebar-section">📖 诗箧藏珍 <span style="font-weight:400;color:var(--ink-muted)" id="collCount">0</span></div>
+    <div class="sidebar-collection" id="collectionList"></div>
+
+    <div class="api-row">
+        <input type="password" class="input" id="apiKeyInp" placeholder="DeepSeek API Key: sk-...">
+        <button class="btn" style="width:100%;margin-top:4px;padding:5px;font-size:0.72rem" onclick="saveKey()">保存</button>
+        <span id="keyHint" style="font-size:0.65rem;color:var(--accent-jade);display:block;text-align:center;margin-top:3px"></span>
+    </div>
+
+    <div class="sidebar-footer">涉江采芙蓉<br>兰泽多芳草</div>
+</div>
+
+<!-- Main -->
+<div class="main-area" id="mainArea">
+    <div class="empty-state" id="emptyState">
+        <div class="es-icon">📜</div>
+        <div class="es-text">诗海无涯，待君采撷</div>
+        <div class="es-sub">在左侧选择风格与题材，寻一首属于你的诗</div>
+    </div>
+
+    <div id="poemDisplay" style="display:none;flex:1">
+        <div class="poem-scroll" id="poemScroll"></div>
+    </div>
+</div>
+
+</div><!-- /layout -->
+<div class="footer">涉江采芙蓉，兰泽多芳草。采之欲遗谁，所思在远道。</div>
+</div><!-- /desk -->
+
+<!-- Loading -->
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-card">
+        <div class="lc-icon">🪶</div>
+        <div class="lc-text">寻诗中……</div>
+        <div class="lc-sub">墨正浓，笔正落，稍候片刻</div>
+    </div>
+</div>
+
+<script>
+// ═══ DATA ═══════════════════════════════════════
+const STYLES = ["豪放","婉约","禅意","浪漫","哲理","山水田园","边塞","咏物","思乡","送别","隐逸","悲慨"];
+const THEMES = ["春天","秋思","离别","爱情","战争","月夜","饮酒","怀古","人生","自由","孤独","自然","梦","时光"];
+const LANG_NAMES = {"zh":"中文古典","zh-modern":"中文现代诗","en":"English Poetry","ja":"和歌 · 俳句"};
+
+const DS_API = "https://api.deepseek.com/chat/completions";
+const POETRY_KEY = "poetry_collection";
+
+function loadPoems() { try{return JSON.parse(localStorage.getItem(POETRY_KEY))||[]}catch(e){return[]} }
+function savePoems(p) { localStorage.setItem(POETRY_KEY, JSON.stringify(p)); }
+function getKey() { return localStorage.getItem("deepseek_api_key")||""; }
+
+// ═══ FILTER CHIPS ═══════════════════════════════
+let selectedStyle = STYLES[0];
+let selectedTheme = THEMES[0];
+
+function renderChips() {
+    document.getElementById("styleChips").innerHTML = STYLES.map(s =>
+        `<span class="chip${s===selectedStyle?' active':''}" onclick="selectStyle('${s}')">${s}</span>`
+    ).join("");
+    document.getElementById("themeChips").innerHTML = THEMES.map(t =>
+        `<span class="chip${t===selectedTheme?' active':''}" onclick="selectTheme('${t}')">${t}</span>`
+    ).join("");
+}
+
+function selectStyle(s) { selectedStyle = s; renderChips(); }
+function selectTheme(t) { selectedTheme = t; renderChips(); }
+
+// ═══ FIND POEM ═══════════════════════════════════
+async function findPoem() {
+    const key = getKey();
+    if (!key) { document.getElementById("findStatus").textContent = "请先设置 API Key"; document.getElementById("findStatus").className = "status-msg error"; return; }
+    const lang = document.getElementById("langSelect").value;
+
+    const btn = document.getElementById("findBtn");
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 寻诗中……';
+    document.getElementById("loadingOverlay").classList.add("show");
+    document.getElementById("findStatus").textContent = ""; document.getElementById("findStatus").className = "status-msg";
+
+    let prompt;
+    if (lang === "zh") {
+        prompt = `你是一位博学的中国古典文学教授。请从你训练数据中的真实中国古典诗词里，选出一首风格接近「${selectedStyle}」、题材接近「${selectedTheme}」的诗词。必须是历史上真实存在的诗词，不能自己编造。
+
+请确认该诗词在文学史上确实存在，然后严格返回JSON：
+{
+  "title": "诗词真实标题",
+  "author": "真实作者姓名，如 李白/杜甫/苏轼/李清照",
+  "dynasty": "真实朝代，如 唐/宋/元/明/清",
+  "source": "出处，如《全唐诗》/《宋词三百首》/《诗经》",
+  "original": "诗词完整原文（必须是真实原文）",
+  "translation": "现代汉语白话译文",
+  "words": [{"word":"诗中的难字或典故词","explanation":"准确注释"}],
+  "appreciation": "赏析文字，200-300字，基于真实学术观点分析意象、情感、技法"
+}
+重要提醒：不要编造诗词。必须是真实存在的经典作品。words至少3个。`;
+
+    } else if (lang === "zh-modern") {
+        prompt = `你是一位中国现当代文学研究者。请从你训练数据中的真实中国现代诗里，选出一首风格接近「${selectedStyle}」、题材接近「${selectedTheme}」的诗。必须是真实存在、有明确作者的诗。严格返回JSON：
+{
+  "title": "诗歌真实标题",
+  "author": "真实作者，如 徐志摩/海子/北岛/顾城/舒婷/戴望舒/艾青",
+  "dynasty": "如 民国/20世纪80年代/当代",
+  "source": "出处，如诗集名称或发表年份",
+  "original": "诗歌完整原文（必须是真实原文）",
+  "translation": "英文翻译",
+  "words": [{"word":"关键词或意象","explanation":"简释"}],
+  "appreciation": "赏析，200-300字"
+}
+重要：必须是真实存在的诗，不能编造。`;
+
+    } else if (lang === "en") {
+        prompt = `You are a professor of English literature. From your training data, select a REAL, historically existing English poem whose style approximates "${selectedStyle}" and theme approximates "${selectedTheme}". The poem MUST be a genuine work by a real poet - do NOT fabricate. Return strictly JSON:
+{
+  "title": "Real poem title",
+  "author": "Real poet name, e.g. William Wordsworth/Emily Dickinson/Robert Frost",
+  "dynasty": "Period, e.g. Romantic/Victorian/Modern/20th century",
+  "source": "Collection or publication, e.g. 'Leaves of Grass'/published 1862",
+  "original": "The COMPLETE authentic poem text",
+  "translation": "中文翻译",
+  "words": [{"word":"archaic or difficult word","explanation":"brief note"}],
+  "appreciation": "Appreciation in Chinese, 200-300 characters based on real literary criticism"
+}
+CRITICAL: Only real poems that exist in literary history. Do not fabricate.`;
+
+    } else if (lang === "ja") {
+        prompt = `あなたは日本文学の研究者です。トレーニングデータから、風格「${selectedStyle}」、題材「${selectedTheme}」に近い、実在する日本の古典和歌または俳句を選んでください。必ず実在する作品を選び、捏造しないでください。JSON形式で返してください：
+{
+  "title": "実在する詩の題名または首句",
+  "author": "実在する作者，如 松尾芭蕉/与謝蕪村/小林一茶/小野小町/紀貫之",
+  "dynasty": "時代，如 江戸時代/平安時代",
+  "source": "出典，如《古今和歌集》/《おくのほそ道》",
+  "original": "日本語原文",
+  "translation": "中国語翻訳",
+  "words": [{"word":"古語や難しい言葉","explanation":"注釈"}],
+  "appreciation": "中国語での鑑賞、200-300字"
+}
+重要：必ず実在する作品です。捏造は絶対にしないでください。`;
+
+    try {
+        const r = await fetch(DS_API, {
+            method:"POST", headers:{"Content-Type":"application/json","Authorization":"Bearer "+key},
+            body:JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:"你是一位博学的文学教授，专精于从训练数据中检索和引用真实的文学作品。只返回JSON，不返回其他内容。绝不编造诗词。"},{role:"user",content:prompt}],temperature:0.3,max_tokens:4096})
+        });
+        const d = await r.json();
+        if (!r.ok) throw new Error(d.error?.message||"API错误");
+        const m = d.choices[0].message.content.trim().match(/\{[\s\S]*\}/);
+        if (!m) throw new Error("返回格式异常，请重试");
+        const poem = {...JSON.parse(m[0]), id: Date.now(), createdAt: new Date().toISOString(), style: selectedStyle, theme: selectedTheme, language: lang};
+
+        // Save
+        const poems = loadPoems();
+        poems.unshift(poem);
+        savePoems(poems);
+
+        // Display
+        currentPoemId = poem.id;
+        renderCollection();
+        displayPoem(poem);
+        document.getElementById("emptyState").style.display = "none";
+        document.getElementById("poemDisplay").style.display = "";
+
+        document.getElementById("findStatus").textContent = "觅得佳作！已收入诗箧"; document.getElementById("findStatus").className = "status-msg success";
+    } catch(e) {
+        document.getElementById("findStatus").textContent = "寻诗未果: "+e.message; document.getElementById("findStatus").className = "status-msg error";
+    } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-feather-alt"></i> 寻 诗';
+        document.getElementById("loadingOverlay").classList.remove("show");
+    }
+}
+
+// ═══ DISPLAY POEM ════════════════════════════════
+let currentPoemId = null;
+let activePane = "original";
+
+function displayPoem(poem) {
+    currentPoemId = poem.id;
+    document.getElementById("emptyState").style.display = "none";
+    document.getElementById("poemDisplay").style.display = "";
+    activePane = "original";
+
+    const langLabel = LANG_NAMES[poem.language] || "";
+    document.getElementById("poemScroll").innerHTML = `
+        <div class="poem-header">
+            <div class="ph-title">${esc(poem.title)}</div>
+            <div class="ph-meta">
+                ${esc(poem.author||'')} · ${esc(poem.dynasty||'')} · ${esc(poem.source||'')} · ${esc(poem.style||'')} · ${esc(poem.theme||'')}
+            </div>
+        </div>
+        <div class="poem-tabs">
+            <button class="poem-tab active" data-pane="original" onclick="switchPane('original')">📝 原文</button>
+            <button class="poem-tab" data-pane="translation" onclick="switchPane('translation')">🌐 译文</button>
+            <button class="poem-tab" data-pane="words" onclick="switchPane('words')">📖 字词</button>
+            <button class="poem-tab" data-pane="appreciation" onclick="switchPane('appreciation')">✨ 赏析</button>
+        </div>
+        <div class="poem-content">
+            <div class="poem-pane active" id="pane-original">
+                <div class="poem-original">${esc(poem.original)}</div>
+            </div>
+            <div class="poem-pane" id="pane-translation">
+                <div class="poem-translation">${esc(poem.translation)}</div>
+            </div>
+            <div class="poem-pane" id="pane-words">
+                ${(poem.words||[]).map(w => `
+                    <div class="word-item">
+                        <div class="wi-word">${esc(w.word)}</div>
+                        <div class="wi-expl">${esc(w.explanation)}</div>
+                    </div>
+                `).join("")}
+            </div>
+            <div class="poem-pane" id="pane-appreciation">
+                <div class="poem-appreciation">${esc(poem.appreciation)}</div>
+            </div>
+        </div>
+        <div class="poem-actions">
+            <button class="btn btn-sm" onclick="deletePoem(${poem.id})"><i class="fas fa-trash-alt"></i> 弃之</button>
+        </div>
+    `;
+
+    // Scroll to top
+    document.getElementById("mainArea").scrollTop = 0;
+}
+
+function switchPane(pane) {
+    activePane = pane;
+    document.querySelectorAll(".poem-tab").forEach(t => t.classList.remove("active"));
+    document.querySelector(`.poem-tab[data-pane="${pane}"]`).classList.add("active");
+    document.querySelectorAll(".poem-pane").forEach(p => p.classList.remove("active"));
+    document.getElementById("pane-" + pane).classList.add("active");
+}
+
+// ═══ COLLECTION ═══════════════════════════════════
+function renderCollection() {
+    const poems = loadPoems();
+    document.getElementById("collCount").textContent = poems.length;
+    const list = document.getElementById("collectionList");
+
+    if (!poems.length) {
+        list.innerHTML = `<div style="padding:24px;text-align:center;color:var(--ink-muted);font-size:0.82rem;font-family:var(--font-body)">诗箧尚空<br>寻一首诗以藏之</div>`;
+        return;
+    }
+
+    list.innerHTML = poems.map(p => `
+        <div class="poem-thumb${p.id===currentPoemId?' active':''}" onclick="viewPoem(${p.id})">
+            <button class="pt-del" onclick="event.stopPropagation();deletePoem(${p.id})"><i class="fas fa-times"></i></button>
+            <div class="pt-title">${esc(p.title)}</div>
+            <div class="pt-meta">${esc(p.author||'')} · ${esc(p.dynasty||'')} · ${new Date(p.createdAt).toLocaleDateString('zh-CN')}</div>
+        </div>
+    `).join("");
+}
+
+function viewPoem(id) {
+    const poem = loadPoems().find(p => p.id === id);
+    if (!poem) return;
+    currentPoemId = id;
+    displayPoem(poem);
+    renderCollection();
+}
+
+function deletePoem(id) {
+    if (!confirm("确定从诗箧中移除此诗？")) return;
+    const poems = loadPoems().filter(p => p.id !== id);
+    savePoems(poems);
+    if (currentPoemId === id) {
+        currentPoemId = poems.length > 0 ? poems[0].id : null;
+        if (currentPoemId) displayPoem(poems[0]);
+        else {
+            document.getElementById("poemDisplay").style.display = "none";
+            document.getElementById("emptyState").style.display = "";
+        }
+    }
+    renderCollection();
+}
+
+// ═══ API KEY ═════════════════════════════════════
+function saveKey() {
+    const k = document.getElementById("apiKeyInp").value.trim();
+    if (!k) return;
+    if (!k.startsWith("sk-")) { document.getElementById("keyHint").textContent = "格式错误"; return; }
+    localStorage.setItem("deepseek_api_key", k);
+    document.getElementById("keyHint").textContent = "已保存 ✓";
+    setTimeout(() => document.getElementById("keyHint").textContent = "", 3000);
+}
+
+// ═══ UTILS ════════════════════════════════════════
+function esc(s) { if(!s)return""; const d=document.createElement("div"); d.textContent=s; return d.innerHTML; }
+
+// ═══ INIT ════════════════════════════════════════
+(function() {
+    document.getElementById("apiKeyInp").value = getKey();
+    if (getKey()) { document.getElementById("keyHint").textContent = "已加载 ✓"; setTimeout(()=>document.getElementById("keyHint").textContent="",2000); }
+    renderChips();
+    renderCollection();
+    const poems = loadPoems();
+    if (poems.length > 0) {
+        currentPoemId = poems[0].id;
+        displayPoem(poems[0]);
+    }
+})();
+</script>
+
+</body>
+</html>

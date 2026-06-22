@@ -1,0 +1,1878 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>大鱼吃小鱼 - 双人对战</title>
+    <style>
+        :root {
+            --bg: #0a1a2e;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg);
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            overflow: hidden;
+            user-select: none;
+            -webkit-user-select: none;
+            background-image: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="%23001a3a"/><stop offset="40%" stop-color="%2300285a"/><stop offset="70%" stop-color="%23003d6b"/><stop offset="100%" stop-color="%23001a2e"/></linearGradient><radialGradient id="light" cx="60%" cy="15%" r="50%"><stop offset="0%" stop-color="%23ffffff33"/><stop offset="100%" stop-color="%23ffffff00"/></radialGradient></defs><rect fill="url(%23g)" width="1200" height="800"/><rect fill="url(%23light)" width="1200" height="800"/><ellipse cx="600" cy="780" rx="700" ry="80" fill="%23c2a06022"/><ellipse cx="600" cy="790" rx="650" ry="50" fill="%2388704033"/></svg>');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        #game-wrapper {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        canvas {
+            border-radius: 16px;
+            box-shadow: 0 0 40px rgba(0, 150, 255, 0.3), 0 0 80px rgba(0, 100, 200, 0.15), 0 20px 60px rgba(0, 0, 0, 0.5);
+            display: block;
+            /* 光标样式将在JS中动态设置 */
+        }
+
+        #ui-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        @media (max-width: 768px) {
+            canvas {
+                border-radius: 8px;
+                max-width: 100vw;
+                max-height: 60vh;
+            }
+
+            body {
+                align-items: flex-start;
+                padding-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+<script>
+if(!sessionStorage.getItem('_arce_session')){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:-apple-system,sans-serif;color:#999;text-align:center;"><div><div style="font-size:3rem;margin-bottom:16px;">🔒</div><p>请先通过主页登录</p><p style="font-size:.85rem;margin-top:8px;"><a href="/" style="color:#667eea;">返回主页</a></p></div></div>';
+  throw new Error();
+}
+</script>
+
+    <div id="game-wrapper">
+        <canvas id="gameCanvas"></canvas>
+    </div>
+
+    <script>
+        (function() {
+            const canvas = document.getElementById('gameCanvas');
+            const ctx = canvas.getContext('2d');
+
+            // ==================== Canvas 尺寸设置 ====================
+            const GAME_WIDTH = 3000;
+            const GAME_HEIGHT = 1350;
+
+            function resizeCanvas() {
+                const scale = Math.min(
+                    (window.innerWidth - 20) / GAME_WIDTH,
+                    (window.innerHeight - 20) / GAME_HEIGHT,
+                    1.0
+                );
+                canvas.width = GAME_WIDTH;
+                canvas.height = GAME_HEIGHT;
+                canvas.style.width = GAME_WIDTH * scale + 'px';
+                canvas.style.height = GAME_HEIGHT * scale + 'px';
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            // ==================== 音频系统 ====================
+            let audioCtx = null;
+            let bgMusicNodes = [];
+            let bgMusicPlaying = false;
+
+            function initAudio() {
+                if (audioCtx) return;
+                try {
+                    audioCtx = new(window.AudioContext || window.webkitAudioContext)();
+                } catch (e) {
+                    audioCtx = null;
+                }
+            }
+
+            function playBackgroundMusic() {
+                if (!audioCtx || bgMusicPlaying) return;
+                bgMusicPlaying = true;
+
+                function createDrone(freq, gainVal, type = 'sine') {
+                    const osc = audioCtx.createOscillator();
+                    const gain = audioCtx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0, audioCtx.currentTime);
+                    gain.gain.linearRampToValueAtTime(gainVal, audioCtx.currentTime + 2);
+                    osc.connect(gain);
+                    gain.connect(audioCtx.destination);
+                    osc.start();
+                    bgMusicNodes.push({ osc, gain });
+                    return { osc, gain };
+                }
+
+                createDrone(55, 0.06, 'sine');
+                createDrone(82, 0.04, 'sine');
+                createDrone(110, 0.03, 'triangle');
+                createDrone(165, 0.02, 'sine');
+
+                function scheduleBubble() {
+                    if (!bgMusicPlaying || !audioCtx) return;
+                    const delay = 1.5 + Math.random() * 4;
+                    const now = audioCtx.currentTime;
+                    const bubbleOsc = audioCtx.createOscillator();
+                    const bubbleGain = audioCtx.createGain();
+                    bubbleOsc.type = 'sine';
+                    const freq = 200 + Math.random() * 600;
+                    bubbleOsc.frequency.setValueAtTime(freq, now + delay);
+                    bubbleOsc.frequency.linearRampToValueAtTime(freq * 1.5, now + delay + 0.3);
+                    bubbleGain.gain.setValueAtTime(0, now + delay);
+                    bubbleGain.gain.linearRampToValueAtTime(0.04, now + delay + 0.1);
+                    bubbleGain.gain.linearRampToValueAtTime(0, now + delay + 0.4);
+                    bubbleOsc.connect(bubbleGain);
+                    bubbleGain.connect(audioCtx.destination);
+                    bubbleOsc.start(now + delay);
+                    bubbleOsc.stop(now + delay + 0.5);
+                    const tid = setTimeout(scheduleBubble, (delay + 0.5) * 1000);
+                    bgMusicNodes.push({ timeoutId: tid });
+                }
+                scheduleBubble();
+            }
+
+            function stopBackgroundMusic() {
+                bgMusicPlaying = false;
+                bgMusicNodes.forEach(node => {
+                    if (node.osc) {
+                        try { node.osc.stop(); } catch (e) {}
+                        try { node.gain.gain.setValueAtTime(0, audioCtx?.currentTime || 0); } catch (
+                        e) {}
+                    }
+                    if (node.timeoutId) {
+                        clearTimeout(node.timeoutId);
+                    }
+                });
+                bgMusicNodes = [];
+            }
+
+            function playEatSound() {
+                if (!audioCtx) return;
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(900, now + 0.15);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.2);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            }
+
+            function playHurtSound() {
+                if (!audioCtx) return;
+                const now = audioCtx.currentTime;
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(50, now + 0.4);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.exponentialRampToValueAtTime(0.001, now + 0.5);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start(now);
+                osc.stop(now + 0.55);
+            }
+
+            // ==================== 游戏状态 ====================
+            const STATE = {
+                MENU: 'menu',
+                PLAYING: 'playing',
+                GAME_OVER: 'gameOver',
+            };
+
+            let gameState = STATE.MENU;
+            let gameTimer = 0;
+            let gameDuration = 300; // 5分钟
+            let menuSelectionComplete = false;
+
+            // ==================== 输入处理 ====================
+            const keys = {};
+            window.addEventListener('keydown', (e) => {
+                keys[e.key.toLowerCase()] = true;
+                keys[e.code] = true;
+                e.preventDefault();
+            });
+            window.addEventListener('keyup', (e) => {
+                keys[e.key.toLowerCase()] = false;
+                keys[e.code] = false;
+                e.preventDefault();
+            });
+
+            // ==================== 玩家类 ====================
+            class PlayerFish {
+                constructor(x, y, color, shapeType, playerNum) {
+                    this.x = x;
+                    this.y = y;
+                    this.radius = 20;
+                    this.baseRadius = 20;
+                    this.color = color;
+                    this.shapeType = shapeType;
+                    this.playerNum = playerNum;
+                    this.score = 0;
+                    this.lives = 3;
+                    this.maxLives = 3;
+                    this.speed = 420;
+                    this.facingRight = true;
+                    this.invincibleUntil = 0;
+                    this.alive = true;
+                    this.flashTimer = 0;
+                    this.visible = true;
+                    this.eatCount = 0;
+                    this.vx = 0;
+                    this.vy = 0;
+                    this.trailPositions = [];
+                }
+
+                update(dt, keysDown) {
+                    if (!this.alive) return;
+                    if (this.isInvincible()) {
+                        this.flashTimer += dt;
+                        if (this.flashTimer > 0.12) {
+                            this.flashTimer = 0;
+                            this.visible = !this.visible;
+                        }
+                    } else {
+                        this.visible = true;
+                        this.flashTimer = 0;
+                    }
+
+                    let mx = 0,
+                        my = 0;
+                    if (this.playerNum === 1) {
+                        if (keysDown['w'] || keysDown['keyw']) my = -1;
+                        if (keysDown['s'] || keysDown['keys']) my = 1;
+                        if (keysDown['a'] || keysDown['keya']) mx = -1;
+                        if (keysDown['d'] || keysDown['keyd']) mx = 1;
+                    } else {
+                        if (keysDown['arrowup']) my = -1;
+                        if (keysDown['arrowdown']) my = 1;
+                        if (keysDown['arrowleft']) mx = -1;
+                        if (keysDown['arrowright']) mx = 1;
+                    }
+
+                    const mag = Math.sqrt(mx * mx + my * my);
+                    if (mag > 1) {
+                        mx /= mag;
+                        my /= mag;
+                    }
+
+                    this.vx = mx * this.speed;
+                    this.vy = my * this.speed;
+                    this.x += this.vx * dt;
+                    this.y += this.vy * dt;
+                    if (mx !== 0) this.facingRight = mx > 0;
+
+                    const r = this.radius;
+                    this.x = Math.max(r, Math.min(GAME_WIDTH - r, this.x));
+                    this.y = Math.max(r + 50, Math.min(GAME_HEIGHT - r - 10, this.y));
+
+                    if (Math.abs(this.vx) > 5 || Math.abs(this.vy) > 5) {
+                        this.trailPositions.push({ x: this.x, y: this.y, age: 0, radius: this.radius * 0.6 });
+                    }
+                    for (let i = this.trailPositions.length - 1; i >= 0; i--) {
+                        this.trailPositions[i].age += dt;
+                        if (this.trailPositions[i].age > 0.35) {
+                            this.trailPositions.splice(i, 1);
+                        }
+                    }
+                    // --- 鱼雷生成逻辑 ---
+                    torpedoSpawnTimer += dt;
+                    if (torpedoSpawnTimer >= torpedoSpawnInterval) {
+                        torpedoSpawnTimer = 0;
+                        const tx = Math.random() * (GAME_WIDTH - 40) + 20;
+                        const tSpeed = 80 + Math.random() * 60; // 速度较慢
+                        torpedoes.push(new Torpedo(tx, -50, tSpeed));
+                    }
+
+                    // --- 鱼雷更新与碰撞检测 ---
+                    for (let i = torpedoes.length - 1; i >= 0; i--) {
+                        const t = torpedoes[i];
+                        t.update(dt);
+
+                        if (!t.alive) {
+                            torpedoes.splice(i, 1);
+                            continue;
+                        }
+
+                        // 碰撞玩家1
+                        if (player1.alive) {
+                            const dx1 = t.x - player1.x;
+                            const dy1 = (t.y - player1.y);
+                            if (Math.sqrt(dx1*dx1 + dy1*dy1) < player1.radius + 10) {
+                                triggerExplosion(t.x, t.y);
+                                player1.takeDamage(); 
+                                // 如果你想让鱼雷直接“秒杀”，可以设置 player1.lives = 0; player1.alive = false;
+                                t.alive = false;
+                            }
+                        }
+
+                        // 碰撞玩家2
+                        if (player2.alive) {
+                            const dx2 = t.x - player2.x;
+                            const dy2 = t.y - player2.y;
+                            if (Math.sqrt(dx2*dx2 + dy2*dy2) < player2.radius + 10) {
+                                triggerExplosion(t.x, t.y);
+                                player2.takeDamage();
+                                t.alive = false;
+                            }
+                        }
+
+                        // 碰撞NPC鱼 (炸死NPC)
+                        for (let j = npcFishes.length - 1; j >= 0; j--) {
+                            const nf = npcFishes[j];
+                            const dxn = t.x - nf.x;
+                            const dyn = t.y - nf.y;
+                            if (Math.sqrt(dxn*dxn + dyn*dyn) < nf.radius + 10) {
+                                triggerExplosion(t.x, t.y);
+                                nf.alive = false;
+                                t.alive = false;
+                                break;
+                            }
+                        }
+
+                        if (!t.alive) torpedoes.splice(i, 1);
+                    }
+                }
+
+                isInvincible() {
+                    return performance.now() / 1000 < this.invincibleUntil;
+                }
+
+                takeDamage() {
+                    if (this.isInvincible() || !this.alive) return false;
+                    this.lives--;
+                    this.invincibleUntil = performance.now() / 1000 + 2.0;
+                    this.visible = true;
+                    this.flashTimer = 0;
+                    playHurtSound();
+                    if (this.lives <= 0) {
+                        this.alive = false;
+                        this.lives = 0;
+                    }
+                    return true;
+                }
+
+                // eatFish(npcFish) {
+                //     const growthRatio = 0.025;
+                //     const growth = npcFish.radius * growthRatio;
+                //     this.radius += growth;
+                //     this.baseRadius = this.radius;
+                //     this.score += Math.floor(npcFish.radius * 2);
+                //     this.eatCount++;
+                //     this.speed = Math.max(150, 220 - this.eatCount * 2);
+                //     playEatSound();
+
+                // }
+                eatFish(npcFish) {
+                    // 增加成长系数：让体型增长更可感
+                    // 原来的 0.025 太小了，建议改为 0.1 到 0.2
+                    const growthRatio = 0.1; 
+                    const growth = npcFish.radius * growthRatio;
+                    this.radius += growth;
+                    
+                    // 更新得分：让得分与半径挂钩，便于理解
+                    this.score += Math.floor(npcFish.radius); 
+                    
+                    this.eatCount++;
+                    // 随着体型变大，稍微降低速度，增加大鱼的“笨重感”
+                    this.speed = Math.min(620, 420 + (this.radius - 20) * 0.5);
+                    playEatSound();
+                }
+
+                draw(ctx) {
+                    if (!this.alive) return;
+                    if (!this.visible && this.isInvincible()) {
+                        ctx.globalAlpha = 0.3;
+                    }
+
+                    for (const trail of this.trailPositions) {
+                        const alpha = Math.max(0, 1 - trail.age / 0.35) * 0.4;
+                        ctx.fillStyle = this.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                        ctx.beginPath();
+                        ctx.arc(trail.x, trail.y, trail.radius * (1 - trail.age / 0.35), 0, Math.PI * 2);
+                        ctx.fill();
+                    }
+
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    const facingScale = this.facingRight ? 1 : -1;
+                    ctx.scale(facingScale, 1);
+                    const r = this.radius;
+
+                    if (this.shapeType === 'arrow') {
+                        this.drawArrowFish(ctx, r*0.8, this.color);
+                    } else {
+                        this.drawRoundFish(ctx, r*1.1, this.color);
+                    }
+
+                    ctx.restore();
+
+                    if (this.isInvincible() && this.visible) {
+                        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+                        ctx.lineWidth = 3;
+                        ctx.setLineDash([8, 6]);
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, r + 8, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.setLineDash([]);
+                        ctx.lineWidth = 1;
+                    }
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.font = 'bold 13px "Microsoft YaHei", Arial';
+                    ctx.textAlign = 'center';
+                    const label = this.playerNum === 1 ? 'P1' : 'P2';
+                    // ctx.fillText(label, this.x, this.y - r - 14);
+                    // 显示 P1/P2 以及当前的体型数值
+                    const sizeLabel = Math.floor(this.radius);
+                    ctx.fillText(`${label} [${sizeLabel}]`, this.x, this.y - r - 14);
+                    ctx.globalAlpha = 1;
+                }
+
+                drawArrowFish(ctx, r, color) {
+                    const bodyLength = r * 2.2;
+                    const bodyHeight = r * 1.1;
+                    ctx.fillStyle = color;
+                    ctx.beginPath();
+                    ctx.moveTo(bodyLength, 0);
+                    ctx.bezierCurveTo(bodyLength * 0.3, -bodyHeight, -bodyLength * 0.5, -bodyHeight * 0.8, -
+                        bodyLength * 0.8, 0);
+                    ctx.bezierCurveTo(-bodyLength * 0.5, bodyHeight * 0.8, bodyLength * 0.3, bodyHeight, bodyLength,
+                        0);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    const stripeColor = this.lightenColor(color, 0.25);
+                    ctx.fillStyle = stripeColor;
+                    ctx.beginPath();
+                    ctx.ellipse(bodyLength * 0.25, 0, bodyLength * 0.35, bodyHeight * 0.6, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = this.darkenColor(color, 0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(bodyLength * 0.1, -bodyHeight * 0.75);
+                    ctx.quadraticCurveTo(bodyLength * 0.05, -bodyHeight * 1.8, -bodyLength * 0.25, -bodyHeight * 0.6);
+                    ctx.quadraticCurveTo(-bodyLength * 0.1, -bodyHeight * 0.3, bodyLength * 0.05, -bodyHeight * 0.2);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = this.darkenColor(color, 0.15);
+                    ctx.beginPath();
+                    ctx.moveTo(-bodyLength * 0.65, -bodyHeight * 0.15);
+                    ctx.quadraticCurveTo(-bodyLength * 1.3, -bodyHeight * 1.1, -bodyLength * 1.05, 0);
+                    ctx.quadraticCurveTo(-bodyLength * 1.3, bodyHeight * 1.1, -bodyLength * 0.65, bodyHeight * 0.15);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(bodyLength * 0.55, -bodyHeight * 0.15, r * 0.28, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#111111';
+                    ctx.beginPath();
+                    ctx.arc(bodyLength * 0.6, -bodyHeight * 0.13, r * 0.16, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(bodyLength * 0.63, -bodyHeight * 0.18, r * 0.06, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = this.darkenColor(color, 0.15);
+                    ctx.beginPath();
+                    ctx.ellipse(bodyLength * 0.15, bodyHeight * 0.5, r * 0.5, r * 0.25, -0.4, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+
+                drawRoundFish(ctx, r, color) {
+                    const bodyR = r * 1.05;
+                    const gradient = ctx.createRadialGradient(-bodyR * 0.2, -bodyR * 0.3, bodyR * 0.1, 0, 0, bodyR);
+                    gradient.addColorStop(0, this.lightenColor(color, 0.35));
+                    gradient.addColorStop(0.5, color);
+                    gradient.addColorStop(1, this.darkenColor(color, 0.25));
+                    ctx.fillStyle = gradient;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, bodyR, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.strokeStyle = this.darkenColor(color, 0.3);
+                    ctx.lineWidth = 1.5;
+                    const spikeCount = 10;
+                    for (let i = 0; i < spikeCount; i++) {
+                        const angle = (i / spikeCount) * Math.PI * 2 - Math.PI / 2;
+                        const sx = Math.cos(angle) * bodyR * 0.85;
+                        const sy = Math.sin(angle) * bodyR * 0.85;
+                        const ex = Math.cos(angle) * bodyR * 1.25;
+                        const ey = Math.sin(angle) * bodyR * 1.25;
+                        ctx.beginPath();
+                        ctx.moveTo(sx, sy);
+                        ctx.lineTo(ex, ey);
+                        ctx.stroke();
+                    }
+
+                    ctx.fillStyle = this.lightenColor(color, 0.3);
+                    ctx.beginPath();
+                    ctx.ellipse(0, bodyR * 0.2, bodyR * 0.6, bodyR * 0.5, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = this.darkenColor(color, 0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(-bodyR * 0.8, -bodyR * 0.1);
+                    ctx.quadraticCurveTo(-bodyR * 1.5, -bodyR * 0.9, -bodyR * 1.3, 0);
+                    ctx.quadraticCurveTo(-bodyR * 1.5, bodyR * 0.9, -bodyR * 0.8, bodyR * 0.1);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = this.darkenColor(color, 0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(-bodyR * 0.1, -bodyR * 0.6);
+                    ctx.quadraticCurveTo(bodyR * 0.1, -bodyR * 1.4, bodyR * 0.25, -bodyR * 0.5);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(bodyR * 0.45, -bodyR * 0.2, r * 0.32, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#1a1a1a';
+                    ctx.beginPath();
+                    ctx.arc(bodyR * 0.5, -bodyR * 0.18, r * 0.18, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#ffffff';
+                    ctx.beginPath();
+                    ctx.arc(bodyR * 0.54, -bodyR * 0.24, r * 0.08, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.strokeStyle = this.darkenColor(color, 0.35);
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.arc(bodyR * 0.7, bodyR * 0.05, r * 0.2, -0.3, 0.6);
+                    ctx.stroke();
+                    ctx.lineWidth = 1;
+                }
+
+                lightenColor(hex, factor) {
+                    let r, g, b;
+                    if (hex.startsWith('#')) {
+                        const num = parseInt(hex.slice(1), 16);
+                        r = (num >> 16) & 0xff;
+                        g = (num >> 8) & 0xff;
+                        b = num & 0xff;
+                    } else { return hex; }
+                    r = Math.min(255, Math.floor(r + (255 - r) * factor));
+                    g = Math.min(255, Math.floor(g + (255 - g) * factor));
+                    b = Math.min(255, Math.floor(b + (255 - b) * factor));
+                    return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+                }
+
+                darkenColor(hex, factor) {
+                    let r, g, b;
+                    if (hex.startsWith('#')) {
+                        const num = parseInt(hex.slice(1), 16);
+                        r = (num >> 16) & 0xff;
+                        g = (num >> 8) & 0xff;
+                        b = num & 0xff;
+                    } else { return hex; }
+                    r = Math.max(0, Math.floor(r * (1 - factor)));
+                    g = Math.max(0, Math.floor(g * (1 - factor)));
+                    b = Math.max(0, Math.floor(b * (1 - factor)));
+                    return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+                }
+            }
+
+            // ==================== NPC鱼类 ====================
+            class NPCFish {
+                constructor(x, y, radius, speed, direction, color) {
+                    this.x = x;
+                    this.y = y;
+                    this.radius = radius;
+                    this.speed = speed;
+                    this.direction = direction;
+                    this.color = color;
+                    this.alive = true;
+                    this.wobble = Math.random() * Math.PI * 2;
+                    this.wobbleSpeed = 0.5 + Math.random() * 2;
+                    this.wobbleAmp = 0.3 + Math.random() * 1.5;
+                }
+
+                update(dt) {
+                    this.x += this.speed * this.direction * dt;
+                    this.wobble += this.wobbleSpeed * dt;
+                    this.y += Math.sin(this.wobble) * this.wobbleAmp * dt * 20;
+                    this.y = Math.max(this.radius + 5, Math.min(GAME_HEIGHT - this.radius - 5, this.y));
+                }
+
+                isOffScreen() {
+                    const margin = this.radius * 3;
+                    return this.x < -margin || this.x > GAME_WIDTH + margin;
+                }
+
+                draw(ctx) {
+                    if (!this.alive) return;
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    const facingScale = this.direction === 1 ? 1 : -1;
+                    ctx.scale(facingScale, 1);
+                    const r = this.radius;
+                    const bodyLen = r * 2;
+
+                    const bodyGrad = ctx.createLinearGradient(-r, 0, r, 0);
+                    bodyGrad.addColorStop(0, this.darkenColorLocal(this.color, 0.2));
+                    bodyGrad.addColorStop(0.4, this.color);
+                    bodyGrad.addColorStop(1, this.lightenColorLocal(this.color, 0.3));
+                    ctx.fillStyle = bodyGrad;
+                    ctx.beginPath();
+                    ctx.ellipse(0, 0, bodyLen * 0.7, r * 0.75, 0, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.fillStyle = this.darkenColorLocal(this.color, 0.2);
+                    ctx.beginPath();
+                    ctx.moveTo(-bodyLen * 0.5, -r * 0.3);
+                    ctx.quadraticCurveTo(-bodyLen * 1.0, -r * 0.9, -bodyLen * 0.85, 0);
+                    ctx.quadraticCurveTo(-bodyLen * 1.0, r * 0.9, -bodyLen * 0.5, r * 0.3);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = this.darkenColorLocal(this.color, 0.15);
+                    ctx.beginPath();
+                    ctx.moveTo(-bodyLen * 0.15, -r * 0.55);
+                    ctx.quadraticCurveTo(bodyLen * 0.1, -r * 1.3, bodyLen * 0.35, -r * 0.4);
+                    ctx.closePath();
+                    ctx.fill();
+
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(bodyLen * 0.35, -r * 0.1, r * 0.22, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#111';
+                    ctx.beginPath();
+                    ctx.arc(bodyLen * 0.4, -r * 0.08, r * 0.12, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#fff';
+                    ctx.beginPath();
+                    ctx.arc(bodyLen * 0.43, -r * 0.14, r * 0.05, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+                    ctx.lineWidth = 0.5;
+                    for (let i = -2; i <= 2; i++) {
+                        for (let j = -1; j <= 1; j++) {
+                            const sx = i * r * 0.35;
+                            const sy = j * r * 0.35;
+                            if (Math.sqrt(sx * sx + sy * sy) < r * 0.65) {
+                                ctx.beginPath();
+                                ctx.arc(sx, sy, r * 0.18, 0, Math.PI * 1.5);
+                                ctx.stroke();
+                            }
+                        }
+                    }
+
+                    ctx.restore();
+
+                    if (r > 100) {
+                        ctx.fillStyle = 'rgba(255,255,255,0.9)';
+                        ctx.font = '16px "Microsoft YaHei", Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText(Math.floor(r) + '', this.x, this.y - r - 8);
+                    }
+                }
+
+                lightenColorLocal(hex, factor) {
+                    let r, g, b;
+                    if (hex.startsWith('#')) {
+                        const num = parseInt(hex.slice(1), 16);
+                        r = (num >> 16) & 0xff;
+                        g = (num >> 8) & 0xff;
+                        b = num & 0xff;
+                    } else return hex;
+                    r = Math.min(255, Math.floor(r + (255 - r) * factor));
+                    g = Math.min(255, Math.floor(g + (255 - g) * factor));
+                    b = Math.min(255, Math.floor(b + (255 - b) * factor));
+                    return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+                }
+
+                darkenColorLocal(hex, factor) {
+                    let r, g, b;
+                    if (hex.startsWith('#')) {
+                        const num = parseInt(hex.slice(1), 16);
+                        r = (num >> 16) & 0xff;
+                        g = (num >> 8) & 0xff;
+                        b = num & 0xff;
+                    } else return hex;
+                    r = Math.max(0, Math.floor(r * (1 - factor)));
+                    g = Math.max(0, Math.floor(g * (1 - factor)));
+                    b = Math.max(0, Math.floor(b * (1 - factor)));
+                    return '#' + ((r << 16) | (g << 8) | b).toString(16).padStart(6, '0');
+                }
+            }
+            // ==================== 鱼雷类 ====================
+            class Torpedo {
+                constructor(x, y, speed) {
+                    this.x = x;
+                    this.y = y;
+                    this.width = 15;
+                    this.height = 40;
+                    this.speed = speed;
+                    this.alive = true;
+                }
+
+                update(dt) {
+                    this.y += this.speed * dt;
+                    // 如果掉出屏幕下方，销毁
+                    if (this.y > GAME_HEIGHT + 50) this.alive = false;
+                }
+
+                draw(ctx) {
+                    ctx.save();
+                    ctx.translate(this.x, this.y);
+                    
+                    // 绘制鱼雷主体 (黑色梭形)
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    // 身体
+                    ctx.roundRect(-this.width/2, -this.height/2, this.width, this.height, 8);
+                    ctx.fill();
+                    
+                    // 头部红色闪光灯
+                    ctx.fillStyle = (Math.floor(performance.now() / 200) % 2 === 0) ? '#ff0000' : '#660000';
+                    ctx.beginPath();
+                    ctx.arc(0, this.height/2 - 5, 4, 0, Math.PI * 2);
+                    ctx.fill();
+
+                    // 尾部小螺旋桨/鳍
+                    ctx.strokeStyle = '#333';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(-this.width, -this.height/2);
+                    ctx.lineTo(this.width, -this.height/2);
+                    ctx.stroke();
+
+                    ctx.restore();
+                }
+            }
+
+            // ==================== 气泡粒子 ====================
+            class Bubble {
+                constructor() {
+                    this.reset();
+                    this.y = Math.random() * GAME_HEIGHT;
+                }
+                reset() {
+                    this.x = Math.random() * GAME_WIDTH;
+                    this.y = GAME_HEIGHT + 20;
+                    this.radius = 2 + Math.random() * 6;
+                    this.speed = 30 + Math.random() * 80;
+                    this.wobble = Math.random() * Math.PI * 2;
+                    this.wobbleSpeed = 0.5 + Math.random() * 2;
+                    this.opacity = 0.2 + Math.random() * 0.5;
+                }
+                update(dt) {
+                    this.y -= this.speed * dt;
+                    this.wobble += this.wobbleSpeed * dt;
+                    this.x += Math.sin(this.wobble) * 15 * dt;
+                    if (this.y < -20) this.reset();
+                }
+                draw(ctx) {
+                    ctx.fillStyle = `rgba(200,230,255,${this.opacity})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = `rgba(255,255,255,${this.opacity*0.7})`;
+                    ctx.beginPath();
+                    ctx.arc(this.x - this.radius * 0.3, this.y - this.radius * 0.3, this.radius * 0.35, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // ==================== 游戏变量 ====================
+            let torpedoes = [];
+            let torpedoSpawnTimer = 0;
+            const torpedoSpawnInterval = 1000; // 每6秒左右落下一个鱼雷
+            let player1 = null;
+            let player2 = null;
+            let npcFishes = [];
+            let bubbles = [];
+            let particles = [];
+            let npcSpawnTimer = 0;
+            let npcSpawnInterval = 1.2;
+            let maxNpcFish = 22;
+            let gameOverShown = false;
+            let lastTime = 0;
+
+            // 菜单选项
+            let menuP1Color = '#4488ff';
+            let menuP2Color = '#ff6644';
+            let menuLives = 3;
+            let menuColorSelectFor = 'p1';
+            const presetColors = [
+                '#4488ff', '#ff6644', '#44dd44', '#ffaa00', '#ff44aa',
+                '#44dddd', '#aa66ff', '#ff8844', '#88dd44', '#ff4488',
+                '#3399cc', '#cc6633', '#66bb33', '#ee9922', '#cc44aa',
+            ];
+
+            // 存储菜单按钮区域，用于点击检测
+            let menuButtons = {
+                p1Colors: [], // 每个颜色的 {x, y, r}
+                p2Colors: [],
+                lives: [], // {x, y, w, h, value}
+                start: null, // {x, y, w, h}
+            };
+
+            // ==================== 背景绘制 ====================
+            let bgCanvas = null;
+            let bgCtx = null;
+
+            function createBackground() {
+                bgCanvas = document.createElement('canvas');
+                bgCanvas.width = GAME_WIDTH;
+                bgCanvas.height = GAME_HEIGHT;
+                bgCtx = bgCanvas.getContext('2d');
+
+                const waterGrad = bgCtx.createLinearGradient(0, 0, 0, GAME_HEIGHT);
+                waterGrad.addColorStop(0, '#001a3a');
+                waterGrad.addColorStop(0.3, '#002850');
+                waterGrad.addColorStop(0.55, '#003a60');
+                waterGrad.addColorStop(0.7, '#004070');
+                waterGrad.addColorStop(1, '#001a30');
+                bgCtx.fillStyle = waterGrad;
+                bgCtx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+                for (let i = 0; i < 5; i++) {
+                    const lx = GAME_WIDTH * (0.1 + i * 0.2);
+                    const lightGrad = bgCtx.createLinearGradient(lx, 0, lx + 60, GAME_HEIGHT * 0.6);
+                    lightGrad.addColorStop(0, 'rgba(180,210,255,0.12)');
+                    lightGrad.addColorStop(0.5, 'rgba(150,190,240,0.04)');
+                    lightGrad.addColorStop(1, 'rgba(100,150,200,0)');
+                    bgCtx.fillStyle = lightGrad;
+                    bgCtx.beginPath();
+                    bgCtx.moveTo(lx - 15, 0);
+                    bgCtx.lineTo(lx + 25, GAME_HEIGHT * 0.55);
+                    bgCtx.lineTo(lx + 55, GAME_HEIGHT * 0.55);
+                    bgCtx.lineTo(lx + 15, 0);
+                    bgCtx.closePath();
+                    bgCtx.fill();
+                }
+
+                const sandGrad = bgCtx.createLinearGradient(0, GAME_HEIGHT - 55, 0, GAME_HEIGHT);
+                sandGrad.addColorStop(0, '#c2a060');
+                sandGrad.addColorStop(0.3, '#b89450');
+                sandGrad.addColorStop(0.7, '#8a6a30');
+                sandGrad.addColorStop(1, '#5a4020');
+                bgCtx.fillStyle = sandGrad;
+                bgCtx.beginPath();
+                bgCtx.moveTo(0, GAME_HEIGHT - 40);
+                for (let x = 0; x <= GAME_WIDTH; x += 30) {
+                    bgCtx.lineTo(x, GAME_HEIGHT - 40 + Math.sin(x * 0.02) * 12 + Math.sin(x * 0.05) * 5);
+                }
+                bgCtx.lineTo(GAME_WIDTH, GAME_HEIGHT);
+                bgCtx.lineTo(0, GAME_HEIGHT);
+                bgCtx.closePath();
+                bgCtx.fill();
+
+                for (let i = 0; i < 14; i++) {
+                    const sx = i * 75 + Math.random() * 40;
+                    const sh = 40 + Math.random() * 100;
+                    const swayBase = Math.random() * Math.PI * 2;
+                    bgCtx.strokeStyle = `rgba(${30+Math.random()*40},${120+Math.random()*60},${40+Math.random()*50},0.7)`;
+                    bgCtx.lineWidth = 3 + Math.random() * 5;
+                    bgCtx.beginPath();
+                    bgCtx.moveTo(sx, GAME_HEIGHT - 38);
+                    const segments = 6;
+                    for (let s = 1; s <= segments; s++) {
+                        const py = GAME_HEIGHT - 38 - (sh / segments) * s;
+                        const px = sx + Math.sin(swayBase + s * 0.6) * (8 + s * 3);
+                        bgCtx.lineTo(px, py);
+                    }
+                    bgCtx.stroke();
+                }
+
+                for (let i = 0; i < 5; i++) {
+                    const cx = 80 + i * 200 + Math.random() * 60;
+                    const cy = GAME_HEIGHT - 45 + Math.random() * 15;
+                    bgCtx.fillStyle = `rgba(${220+Math.random()*35},${80+Math.random()*60},${50+Math.random()*50},0.75)`;
+                    for (let b = 0; b < 5; b++) {
+                        const angle = -Math.PI / 2 + (b - 2) * 0.35;
+                        const branchLen = 25 + Math.random() * 30;
+                        bgCtx.beginPath();
+                        bgCtx.moveTo(cx, cy);
+                        const ex = cx + Math.cos(angle) * branchLen;
+                        const ey = cy + Math.sin(angle) * branchLen;
+                        bgCtx.quadraticCurveTo(cx + Math.cos(angle) * branchLen * 0.6, cy - branchLen * 0.3, ex, ey);
+                        bgCtx.lineWidth = 5 + Math.random() * 4;
+                        bgCtx.strokeStyle = bgCtx.fillStyle;
+                        bgCtx.stroke();
+                        bgCtx.beginPath();
+                        bgCtx.arc(ex, ey, 3 + Math.random() * 4, 0, Math.PI * 2);
+                        bgCtx.fill();
+                    }
+                }
+                bgCtx.lineWidth = 1;
+            }
+            createBackground();
+
+            // ==================== 粒子效果 ====================
+            function spawnParticles(x, y, color, count) {
+                for (let i = 0; i < count; i++) {
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = 60 + Math.random() * 200;
+                    particles.push({
+                        x: x,
+                        y: y,
+                        vx: Math.cos(angle) * speed,
+                        vy: Math.sin(angle) * speed,
+                        life: 0.4 + Math.random() * 0.6,
+                        maxLife: 0.4 + Math.random() * 0.6,
+                        radius: 2 + Math.random() * 4,
+                        color: color,
+                    });
+                }
+            }
+
+            function updateParticles(dt) {
+                for (let i = particles.length - 1; i >= 0; i--) {
+                    const p = particles[i];
+                    p.x += p.vx * dt;
+                    p.y += p.vy * dt;
+                    p.life -= dt;
+                    if (p.life <= 0) particles.splice(i, 1);
+                }
+            }
+
+            function drawParticles(ctx) {
+                for (const p of particles) {
+                    const alpha = p.life / p.maxLife;
+                    ctx.fillStyle = p.color.replace(')', `,${alpha})`).replace('rgb', 'rgba');
+                    if (p.color.startsWith('#')) {
+                        const hexAlpha = Math.floor(alpha * 255).toString(16).padStart(2, '0');
+                        ctx.fillStyle = p.color + hexAlpha;
+                    }
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius * alpha, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            // ==================== 初始化游戏 ====================
+            function initGame() {
+                player1 = new PlayerFish(GAME_WIDTH * 0.25, GAME_HEIGHT * 0.5, menuP1Color, 'arrow', 1);
+                player2 = new PlayerFish(GAME_WIDTH * 0.75, GAME_HEIGHT * 0.5, menuP2Color, 'round', 2);
+                player1.lives = menuLives;
+                player1.maxLives = menuLives;
+                player2.lives = menuLives;
+                player2.maxLives = menuLives;
+                player1.radius = 20;
+                player1.baseRadius = 20;
+                player2.radius = 20;
+                player2.baseRadius = 20;
+                player1.score = 0;
+                player2.score = 0;
+                player1.alive = true;
+                player2.alive = true;
+                player1.invincibleUntil = 0;
+                player2.invincibleUntil = 0;
+                player1.eatCount = 0;
+                player2.eatCount = 0;
+                player1.speed = 420;
+                player2.speed = 420;
+                npcFishes = [];
+                particles = [];
+                npcSpawnTimer = 0;
+                gameTimer = 0;
+                gameOverShown = false;
+
+                for (let i = 0; i < 10; i++) {
+                    spawnNPCFish();
+                }
+
+                if (bubbles.length === 0) {
+                    for (let i = 0; i < 25; i++) {
+                        const b = new Bubble();
+                        b.y = Math.random() * GAME_HEIGHT;
+                        bubbles.push(b);
+                    }
+                }
+                torpedoes = [];
+                torpedoSpawnTimer = 0;
+            }
+
+            function spawnNPCFish() {
+                const fromLeft = Math.random() < 0.5;
+                const x = fromLeft ? -40 : GAME_WIDTH + 40;
+                const direction = fromLeft ? 1 : -1;
+
+                // 1. 获取当前存活玩家中的最小半径
+                let minPlayerRadius = 20; // 默认初始值
+                if (player1 && player1.alive && player2 && player2.alive) {
+                    minPlayerRadius = Math.min(player1.radius, player2.radius);
+                } else if (player1 && player1.alive) {
+                    minPlayerRadius = player1.radius;
+                } else if (player2 && player2.alive) {
+                    minPlayerRadius = player2.radius;
+                }
+                // 调整 NPC 尺寸分布
+                // 玩家初始 20。让 60% 的鱼比玩家小（7-20），40% 的鱼比玩家大（20-60）
+                // let radius;
+                // const rand = Math.random();
+                // if (rand < 0.2) {
+                //     radius = 8 + Math.random() * 12; // 小鱼 8-20
+                // } else {
+                //     radius = 20 + Math.random() * 40; // 大鱼 20-60
+                // }
+                let radius;
+                const rand = Math.random();
+
+                // 设定分布逻辑：
+                // 70% 的几率生成比最小玩家小的“食物”
+                // 30% 的几率生成比最小玩家大的“威胁”
+                if (rand < 0.8) {
+                    // 生成范围：最小玩家半径的 40% 到 95% 之间
+                    // 且保证不小于最小物理尺寸 8，避免鱼小到看不见
+                    radius = Math.max(8, minPlayerRadius * (0.4 + Math.random() * 0.55));
+                } else {
+                    // 生成范围：最小玩家半径的 110% 到 250% 之间
+                    radius = minPlayerRadius * (1.1 + Math.random() * 0.8);
+                }
+
+                // 限制 NPC 的最大半径，防止后期出现遮天蔽日的巨型鱼（建议上限 200-300 左右）
+                radius = Math.min(radius, 150);
+
+                const speed = 60 + Math.random() * 200;
+                // const fromLeft = Math.random() < 0.5;
+                // const x = fromLeft ? -40 : GAME_WIDTH + 40;
+                // const direction = fromLeft ? 1 : -1;
+                // const radius = 7 + Math.random() * 48;
+                // const speed = 60 + Math.random() * 250;
+                const y = 60 + Math.random() * (GAME_HEIGHT - 120);
+                const hue = Math.floor(Math.random() * 360);
+                const sat = 50 + Math.floor(Math.random() * 40);
+                const light = 35 + Math.floor(Math.random() * 35);
+                const color = `hsl(${hue},${sat}%,${light}%)`;
+                const colorHex = hslToHex(hue, sat, light);
+                const fish = new NPCFish(x, y, radius, speed, direction, colorHex);
+                npcFishes.push(fish);
+            }
+
+            function hslToHex(h, s, l) {
+                s /= 100;
+                l /= 100;
+                const a = s * Math.min(l, 1 - l);
+                const f = n => {
+                    const k = (n + h / 30) % 12;
+                    const color = l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1);
+                    return Math.round(255 * color).toString(16).padStart(2, '0');
+                };
+                return `#${f(0)}${f(8)}${f(4)}`;
+            }
+
+            // ==================== 碰撞检测 ====================
+            function checkCollision(player, npcFish) {
+                if (!player.alive || !npcFish.alive) return null;
+                const dx = player.x - npcFish.x;
+                const dy = player.y - npcFish.y;
+                const dist = Math.sqrt(dx * dx + dy * dy);
+                const collisionDist = player.radius + npcFish.radius;
+                if (dist < collisionDist) {
+                    if (player.radius >= npcFish.radius) {
+                        return 'eat';
+                    } else {
+                        return 'hurt';
+                    }
+                }
+                return null;
+            }
+
+            // ==================== 游戏循环 ====================
+            function update(dt) {
+                if (gameState !== STATE.PLAYING) return;
+                if (dt > 0.2) dt = 0.2;
+
+                gameTimer += dt;
+
+                if (gameTimer >= gameDuration && !gameOverShown) {
+                    gameOverShown = true;
+                    gameState = STATE.GAME_OVER;
+                    stopBackgroundMusic();
+                    return;
+                }
+                if (!player1.alive && !player2.alive && !gameOverShown) {
+                    gameOverShown = true;
+                    gameState = STATE.GAME_OVER;
+                    stopBackgroundMusic();
+                    return;
+                }
+
+                player1.update(dt, keys);
+                player2.update(dt, keys);
+
+                npcSpawnTimer += dt;
+                const activeNPCs = npcFishes.filter(f => f.alive).length;
+                if (npcSpawnTimer >= npcSpawnInterval && activeNPCs < maxNpcFish) {
+                    npcSpawnTimer = 0;
+                    spawnNPCFish();
+                    npcSpawnInterval = Math.max(0.4, 1.2 - gameTimer / 600);
+                }
+
+                for (const fish of npcFishes) {
+                    if (fish.alive) fish.update(dt);
+                }
+
+                for (let i = npcFishes.length - 1; i >= 0; i--) {
+                    if (!npcFishes[i].alive || npcFishes[i].isOffScreen()) {
+                        npcFishes.splice(i, 1);
+                    }
+                }
+
+                // P1碰撞
+                for (let i = npcFishes.length - 1; i >= 0; i--) {
+                    const fish = npcFishes[i];
+                    if (!fish.alive) continue;
+                    const result = checkCollision(player1, fish);
+                    if (result === 'eat') {
+                        player1.eatFish(fish);
+                        spawnParticles(fish.x, fish.y, fish.color, 12);
+                        fish.alive = false;
+                        npcFishes.splice(i, 1);
+                    } else if (result === 'hurt') {
+                        if (!player1.isInvincible()) {
+                            player1.takeDamage();
+                            spawnParticles(player1.x, player1.y*0.25, '#ff4444', 20);
+                            if (!player1.alive && !player2.alive && !gameOverShown) {
+                                gameOverShown = true;
+                                gameState = STATE.GAME_OVER;
+                                stopBackgroundMusic();
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                // P2碰撞
+                for (let i = npcFishes.length - 1; i >= 0; i--) {
+                    const fish = npcFishes[i];
+                    if (!fish.alive) continue;
+                    const result = checkCollision(player2, fish);
+                    if (result === 'eat') {
+                        player2.eatFish(fish);
+                        spawnParticles(fish.x, fish.y, fish.color, 12);
+                        fish.alive = false;
+                        npcFishes.splice(i, 1);
+                    } else if (result === 'hurt') {
+                        if (!player2.isInvincible()) {
+                            player2.takeDamage();
+                            spawnParticles(player2.x, player2.y, '#ff4444', 20);
+                            if (!player1.alive && !player2.alive && !gameOverShown) {
+                                gameOverShown = true;
+                                gameState = STATE.GAME_OVER;
+                                stopBackgroundMusic();
+                                return;
+                            }
+                        }
+                    }
+                }
+
+                for (const bubble of bubbles) {
+                    bubble.update(dt);
+                }
+
+                updateParticles(dt);
+            }
+
+            function drawBackgroundLayer() {
+                if (bgCanvas) {
+                    ctx.drawImage(bgCanvas, 0, 0);
+                }
+            }
+
+            function drawUI() {
+                const uiY = 8;
+                const uiH = 44;
+                ctx.fillStyle = 'rgba(0,0,0,0.55)';
+                ctx.fillRect(0, uiY, GAME_WIDTH, uiH);
+                ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(0, uiY + uiH);
+                ctx.lineTo(GAME_WIDTH, uiY + uiH);
+                ctx.stroke();
+
+                const p1X = 30;
+                const p1Y = uiY + uiH / 2 + 5;
+                ctx.fillStyle = player1.color;
+                ctx.beginPath();
+                ctx.arc(p1X, p1Y - 3, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 15px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(`P1  分数:${player1.score}`, p1X + 18, p1Y);
+                for (let i = 0; i < player1.maxLives; i++) {
+                    const hx = p1X + 170 + i * 22;
+                    if (i < player1.lives) {
+                        ctx.fillStyle = '#ff3355';
+                        drawHeart(ctx, hx, p1Y - 2, 8);
+                    } else {
+                        ctx.fillStyle = '#555';
+                        drawHeart(ctx, hx, p1Y - 2, 8);
+                    }
+                }
+                if (!player1.alive) {
+                    ctx.fillStyle = '#ff4444';
+                    ctx.font = 'bold 13px "Microsoft YaHei", Arial';
+                    ctx.fillText('(已死亡)', p1X + 18, p1Y + 16);
+                }
+                if (player1.isInvincible() && player1.alive) {
+                    ctx.fillStyle = '#ffdd44';
+                    ctx.font = '11px "Microsoft YaHei", Arial';
+                    const remaining = Math.max(0, (player1.invincibleUntil - performance.now() / 1000)).toFixed(1);
+                    ctx.fillText(`无敌 ${remaining}s`, p1X + 18, p1Y + 16);
+                }
+
+                const p2X = GAME_WIDTH - 260;
+                const p2Y = uiY + uiH / 2 + 5;
+                ctx.fillStyle = player2.color;
+                ctx.beginPath();
+                ctx.arc(p2X, p2Y - 3, 10, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 15px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'left';
+                ctx.fillText(`P2  分数:${player2.score}`, p2X + 18, p2Y);
+                for (let i = 0; i < player2.maxLives; i++) {
+                    const hx = p2X + 170 + i * 22;
+                    if (i < player2.lives) {
+                        ctx.fillStyle = '#ff3355';
+                        drawHeart(ctx, hx, p2Y - 2, 8);
+                    } else {
+                        ctx.fillStyle = '#555';
+                        drawHeart(ctx, hx, p2Y - 2, 8);
+                    }
+                }
+                if (!player2.alive) {
+                    ctx.fillStyle = '#ff4444';
+                    ctx.font = 'bold 13px "Microsoft YaHei", Arial';
+                    ctx.fillText('(已死亡)', p2X + 18, p2Y + 16);
+                }
+                if (player2.isInvincible() && player2.alive) {
+                    ctx.fillStyle = '#ffdd44';
+                    ctx.font = '11px "Microsoft YaHei", Arial';
+                    const remaining = Math.max(0, (player2.invincibleUntil - performance.now() / 1000)).toFixed(1);
+                    ctx.fillText(`无敌 ${remaining}s`, p2X + 18, p2Y + 16);
+                }
+
+                const remainingTime = Math.max(0, gameDuration - gameTimer);
+                const mins = Math.floor(remainingTime / 60);
+                const secs = Math.floor(remainingTime % 60);
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 16px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`⏱ ${mins}:${secs.toString().padStart(2, '0')}`, GAME_WIDTH / 2, uiY + uiH / 2 + 6);
+
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.font = '11px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('P1: WASD移动 | P2: 方向键移动 | 吃≤自己的鱼 | 躲避>自己的鱼', GAME_WIDTH / 2, GAME_HEIGHT - 8);
+            }
+
+            function drawHeart(ctx, x, y, size) {
+                ctx.beginPath();
+                const topCurveHeight = size * 0.3;
+                ctx.moveTo(x, y + topCurveHeight);
+                ctx.bezierCurveTo(x, y, x - size, y, x - size, y + topCurveHeight);
+                ctx.bezierCurveTo(x - size, y + size * 0.8, x, y + size * 1.2, x, y + size);
+                ctx.bezierCurveTo(x, y + size * 1.2, x + size, y + size * 0.8, x + size, y + topCurveHeight);
+                ctx.bezierCurveTo(x + size, y, x, y, x, y + topCurveHeight);
+                ctx.fill();
+            }
+
+            function drawMenuBackground() {
+                drawBackgroundLayer();
+                ctx.fillStyle = 'rgba(0,0,0,0.65)';
+                ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+            }
+
+            function drawMenu() {
+                drawMenuBackground();
+                // 重置菜单按钮数据
+                menuButtons = { p1Colors: [], p2Colors: [], lives: [], start: null };
+
+                const cx = GAME_WIDTH / 2;
+                let cy = 70;
+
+                // 标题
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 48px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('🐟 大鱼吃小鱼 🐟', cx, cy);
+                ctx.fillStyle = '#aaddff';
+                ctx.font = 'bold 16px "Microsoft YaHei", Arial';
+                ctx.fillText('双人对战', cx, cy + 35);
+                cy += 75;
+
+                ctx.strokeStyle = 'rgba(255,255,255,0.3)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(cx - 250, cy);
+                ctx.lineTo(cx + 250, cy);
+                ctx.stroke();
+                cy += 25;
+
+                // P1颜色
+                ctx.fillStyle = '#88bbff';
+                ctx.font = 'bold 20px "Microsoft YaHei", Arial';
+                ctx.fillText('🎮 P1 颜色选择 (WASD操作)', cx, cy);
+                cy += 30;
+                drawColorPicker(cx, cy, menuP1Color, 'p1');
+                cy += 55;
+
+                // P2颜色
+                ctx.fillStyle = '#ffaa88';
+                ctx.font = 'bold 20px "Microsoft YaHei", Arial';
+                ctx.fillText('🎮 P2 颜色选择 (方向键操作)', cx, cy);
+                cy += 30;
+                drawColorPicker(cx, cy, menuP2Color, 'p2');
+                cy += 55;
+
+                // 命数选择
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 20px "Microsoft YaHei", Arial';
+                ctx.fillText('❤️ 生命数量', cx, cy);
+                cy += 35;
+                drawLivesSelector(cx, cy);
+                cy += 55;
+
+                // 开始按钮
+                drawStartButton(cx, cy);
+
+                // 预览鱼
+                drawMenuPreviewFish();
+
+                ctx.fillStyle = 'rgba(255,255,255,0.5)';
+                ctx.font = '12px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('点击颜色块选择颜色 | 点击命数按钮选择生命数量 | 点击开始游戏', cx, GAME_HEIGHT - 15);
+            }
+
+            function drawColorPicker(cx, cy, selectedColor, player) {
+                const totalWidth = presetColors.length * 38;
+                const startX = cx - totalWidth / 2;
+                const isSelected = menuColorSelectFor === player;
+
+                if (isSelected) {
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([6, 3]);
+                    ctx.beginPath();
+                    ctx.roundRect(startX - 8, cy - 22, totalWidth + 16, 44, 10);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+                    ctx.lineWidth = 1;
+                }
+
+                // 存储颜色按钮区域
+                const colorsArray = player === 'p1' ? menuButtons.p1Colors : menuButtons.p2Colors;
+                colorsArray.length = 0;
+
+                for (let i = 0; i < presetColors.length; i++) {
+                    const px = startX + i * 38 + 19;
+                    const py = cy;
+                    const r = 15;
+                    ctx.fillStyle = presetColors[i];
+                    ctx.beginPath();
+                    ctx.arc(px, py, r, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.strokeStyle = 'rgba(255,255,255,0.6)';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    ctx.lineWidth = 1;
+
+                    colorsArray.push({ x: px, y: py, r: r, color: presetColors[i] });
+
+                    if (presetColors[i] === selectedColor) {
+                        ctx.strokeStyle = '#ffffff';
+                        ctx.lineWidth = 3;
+                        ctx.beginPath();
+                        ctx.arc(px, py, r + 4, 0, Math.PI * 2);
+                        ctx.stroke();
+                        ctx.lineWidth = 1;
+                        ctx.fillStyle = '#fff';
+                        ctx.font = 'bold 14px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.fillText('✓', px, py + 5);
+                    }
+                }
+
+                const displayX = cx;
+                const displayY = cy + 30;
+                ctx.fillStyle = 'rgba(255,255,255,0.8)';
+                ctx.font = '11px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText(`当前: ${selectedColor}`, displayX, displayY);
+                ctx.fillStyle = selectedColor;
+                ctx.beginPath();
+                ctx.arc(displayX + 70, displayY - 4, 7, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            function drawLivesSelector(cx, cy) {
+                const options = [1, 3, 5];
+                const btnW = 80;
+                const btnH = 44;
+                const gap = 20;
+                const totalW = options.length * btnW + (options.length - 1) * gap;
+                const startX = cx - totalW / 2;
+
+                menuButtons.lives = [];
+
+                for (let i = 0; i < options.length; i++) {
+                    const bx = startX + i * (btnW + gap);
+                    const by = cy - btnH / 2;
+                    const isSelected = menuLives === options[i];
+
+                    const btnGrad = ctx.createLinearGradient(bx, by, bx, by + btnH);
+                    if (isSelected) {
+                        btnGrad.addColorStop(0, '#ff5555');
+                        btnGrad.addColorStop(1, '#cc2222');
+                    } else {
+                        btnGrad.addColorStop(0, '#444');
+                        btnGrad.addColorStop(1, '#222');
+                    }
+                    ctx.fillStyle = btnGrad;
+                    ctx.beginPath();
+                    ctx.roundRect(bx, by, btnW, btnH, 10);
+                    ctx.fill();
+                    ctx.strokeStyle = isSelected ? '#fff' : '#666';
+                    ctx.lineWidth = isSelected ? 3 : 1;
+                    ctx.stroke();
+                    ctx.lineWidth = 1;
+
+                    ctx.fillStyle = '#fff';
+                    ctx.font = 'bold 18px "Microsoft YaHei", Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${options[i]} 条命`, bx + btnW / 2, by + btnH / 2 + 6);
+
+                    for (let h = 0; h < options[i]; h++) {
+                        const hx = bx + btnW / 2 - (options[i] - 1) * 9 + h * 18;
+                        ctx.fillStyle = isSelected ? '#ffdddd' : '#ff6666';
+                        drawHeart(ctx, hx, by - 14, 6);
+                    }
+
+                    menuButtons.lives.push({ x: bx, y: by, w: btnW, h: btnH, value: options[i] });
+                }
+            }
+
+            function drawStartButton(cx, cy) {
+                const btnW = 220;
+                const btnH = 55;
+                const bx = cx - btnW / 2;
+                const by = cy - btnH / 2;
+
+                const glowGrad = ctx.createRadialGradient(cx, cy, btnW * 0.2, cx, cy, btnW * 0.8);
+                glowGrad.addColorStop(0, 'rgba(100,200,255,0.4)');
+                glowGrad.addColorStop(1, 'rgba(0,100,200,0)');
+                ctx.fillStyle = glowGrad;
+                ctx.beginPath();
+                ctx.arc(cx, cy, btnW * 0.8, 0, Math.PI * 2);
+                ctx.fill();
+
+                const btnGrad = ctx.createLinearGradient(bx, by, bx, by + btnH);
+                btnGrad.addColorStop(0, '#44aa44');
+                btnGrad.addColorStop(0.5, '#55cc55');
+                btnGrad.addColorStop(1, '#338833');
+                ctx.fillStyle = btnGrad;
+                ctx.beginPath();
+                ctx.roundRect(bx, by, btnW, btnH, 14);
+                ctx.fill();
+                ctx.strokeStyle = '#88ff88';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+                ctx.lineWidth = 1;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 24px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('🎮 开始游戏', cx, cy + 9);
+
+                menuButtons.start = { x: bx, y: by, w: btnW, h: btnH };
+            }
+
+            function drawMenuPreviewFish() {
+                const p1x = 120;
+                const p1y = GAME_HEIGHT - 90;
+                ctx.save();
+                ctx.translate(p1x, p1y);
+                const tempP1 = new PlayerFish(0, 0, menuP1Color, 'arrow', 1);
+                tempP1.radius = 22;
+                tempP1.facingRight = true;
+                tempP1.visible = true;
+                tempP1.invincibleUntil = 0;
+                tempP1.draw(ctx);
+                ctx.restore();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 13px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('P1 梭形鱼', p1x, p1y + 35);
+
+                const p2x = GAME_WIDTH - 120;
+                const p2y = GAME_HEIGHT - 90;
+                ctx.save();
+                ctx.translate(p2x, p2y);
+                const tempP2 = new PlayerFish(0, 0, menuP2Color, 'round', 2);
+                tempP2.radius = 22;
+                tempP2.facingRight = true;
+                tempP2.visible = true;
+                tempP2.invincibleUntil = 0;
+                tempP2.draw(ctx);
+                ctx.restore();
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 13px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('P2 河豚鱼', p2x, p2y + 35);
+
+                ctx.fillStyle = '#ffdd44';
+                ctx.font = 'bold 28px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('⚔️ VS ⚔️', GAME_WIDTH / 2, p1y + 5);
+            }
+
+            function drawGameOverScreen() {
+                drawBackgroundLayer();
+                ctx.fillStyle = 'rgba(0,0,0,0.7)';
+                ctx.fillRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+                const cx = GAME_WIDTH / 2;
+                let cy = 130;
+
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 42px "Microsoft YaHei", Arial';
+                ctx.textAlign = 'center';
+                ctx.fillText('🏆 游戏结束 🏆', cx, cy);
+                cy += 55;
+
+                let resultText = '';
+                let resultColor = '#fff';
+                const p1Alive = player1.alive;
+                const p2Alive = player2.alive;
+                const p1Score = player1.score;
+                const p2Score = player2.score;
+
+                if (!p1Alive && !p2Alive) {
+                    if (p1Score > p2Score) {
+                        resultText = 'P1 获胜！(得分更高)';
+                        resultColor = player1.color;
+                    } else if (p2Score > p1Score) {
+                        resultText = 'P2 获胜！(得分更高)';
+                        resultColor = player2.color;
+                    } else {
+                        resultText = '平局！';
+                        resultColor = '#ffdd44';
+                    }
+                } else if (!p1Alive) {
+                    resultText = 'P2 获胜！';
+                    resultColor = player2.color;
+                } else if (!p2Alive) {
+                    resultText = 'P1 获胜！';
+                    resultColor = player1.color;
+                } else {
+                    if (p1Score > p2Score) {
+                        resultText = 'P1 获胜！(得分更高)';
+                        resultColor = player1.color;
+                    } else if (p2Score > p1Score) {
+                        resultText = 'P2 获胜！(得分更高)';
+                        resultColor = player2.color;
+                    } else {
+                        resultText = '平局！';
+                        resultColor = '#ffdd44';
+                    }
+                }
+
+                ctx.fillStyle = resultColor;
+                ctx.font = 'bold 36px "Microsoft YaHei", Arial';
+                ctx.fillText(resultText, cx, cy);
+                cy += 55;
+
+                ctx.fillStyle = '#fff';
+                ctx.font = '20px "Microsoft YaHei", Arial';
+                ctx.fillText(
+                    `P1 得分: ${p1Score}   |   最大体型: ${Math.floor(player1.radius)}   |   状态: ${p1Alive?'存活':'死亡'}`,
+                    cx, cy);
+                cy += 35;
+                ctx.fillText(
+                    `P2 得分: ${p2Score}   |   最大体型: ${Math.floor(player2.radius)}   |   状态: ${p2Alive?'存活':'死亡'}`,
+                    cx, cy);
+                cy += 35;
+                const mins = Math.floor(gameTimer / 60);
+                const secs = Math.floor(gameTimer % 60);
+                ctx.fillText(`游戏时长: ${mins}分${secs}秒`, cx, cy);
+                cy += 60;
+
+                const btnW = 200;
+                const btnH = 50;
+                const bx = cx - btnW / 2;
+                const by = cy - btnH / 2;
+                const btnGrad = ctx.createLinearGradient(bx, by, bx, by + btnH);
+                btnGrad.addColorStop(0, '#4488ff');
+                btnGrad.addColorStop(1, '#2255cc');
+                ctx.fillStyle = btnGrad;
+                ctx.beginPath();
+                ctx.roundRect(bx, by, btnW, btnH, 12);
+                ctx.fill();
+                ctx.strokeStyle = '#88bbff';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                ctx.lineWidth = 1;
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 20px "Microsoft YaHei", Arial';
+                ctx.fillText('🔄 返回菜单', cx, cy + 7);
+
+                canvas._restartBtn = { x: bx, y: by, w: btnW, h: btnH };
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, GAME_WIDTH, GAME_HEIGHT);
+
+                // 根据状态设置光标样式
+                if (gameState === STATE.PLAYING) {
+                    canvas.style.cursor = 'none';
+                } else {
+                    canvas.style.cursor = 'default';
+                }
+
+                if (gameState === STATE.MENU) {
+                    drawMenu();
+                    return;
+                }
+                
+
+                drawBackgroundLayer();
+
+                for (const bubble of bubbles) {
+                    bubble.draw(ctx);
+                }
+
+                for (const fish of npcFishes) {
+                    if (fish.alive) fish.draw(ctx);
+                }
+
+                drawParticles(ctx);
+
+                if (player1) player1.draw(ctx);
+                if (player2) player2.draw(ctx);
+
+                if (gameState === STATE.PLAYING) {
+                    drawUI();
+                }
+
+                if (gameState === STATE.GAME_OVER) {
+                    drawGameOverScreen();
+                }
+                // ... 绘制NPC鱼之后 ...
+                for (const t of torpedoes) {
+                    t.draw(ctx);
+                }
+            }
+
+            function gameLoop(timestamp) {
+                if (!lastTime) lastTime = timestamp;
+                let dt = (timestamp - lastTime) / 1000;
+                if (dt <= 0) dt = 0.016;
+                if (dt > 0.2) dt = 0.2;
+                lastTime = timestamp;
+
+                update(dt);
+                draw();
+                requestAnimationFrame(gameLoop);
+            }
+
+            // ==================== 鱼雷爆炸 ====================
+            function triggerExplosion(x, y) {
+                // 产生大量黑色和火橙色粒子
+                spawnParticles(x, y, '#ff6600', 30);
+                spawnParticles(x, y, '#000000', 20);
+                spawnParticles(x, y, '#ffff00', 10);
+                
+                // 播放受伤害的声音
+                if (typeof playHurtSound === 'function') playHurtSound();
+            }
+
+            // ==================== 鼠标点击处理 ====================
+            function getCanvasPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = GAME_WIDTH / rect.width;
+                const scaleY = GAME_HEIGHT / rect.height;
+                return {
+                    x: (e.clientX - rect.left) * scaleX,
+                    y: (e.clientY - rect.top) * scaleY,
+                };
+            }
+
+            canvas.addEventListener('click', (e) => {
+                const pos = getCanvasPos(e);
+
+                if (gameState === STATE.MENU) {
+                    // 检查P1颜色
+                    for (const btn of menuButtons.p1Colors) {
+                        const dx = pos.x - btn.x;
+                        const dy = pos.y - btn.y;
+                        if (Math.sqrt(dx * dx + dy * dy) < btn.r + 4) {
+                            menuP1Color = btn.color;
+                            menuColorSelectFor = 'p1';
+                            return;
+                        }
+                    }
+                    // 检查P2颜色
+                    for (const btn of menuButtons.p2Colors) {
+                        const dx = pos.x - btn.x;
+                        const dy = pos.y - btn.y;
+                        if (Math.sqrt(dx * dx + dy * dy) < btn.r + 4) {
+                            menuP2Color = btn.color;
+                            menuColorSelectFor = 'p2';
+                            return;
+                        }
+                    }
+                    // 检查命数
+                    for (const btn of menuButtons.lives) {
+                        if (pos.x >= btn.x && pos.x <= btn.x + btn.w &&
+                            pos.y >= btn.y && pos.y <= btn.y + btn.h) {
+                            menuLives = btn.value;
+                            return;
+                        }
+                    }
+                    // 检查开始按钮
+                    const startBtn = menuButtons.start;
+                    if (startBtn && pos.x >= startBtn.x && pos.x <= startBtn.x + startBtn.w &&
+                        pos.y >= startBtn.y && pos.y <= startBtn.y + startBtn.h) {
+                        startGame();
+                        return;
+                    }
+                }
+
+                if (gameState === STATE.GAME_OVER) {
+                    const btn = canvas._restartBtn;
+                    if (btn && pos.x >= btn.x && pos.x <= btn.x + btn.w &&
+                        pos.y >= btn.y && pos.y <= btn.y + btn.h) {
+                        returnToMenu();
+                        return;
+                    }
+                }
+            });
+
+            function startGame() {
+                initAudio();
+                initGame();
+                gameState = STATE.PLAYING;
+                gameTimer = 0;
+                gameOverShown = false;
+                lastTime = performance.now();
+                stopBackgroundMusic();
+                playBackgroundMusic();
+            }
+
+            function returnToMenu() {
+                gameState = STATE.MENU;
+                gameOverShown = false;
+                stopBackgroundMusic();
+                player1 = null;
+                player2 = null;
+                npcFishes = [];
+                particles = [];
+                lastTime = performance.now();
+                canvas._restartBtn = null;
+            }
+
+            // ==================== 触摸支持 ====================
+            canvas.addEventListener('touchstart', (e) => {
+                if (e.touches.length === 1) {
+                    const touch = e.touches[0];
+                    const mouseEvent = new MouseEvent('click', {
+                        clientX: touch.clientX,
+                        clientY: touch.clientY,
+                    });
+                    canvas.dispatchEvent(mouseEvent);
+                }
+                e.preventDefault();
+            }, { passive: false });
+
+            // ==================== 启动 ====================
+            function init() {
+                createBackground();
+                for (let i = 0; i < 25; i++) {
+                    const b = new Bubble();
+                    b.y = Math.random() * GAME_HEIGHT;
+                    bubbles.push(b);
+                }
+                player1 = new PlayerFish(0, 0, menuP1Color, 'arrow', 1);
+                player2 = new PlayerFish(0, 0, menuP2Color, 'round', 2);
+                player1.radius = 20;
+                player2.radius = 20;
+                player1.alive = true;
+                player2.alive = true;
+                player1.invincibleUntil = 0;
+                player2.invincibleUntil = 0;
+                lastTime = performance.now();
+                requestAnimationFrame(gameLoop);
+            }
+
+            if (!ctx.roundRect) {
+                ctx.roundRect = function(x, y, w, h, r) {
+                    if (typeof r === 'number') r = { tl: r, tr: r, br: r, bl: r };
+                    ctx.beginPath();
+                    ctx.moveTo(x + r.tl, y);
+                    ctx.lineTo(x + w - r.tr, y);
+                    ctx.quadraticCurveTo(x + w, y, x + w, y + r.tr);
+                    ctx.lineTo(x + w, y + h - r.br);
+                    ctx.quadraticCurveTo(x + w, y + h, x + w - r.br, y + h);
+                    ctx.lineTo(x + r.bl, y + h);
+                    ctx.quadraticCurveTo(x, y + h, x, y + h - r.bl);
+                    ctx.lineTo(x, y + r.tl);
+                    ctx.quadraticCurveTo(x, y, x + r.tl, y);
+                    ctx.closePath();
+                };
+            }
+
+            init();
+            console.log('🐟 大鱼吃小鱼 - 双人对战版已就绪！');
+            console.log('P1: WASD移动 | P2: 方向键移动');
+            console.log('菜单中鼠标可见，可点击选择颜色和生命数量');
+        })();
+    </script>
+</body>
+</html>

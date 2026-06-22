@@ -3,439 +3,303 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>严亦乐 - 主页</title>
+    <title>摇摇乐</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background-color: #fff;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            color: #333; background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
             min-height: 100vh;
-            padding: 20px;
         }
-        
-        .container {
-            text-align: center;
-            max-width: 800px;
-            width: 100%;
+
+        /* ===== 公开区 ===== */
+        #public-view {
+            display: flex; flex-direction: column; align-items: center;
+            padding: 60px 20px; min-height: 100vh;
         }
-        
-        .logo {
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 30px;
-            border-radius: 50%;
-            background-color: #f0f0f0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 2.5rem;
-            color: #666;
+        .avatar {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 2.2rem; color: #fff; margin-bottom: 18px;
+            box-shadow: 0 8px 24px rgba(102,126,234,0.35);
         }
-        
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 50px;
-            color: #222;
-            font-weight: 400;
+        .hero-name { font-size: 2.2rem; font-weight: 700; color: #2d3436; margin-bottom: 4px; }
+        .hero-tagline { font-size: 1rem; color: #888; margin-bottom: 50px; letter-spacing: 0.05em; }
+
+        .public-cards {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 24px; max-width: 780px; width: 100%;
         }
-        
-        .nav-links {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin-bottom: 40px;
+        .public-card {
+            background: rgba(255,255,255,0.78); backdrop-filter: blur(8px);
+            border-radius: 16px; padding: 32px 24px; text-align: center;
+            border: 1px solid rgba(0,0,0,0.06);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
+            transition: transform 0.3s, box-shadow 0.3s;
         }
-        
-        .nav-link {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-decoration: none;
-            color: #333;
-            transition: transform 0.3s, color 0.3s;
-            padding: 20px;
-            border-radius: 10px;
-            width: 150px;
+        .public-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(0,0,0,0.1); }
+        .public-card .card-icon { font-size: 2.4rem; margin-bottom: 16px; }
+        .public-card h3 { font-size: 1.15rem; color: #2d3436; margin-bottom: 8px; font-weight: 600; }
+        .public-card p { font-size: 0.9rem; color: #999; }
+
+        .public-footer {
+            margin-top: 60px; color: #bbb; font-size: 0.85rem; text-align: center;
         }
-        
-        .nav-link:hover {
-            transform: translateY(-5px);
-            color: #3498db;
+
+        /* ===== 锁按钮 ===== */
+        #lock-btn {
+            position: fixed; top: 16px; right: 16px;
+            width: 42px; height: 42px; border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.7);
+            backdrop-filter: blur(6px); font-size: 1.1rem;
+            cursor: pointer; z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            transition: all 0.3s; display: flex; align-items: center; justify-content: center;
         }
-        
-        .nav-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-            width: 80px;
-            height: 80px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            background-color: #f8f9fa;
-            transition: background-color 0.3s;
+        #lock-btn:hover { background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
+        #lock-btn.logged-in { background: #2d3436; color: #fff; border-color: #2d3436; }
+
+        /* ===== 密码弹窗 ===== */
+        #auth-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.45);
+            backdrop-filter: blur(4px); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
         }
-        
-        .nav-link:hover .nav-icon {
-            background-color: #e3f2fd;
+        #auth-overlay.show { display: flex; }
+        .auth-dialog {
+            background: #fff; border-radius: 20px; padding: 40px 32px 32px;
+            width: 360px; max-width: 90vw; text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
-        
-        .nav-text {
-            font-size: 1.2rem;
-            font-weight: 500;
+        .auth-dialog h2 { font-size: 1.4rem; margin-bottom: 6px; color: #2d3436; }
+        .auth-dialog .auth-sub { font-size: 0.85rem; color: #aaa; margin-bottom: 24px; }
+        .auth-dialog input {
+            width: 100%; padding: 12px 16px; border: 1px solid #e0e0e0;
+            border-radius: 10px; font-size: 1rem; outline: none;
+            text-align: center; letter-spacing: 0.15em;
+            transition: border-color 0.3s;
         }
-        
-        .back-home {
-            display: inline-block;
-            margin-top: 30px;
-            padding: 10px 20px;
-            background-color: #f8f9fa;
-            color: #333;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
+        .auth-dialog input:focus { border-color: #667eea; }
+        .auth-dialog .auth-btn {
+            width: 100%; margin-top: 16px; padding: 12px;
+            border: none; border-radius: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff; font-size: 1rem; cursor: pointer;
+            transition: opacity 0.3s; font-weight: 600;
         }
-        
-        .back-home:hover {
-            background-color: #e9ecef;
+        .auth-dialog .auth-btn:hover { opacity: 0.9; }
+        .auth-dialog .auth-hint { display: block; margin-top: 14px; font-size: 0.85rem; color: #ccc; }
+        .auth-dialog .auth-close {
+            margin-top: 12px; font-size: 0.85rem; color: #aaa; cursor: pointer;
+            background: none; border: none;
         }
-        
-        footer {
-            margin-top: 50px;
-            text-align: center;
-            color: #888;
-            font-size: 0.9rem;
+        .auth-error { color: #e74c3c; font-size: 0.85rem; margin-top: 8px; display: none; }
+
+        /* ===== 私人区 ===== */
+        #private-view {
+            display: none; position: fixed; inset: 0; z-index: 500;
         }
-        
-        /* 页面样式 */
-        .page {
-            display: none;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
+        #private-view.show { display: block; }
+        #private-frame { width: 100%; height: 100%; border: none; }
+
+        /* ===== 退出私人模式按钮 ===== */
+        #exit-private-btn {
+            display: none; position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%); z-index: 1001;
+            padding: 10px 22px; border-radius: 24px;
+            border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(6px); font-size: 0.9rem; cursor: pointer;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transition: all 0.3s;
         }
-        
-        .page.active {
-            display: block;
-        }
-        
-        .page-header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-        
-        .page-title {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #222;
-        }
-        
-        .page-content {
-            text-align: left;
-        }
-        
-        /* 阅读页面样式 */
-        .reading-list {
-            list-style: none;
-        }
-        
-        .reading-item {
-            margin-bottom: 30px;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #f8f9fa;
-            transition: transform 0.3s;
-        }
-        
-        .reading-item:hover {
-            transform: translateX(5px);
-        }
-        
-        .reading-title {
-            font-size: 1.3rem;
-            margin-bottom: 10px;
-            color: #222;
-        }
-        
-        .reading-meta {
-            color: #666;
-            font-size: 0.9rem;
-            margin-bottom: 10px;
-        }
-        
-        .reading-description {
-            color: #555;
-            line-height: 1.6;
-        }
-        
-        /* 小技能页面样式 */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        
-        .skill-card {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 8px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        
-        .skill-card:hover {
-            transform: translateY(-5px);
-        }
-        
-        .skill-icon {
-            font-size: 2.5rem;
-            margin-bottom: 15px;
-            color: #3498db;
-        }
-        
-        .skill-name {
-            font-size: 1.2rem;
-            margin-bottom: 10px;
-            color: #222;
-        }
-        
-        .skill-description {
-            color: #666;
-            line-height: 1.5;
-        }
-        
-        /* 拾贝页面样式 */
-        .collection-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .collection-item {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            text-align: center;
-            transition: transform 0.3s;
-        }
-        
-        .collection-item:hover {
-            transform: scale(1.05);
-        }
-        
-        .collection-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-            color: #e74c3c;
-        }
-        
-        .collection-title {
-            font-size: 1.1rem;
-            margin-bottom: 5px;
-            color: #222;
-        }
-        
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-                margin-bottom: 40px;
-            }
-            
-            .nav-links {
-                gap: 20px;
-            }
-            
-            .nav-link {
-                width: 130px;
-                padding: 15px;
-            }
-            
-            .nav-icon {
-                font-size: 2.5rem;
-                width: 70px;
-                height: 70px;
-            }
-            
-            .skills-grid, .collection-grid {
-                grid-template-columns: 1fr;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .nav-links {
-                flex-direction: column;
-                align-items: center;
-                gap: 15px;
-            }
-            
-            .nav-link {
-                width: 200px;
-            }
+        #exit-private-btn:hover { background: #fff; }
+        #exit-private-btn.show { display: block; }
+
+        @media (max-width: 600px) {
+            .hero-name { font-size: 1.8rem; }
+            .public-cards { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
-    <!-- 主页 -->
-    <div id="home-page" class="page active">
-        <div class="container">
-            <div class="logo">
-                <i class="fas fa-user"></i>
+    <!-- 公开区 -->
+    <div id="public-view">
+        <div class="avatar"><i class="fas fa-seedling"></i></div>
+        <div class="hero-name">摇摇乐</div>
+        <div class="hero-tagline">课程笔记 · 项目笔记 · 论文</div>
+
+        <div class="public-cards">
+            <div class="public-card">
+                <div class="card-icon" style="color:#667eea;"><i class="fas fa-graduation-cap"></i></div>
+                <h3>课程笔记</h3>
+                <p>即将更新</p>
             </div>
-            
-            <h1>严亦乐</h1>
-            
-            <div class="nav-links">
-                <a href="#" class="nav-link" onclick="showPage('reading-page')">
-                    <div class="nav-icon">
-                        <i class="fas fa-book"></i>
-                    </div>
-                    <div class="nav-text">阅读</div>
-                </a>
-                
-                <a href="#" class="nav-link" onclick="showPage('skills-page')">
-                    <div class="nav-icon">
-                        <i class="fas fa-lightbulb"></i>
-                    </div>
-                    <div class="nav-text">小技能</div>
-                </a>
-                
-                <a href="#" class="nav-link" onclick="showPage('collection-page')">
-                    <div class="nav-icon">
-                        <i class="fas fa-star"></i>
-                    </div>
-                    <div class="nav-text">拾贝</div>
-                </a>
+            <div class="public-card">
+                <div class="card-icon" style="color:#764ba2;"><i class="fas fa-project-diagram"></i></div>
+                <h3>项目笔记</h3>
+                <p>即将更新</p>
             </div>
-            
-            <footer>
-                <p>© 2024 严亦乐</p>
-            </footer>
+            <div class="public-card">
+                <div class="card-icon" style="color:#e17055;"><i class="fas fa-file-alt"></i></div>
+                <h3>论文</h3>
+                <p>即将更新</p>
+            </div>
+        </div>
+
+        <div class="public-footer">
+            <p>© 2024 摇摇乐</p>
+            <span id="busuanzi_container_site_pv" style="font-size:12px;color:#bbb;">
+                总访问 <span id="busuanzi_value_site_pv"></span> 次
+            </span>
         </div>
     </div>
 
-    <!-- 阅读页面 -->
-    <div id="reading-page" class="page">
-        <div class="page-header">
-            <h2 class="page-title">阅读</h2>
-            <p>记录阅读与思考</p>
-        </div>
-        
-        <div class="page-content">
-            <ul class="reading-list">
-                <li class="reading-item">
-                    <h3 class="reading-title">《人工智能伦理》</h3>
-                    <div class="reading-meta">2024年12月 · 技术伦理</div>
-                    <p class="reading-description">探讨人工智能发展中的伦理问题，特别是大语言模型在决策过程中的偏见与道德考量。</p>
-                </li>
-                
-            </ul>
-            
-            <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
+    <!-- 锁按钮 -->
+    <button id="lock-btn" title="私人区">🔒</button>
+
+    <!-- 密码弹窗 -->
+    <div id="auth-overlay">
+        <div class="auth-dialog">
+            <h2>私人区</h2>
+            <p class="auth-sub">输入密码进入</p>
+            <input type="password" id="pwd-input" placeholder="密码" autocomplete="off">
+            <p class="auth-error" id="auth-error">密码错误，重试一下</p>
+            <button class="auth-btn" id="login-btn">进入</button>
+            <span class="auth-hint">提示: 🍃</span>
+            <button class="auth-close" id="auth-close">取消</button>
         </div>
     </div>
 
-    <!-- 小技能页面 -->
-    <div id="skills-page" class="page">
-        <div class="page-header">
-            <h2 class="page-title">小技能</h2>
-            <p>实用技能与工具</p>
-        </div>
-        
-        <div class="page-content">
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <div class="skill-icon">
-                        <i class="fas fa-code"></i>
-                    </div>
-                    <h3 class="skill-name">MATLAB编程</h3>
-                    <p class="skill-description">物理模拟、数据分析、算法实现</p>
-                </div>
-                
-            </div>
-            
-            <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
-        </div>
+    <!-- 私人区 -->
+    <div id="private-view">
+        <iframe id="private-frame"></iframe>
     </div>
 
-    <!-- 拾贝页面 -->
-    <div id="collection-page" class="page">
-        <div class="page-header">
-            <h2 class="page-title">拾贝</h2>
-            <p>收集有趣的想法与发现</p>
-        </div>
-        
-        <div class="page-content">
-            <div class="collection-grid">
-                <div class="collection-item">
-                    <div class="collection-icon">
-                        <i class="fas fa-quote-left"></i>
-                    </div>
-                    <h4 class="collection-title">名言收藏</h4>
-                    <p>"科学是在不断修正错误中前进的"</p>
-                </div>
-                
-            </div>
-            
-            <a href="#" class="back-home" onclick="showPage('home-page')">返回主页</a>
-        </div>
-    </div>
+    <!-- 退出私人模式 -->
+    <button id="exit-private-btn">← 返回公开页</button>
 
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-
+    <script src="js/auth.js"></script>
+    <script src="js/encrypted-content.js"></script>
     <script>
-        // 页面切换功能
-        function showPage(pageId) {
-            // 隐藏所有页面
-            document.querySelectorAll('.page').forEach(page => {
-                page.classList.remove('active');
-            });
-            
-            // 显示目标页面
-            document.getElementById(pageId).classList.add('active');
-            
-            // 滚动到页面顶部
-            window.scrollTo(0, 0);
+        const lockBtn = document.getElementById('lock-btn');
+        const authOverlay = document.getElementById('auth-overlay');
+        const pwdInput = document.getElementById('pwd-input');
+        const loginBtn = document.getElementById('login-btn');
+        const authClose = document.getElementById('auth-close');
+        const authError = document.getElementById('auth-error');
+        const publicView = document.getElementById('public-view');
+        const privateView = document.getElementById('private-view');
+        const privateFrame = document.getElementById('private-frame');
+        const exitPrivateBtn = document.getElementById('exit-private-btn');
+
+        // 检查是否已有 session
+        if (Auth.isLoggedIn()) {
+            enterPrivateMode();
         }
-        
-        // 处理URL哈希变化
-        window.addEventListener('hashchange', function() {
-            const hash = window.location.hash.substring(1);
-            if (hash === 'reading') {
-                showPage('reading-page');
-            } else if (hash === 'skills') {
-                showPage('skills-page');
-            } else if (hash === 'collection') {
-                showPage('collection-page');
+
+        // 打开弹窗
+        lockBtn.addEventListener('click', () => {
+            if (Auth.isLoggedIn()) {
+                // 已登录：直接进入私人区
+                enterPrivateMode();
             } else {
-                showPage('home-page');
+                authOverlay.classList.add('show');
+                pwdInput.focus();
             }
         });
-        
-        // 初始页面设置
-        window.addEventListener('DOMContentLoaded', function() {
-            const hash = window.location.hash.substring(1);
-            if (hash === 'reading') {
-                showPage('reading-page');
-            } else if (hash === 'skills') {
-                showPage('skills-page');
-            } else if (hash === 'collection') {
-                showPage('collection-page');
-            } else {
-                showPage('home-page');
+        authClose.addEventListener('click', () => {
+            authOverlay.classList.remove('show');
+            pwdInput.value = '';
+            authError.style.display = 'none';
+        });
+        authOverlay.addEventListener('click', (e) => {
+            if (e.target === authOverlay) {
+                authOverlay.classList.remove('show');
+                pwdInput.value = '';
+                authError.style.display = 'none';
             }
+        });
+
+        // 登录
+        loginBtn.addEventListener('click', async () => {
+            await attemptLogin();
+        });
+        pwdInput.addEventListener('keydown', async (e) => {
+            if (e.key === 'Enter') await attemptLogin();
+        });
+
+        async function attemptLogin() {
+            const pwd = pwdInput.value.trim();
+            if (!pwd) return;
+
+            loginBtn.textContent = '验证中...';
+            loginBtn.disabled = true;
+            authError.style.display = 'none';
+
+            try {
+                const html = await Auth.decryptContent(ENCRYPTED_CONTENT, pwd);
+                if (html) {
+                    Auth.setSession();
+                    authOverlay.classList.remove('show');
+                    pwdInput.value = '';
+                    revealPrivateContent(html);
+                } else {
+                    authError.style.display = 'block';
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                }
+            } catch (_) {
+                authError.style.display = 'block';
+            }
+            loginBtn.textContent = '进入';
+            loginBtn.disabled = false;
+        }
+
+        function revealPrivateContent(html) {
+            // 用 Blob URL 加载解密后的内容到 iframe
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            // 释放旧 URL
+            if (privateFrame.src.startsWith('blob:')) URL.revokeObjectURL(privateFrame.src);
+            privateFrame.src = url;
+
+            publicView.style.display = 'none';
+            privateView.classList.add('show');
+            exitPrivateBtn.classList.add('show');
+            lockBtn.classList.add('logged-in');
+            lockBtn.innerHTML = '🔓';
+            lockBtn.title = '已解锁';
+            exitPrivateBtn.focus();
+        }
+
+        function enterPrivateMode() {
+            publicView.style.display = 'none';
+            privateView.classList.add('show');
+            exitPrivateBtn.classList.add('show');
+            lockBtn.classList.add('logged-in');
+            lockBtn.innerHTML = '🔓';
+            lockBtn.title = '已解锁';
+            // iframe 需要重新加载（session 还在但页面刷新后 blob url 丢失）
+            // 这种情况极少，需要重新解密
+        }
+
+        // 退出私人模式
+        exitPrivateBtn.addEventListener('click', () => {
+            publicView.style.display = '';
+            privateView.classList.remove('show');
+            exitPrivateBtn.classList.remove('show');
+            lockBtn.classList.remove('logged-in');
+            lockBtn.innerHTML = '🔒';
+            lockBtn.title = '私人区';
+            if (privateFrame.src.startsWith('blob:')) {
+                URL.revokeObjectURL(privateFrame.src);
+            }
+            privateFrame.src = '';
         });
     </script>
+
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 </body>
 </html>

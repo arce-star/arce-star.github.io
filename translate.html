@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeepSeek 翻译</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #faf9f7; --card: #fffef9; --ink: #3b3226; --muted: #8c8072;
+            --accent: #4a6cf7; --accent-hover: #3651d5;
+            --border: #e8dccf; --radius: 12px;
+            --shadow: 0 2px 12px rgba(60,40,20,0.06);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: "Noto Sans SC", -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            color: var(--ink); min-height: 100vh; line-height: 1.6;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .top-bar {
+            max-width: 900px; margin: 0 auto; padding: 36px 28px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 16px;
+        }
+        .top-bar h1 { font-size: 1.8rem; font-weight: 600; letter-spacing: 0.04em; }
+        .top-bar h1 i { color: var(--accent); margin-right: 8px; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border: 1px solid var(--border); border-radius: 999px;
+            color: var(--muted); text-decoration: none; font-size: 0.9rem;
+            transition: all 0.25s; background: var(--card);
+        }
+        .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .container { max-width: 900px; margin: 0 auto; padding: 0 24px 60px; }
+
+        /* ── API Key Setup ──────────────── */
+        .setup-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 18px 22px; margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .setup-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+        .setup-row label { font-size: 0.9rem; font-weight: 500; white-space: nowrap; }
+        .key-input {
+            flex: 1; min-width: 200px; padding: 9px 14px;
+            border: 1px solid var(--border); border-radius: 8px;
+            font-family: monospace; font-size: 0.85rem;
+            background: var(--bg); color: var(--ink);
+        }
+        .key-input:focus { outline: none; border-color: var(--accent); }
+        .key-input::placeholder { color: #c8bfb0; }
+        .setup-hint { font-size: 0.75rem; color: var(--muted); margin-top: 8px; }
+        .setup-hint a { color: var(--accent); }
+
+        /* ── Translation Area ───────────── */
+        .lang-row {
+            display: flex; align-items: center; gap: 12px; margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .lang-select {
+            padding: 9px 14px; border: 1px solid var(--border); border-radius: 8px;
+            font-family: inherit; font-size: 0.9rem; background: var(--card);
+            color: var(--ink); cursor: pointer; flex: 1; min-width: 100px;
+        }
+        .lang-select:focus { outline: none; border-color: var(--accent); }
+        .swap-btn {
+            width: 38px; height: 38px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--card);
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            color: var(--muted); transition: all 0.25s; flex-shrink: 0;
+            font-size: 0.9rem;
+        }
+        .swap-btn:hover { border-color: var(--accent); color: var(--accent); transform: rotate(180deg); }
+
+        .text-areas { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+        @media (max-width: 640px) { .text-areas { grid-template-columns: 1fr; } }
+
+        .text-box {
+            position: relative;
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); display: flex; flex-direction: column;
+        }
+        .text-box-label {
+            font-size: 0.8rem; color: var(--muted); padding: 12px 16px 0;
+            letter-spacing: 0.04em;
+        }
+        .text-box textarea {
+            flex: 1; border: none; background: transparent; resize: none;
+            padding: 12px 16px 16px; font-family: inherit; font-size: 0.95rem;
+            color: var(--ink); line-height: 1.7; min-height: 180px;
+            outline: none;
+        }
+        .text-box textarea::placeholder { color: #d0cbc4; }
+        .char-count {
+            text-align: right; font-size: 0.72rem; color: #c8bfb0;
+            padding: 0 14px 10px;
+        }
+        .copy-btn {
+            position: absolute; top: 10px; right: 12px;
+            width: 32px; height: 32px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--card);
+            cursor: pointer; color: var(--muted); font-size: 0.8rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; z-index: 2;
+        }
+        .copy-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .action-row { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .btn-translate {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 12px 36px; background: var(--accent); color: #fff;
+            border: none; border-radius: 999px; font-size: 1rem;
+            cursor: pointer; letter-spacing: 0.04em; transition: all 0.2s;
+            font-family: inherit; font-weight: 500;
+        }
+        .btn-translate:hover { background: var(--accent-hover); transform: translateY(-1px); }
+        .btn-translate:active { transform: scale(0.96); }
+        .btn-translate:disabled { opacity: 0.5; pointer-events: none; }
+        .btn-clear {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 22px; border: 1px solid var(--border); border-radius: 999px;
+            background: var(--card); color: var(--muted); cursor: pointer;
+            font-size: 0.9rem; font-family: inherit; transition: all 0.2s;
+        }
+        .btn-clear:hover { border-color: #d08080; color: #c06060; }
+
+        .status {
+            text-align: center; min-height: 1.5em; font-size: 0.85rem; margin-top: 8px;
+            color: var(--muted); letter-spacing: 0.03em;
+        }
+        .status.error { color: #c06060; }
+        .status.success { color: #5a9e8f; }
+
+        .page-footer {
+            text-align: center; padding: 0 20px 40px;
+            color: #c8bfb0; font-size: 0.78rem; letter-spacing: 0.04em;
+        }
+    </style>
+</head>
+<body>
+<script>
+if(!sessionStorage.getItem('_arce_session')){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:-apple-system,sans-serif;color:#999;text-align:center;"><div><div style="font-size:3rem;margin-bottom:16px;">🔒</div><p>请先通过主页登录</p><p style="font-size:.85rem;margin-top:8px;"><a href="/" style="color:#667eea;">返回主页</a></p></div></div>';
+  throw new Error();
+}
+</script>
+
+
+<div class="top-bar">
+    <h1><i class="fas fa-language"></i>DeepSeek 翻译</h1>
+    <a class="back-btn" href="index.html"><i class="fas fa-arrow-left"></i> 返回主页</a>
+</div>
+
+<div class="container">
+
+    <!-- API Key Setup -->
+    <div class="setup-card">
+        <div class="setup-row">
+            <label><i class="fas fa-key"></i> API Key</label>
+            <input type="password" class="key-input" id="apiKey" placeholder="输入你的 DeepSeek API Key">
+            <button class="btn-clear" onclick="toggleKeyVisibility()" title="显示/隐藏">
+                <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+            <button class="btn-clear" onclick="saveKey()"><i class="fas fa-save"></i> 保存</button>
+        </div>
+        <div class="setup-hint">
+            在 <a href="https://platform.deepseek.com/api_keys" target="_blank">platform.deepseek.com</a> 申请 API Key，新用户有免费额度。
+            Key 仅保存在你的浏览器本地。
+            <span id="keyStatus" style="color:#5a9e8f;margin-left:8px;"></span>
+        </div>
+    </div>
+
+    <!-- Language Selector -->
+    <div class="lang-row">
+        <select class="lang-select" id="sourceLang">
+            <option value="auto">自动检测语言</option>
+            <option value="zh">中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="es">Español</option>
+            <option value="ru">Русский</option>
+            <option value="pt">Português</option>
+            <option value="ar">العربية</option>
+            <option value="th">ไทย</option>
+            <option value="vi">Tiếng Việt</option>
+        </select>
+        <button class="swap-btn" onclick="swapLangs()" title="交换语言"><i class="fas fa-exchange-alt"></i></button>
+        <select class="lang-select" id="targetLang">
+            <option value="zh">中文</option>
+            <option value="en" selected>English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+            <option value="fr">Français</option>
+            <option value="de">Deutsch</option>
+            <option value="es">Español</option>
+            <option value="ru">Русский</option>
+            <option value="pt">Português</option>
+            <option value="ar">العربية</option>
+            <option value="th">ไทย</option>
+            <option value="vi">Tiếng Việt</option>
+        </select>
+    </div>
+
+    <!-- Text Areas -->
+    <div class="text-areas">
+        <div class="text-box">
+            <div class="text-box-label">原文</div>
+            <textarea id="sourceText" placeholder="输入要翻译的文字……" oninput="updateCount()"></textarea>
+            <div class="char-count"><span id="charCount">0</span> 字</div>
+        </div>
+        <div class="text-box">
+            <div class="text-box-label">译文</div>
+            <button class="copy-btn" onclick="copyResult()" title="复制译文"><i class="fas fa-copy"></i></button>
+            <textarea id="resultText" placeholder="翻译结果将显示在这里……" readonly></textarea>
+        </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+        <button class="btn-translate" id="translateBtn" onclick="doTranslate()">
+            <i class="fas fa-language"></i> 翻译
+        </button>
+        <button class="btn-clear" onclick="clearAll()"><i class="fas fa-eraser"></i> 清空</button>
+    </div>
+    <div class="status" id="statusMsg"></div>
+
+</div>
+
+<div class="page-footer">&copy; 2024 摇摇乐</div>
+
+<script>
+// ── API Key Management ──────────────────────
+const STORAGE_KEY = "deepseek_api_key";
+const DS_API = "https://api.deepseek.com/chat/completions";
+
+function getKey() {
+    return localStorage.getItem(STORAGE_KEY) || "";
+}
+
+function saveKey() {
+    const key = document.getElementById("apiKey").value.trim();
+    if (!key) { setStatus("请输入 API Key", "error"); return; }
+    if (!key.startsWith("sk-")) { setStatus("API Key 格式不正确，应以 sk- 开头", "error"); return; }
+    localStorage.setItem(STORAGE_KEY, key);
+    document.getElementById("keyStatus").textContent = "已保存 ✓";
+    setStatus("API Key 已保存到本地", "success");
+    setTimeout(() => document.getElementById("keyStatus").textContent = "", 3000);
+}
+
+function toggleKeyVisibility() {
+    const inp = document.getElementById("apiKey");
+    const icon = document.getElementById("eyeIcon");
+    if (inp.type === "password") { inp.type = "text"; icon.className = "fas fa-eye-slash"; }
+    else { inp.type = "password"; icon.className = "fas fa-eye"; }
+}
+
+// ── Language ────────────────────────────────
+const langNames = { auto:"自动检测语言", zh:"中文", en:"English", ja:"日本語", ko:"한국어",
+    fr:"Français", de:"Deutsch", es:"Español", ru:"Русский", pt:"Português",
+    ar:"العربية", th:"ไทย", vi:"Tiếng Việt" };
+
+function swapLangs() {
+    const src = document.getElementById("sourceLang");
+    const tgt = document.getElementById("targetLang");
+    if (src.value === "auto") return;
+    const tmp = src.value;
+    src.value = tgt.value;
+    tgt.value = tmp;
+    document.getElementById("resultText").value = "";
+    document.getElementById("statusMsg").textContent = "";
+}
+
+// ── Char Count ──────────────────────────────
+function updateCount() {
+    const text = document.getElementById("sourceText").value;
+    document.getElementById("charCount").textContent = text.length;
+}
+
+// ── Translate ───────────────────────────────
+async function doTranslate() {
+    const apiKey = getKey();
+    if (!apiKey) { setStatus("请先设置并保存 API Key", "error"); return; }
+    const sourceText = document.getElementById("sourceText").value.trim();
+    if (!sourceText) { setStatus("请输入要翻译的文字", "error"); return; }
+
+    const sourceLang = document.getElementById("sourceLang").value;
+    const targetLang = document.getElementById("targetLang").value;
+    const srcName = langNames[sourceLang];
+    const tgtName = langNames[targetLang];
+
+    const btn = document.getElementById("translateBtn");
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 翻译中……';
+    setStatus("正在调用 DeepSeek API……", "");
+
+    let systemPrompt;
+    if (sourceLang === "auto") {
+        systemPrompt = `你是一个专业的翻译助手。请检测用户输入文本的语言，然后将其翻译为${tgtName}。只输出翻译结果，不要添加任何解释、说明或额外文字。保持原文的格式和语气。`;
+    } else {
+        systemPrompt = `你是一个专业的翻译助手。请将用户输入的文本从${srcName}翻译为${tgtName}。只输出翻译结果，不要添加任何解释、说明或额外文字。保持原文的格式和语气。`;
+    }
+
+    try {
+        const resp = await fetch(DS_API, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer " + apiKey,
+            },
+            body: JSON.stringify({
+                model: "deepseek-chat",
+                messages: [
+                    { role: "system", content: systemPrompt },
+                    { role: "user", content: sourceText },
+                ],
+                temperature: 0.3,
+                max_tokens: 4096,
+            }),
+        });
+
+        const data = await resp.json();
+        if (!resp.ok) {
+            throw new Error(data.error?.message || "请求失败，HTTP " + resp.status);
+        }
+        if (data.choices && data.choices.length > 0) {
+            document.getElementById("resultText").value = data.choices[0].message.content.trim();
+            setStatus("翻译完成", "success");
+        } else {
+            throw new Error("API 返回数据异常");
+        }
+    } catch (err) {
+        setStatus("翻译失败：" + err.message, "error");
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-language"></i> 翻译';
+    }
+}
+
+// ── Copy ────────────────────────────────────
+function copyResult() {
+    const text = document.getElementById("resultText").value;
+    if (!text) return;
+    navigator.clipboard.writeText(text).then(() => {
+        setStatus("译文已复制到剪贴板", "success");
+    }).catch(() => {
+        document.getElementById("resultText").select();
+        document.execCommand("copy");
+        setStatus("译文已复制到剪贴板", "success");
+    });
+}
+
+// ── Clear ───────────────────────────────────
+function clearAll() {
+    document.getElementById("sourceText").value = "";
+    document.getElementById("resultText").value = "";
+    document.getElementById("statusMsg").textContent = "";
+    document.getElementById("charCount").textContent = "0";
+}
+
+// ── Status ──────────────────────────────────
+function setStatus(msg, type) {
+    const el = document.getElementById("statusMsg");
+    el.textContent = msg;
+    el.className = "status " + (type || "");
+}
+
+// ── Init ────────────────────────────────────
+document.addEventListener("DOMContentLoaded", () => {
+    const savedKey = getKey();
+    if (savedKey) {
+        document.getElementById("apiKey").value = savedKey;
+        document.getElementById("keyStatus").textContent = "已加载 ✓";
+        setTimeout(() => document.getElementById("keyStatus").textContent = "", 2000);
+    }
+});
+
+// Ctrl+Enter to translate
+document.addEventListener("keydown", e => {
+    if ((e.ctrlKey || e.metaKey) && e.key === "Enter") {
+        e.preventDefault();
+        doTranslate();
+    }
+});
+</script>
+
+</body>
+</html>

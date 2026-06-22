@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单词本</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Noto+Serif+SC:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #faf9f7; --card: #fffef9; --ink: #3b3226; --muted: #8c8072;
+            --accent: #5b7bb5; --accent2: #6c9c7a; --danger: #c7645c;
+            --border: #e8dccf; --radius: 12px;
+            --shadow: 0 2px 12px rgba(60,40,20,0.06);
+            --shadow-lg: 0 8px 32px rgba(60,40,20,0.1);
+        }
+        * { margin:0; padding:0; box-sizing:border-box; }
+        body {
+            font-family: "Noto Sans SC", -apple-system, sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(ellipse at 80% 20%, rgba(90,120,170,0.05) 0%, transparent 60%);
+            color: var(--ink); min-height: 100vh; -webkit-font-smoothing: antialiased;
+        }
+
+        .top-bar {
+            max-width: 1000px; margin: 0 auto; padding: 36px 28px 20px;
+            display: flex; align-items: center; justify-content: space-between;
+            flex-wrap: wrap; gap: 16px;
+        }
+        .top-bar h1 { font-size: 1.8rem; font-weight: 600; letter-spacing: 0.04em; }
+        .top-bar h1 i { color: var(--accent); margin-right: 8px; }
+        .back-btn {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 20px; border: 1px solid var(--border); border-radius: 999px;
+            color: var(--muted); text-decoration: none; font-size: 0.9rem;
+            transition: all 0.25s; background: var(--card);
+        }
+        .back-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+        .container { max-width: 1000px; margin: 0 auto; padding: 0 24px 60px; }
+
+        /* ── Stats Bar ──────────────────── */
+        .stats-bar {
+            display: flex; gap: 20px; flex-wrap: wrap; margin-bottom: 20px;
+        }
+        .stat-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 14px 22px; box-shadow: var(--shadow);
+            display: flex; align-items: center; gap: 12px; flex: 1; min-width: 120px;
+        }
+        .stat-icon {
+            width: 40px; height: 40px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1rem;
+        }
+        .stat-num { font-size: 1.5rem; font-weight: 700; color: var(--ink); }
+        .stat-label { font-size: 0.78rem; color: var(--muted); }
+
+        /* ── Add Word Area ──────────────── */
+        .add-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 22px; margin-bottom: 20px;
+            box-shadow: var(--shadow);
+        }
+        .add-row {
+            display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+        }
+        .word-input {
+            flex: 1; min-width: 200px; padding: 10px 16px;
+            border: 1px solid var(--border); border-radius: 10px;
+            font-size: 1rem; font-family: inherit; background: var(--bg);
+            color: var(--ink);
+        }
+        .word-input:focus { outline: none; border-color: var(--accent); }
+        .word-input::placeholder { color: #c8bfb0; }
+
+        .btn {
+            display: inline-flex; align-items: center; gap: 6px;
+            padding: 10px 22px; border-radius: 999px; cursor: pointer;
+            font-size: 0.9rem; font-family: inherit; transition: all 0.2s;
+            border: none; letter-spacing: 0.03em;
+        }
+        .btn-primary { background: var(--accent); color: #fff; }
+        .btn-primary:hover { filter: brightness(0.9); transform: translateY(-1px); }
+        .btn-primary:disabled { opacity: 0.5; pointer-events: none; }
+        .btn-outline {
+            border: 1px solid var(--border); background: var(--card); color: var(--muted);
+        }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+        .btn-danger { background: var(--danger); color: #fff; }
+        .btn-danger:hover { filter: brightness(0.9); }
+
+        .add-hint { font-size: 0.75rem; color: var(--muted); margin-top: 8px; }
+        .api-row { margin-top: 10px; display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+        .api-row label { font-size: 0.8rem; color: var(--muted); white-space: nowrap; }
+        .api-key-inp {
+            flex: 1; min-width: 180px; padding: 6px 12px;
+            border: 1px solid var(--border); border-radius: 8px;
+            font-family: monospace; font-size: 0.8rem; background: var(--bg);
+            color: var(--ink);
+        }
+        .api-key-inp:focus { outline: none; border-color: var(--accent); }
+
+        /* ── Toolbar ────────────────────── */
+        .toolbar {
+            display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+            margin-bottom: 16px;
+        }
+        .search-input {
+            flex: 1; min-width: 150px; padding: 9px 14px;
+            border: 1px solid var(--border); border-radius: 999px;
+            font-size: 0.9rem; font-family: inherit; background: var(--card);
+            color: var(--ink);
+        }
+        .search-input:focus { outline: none; border-color: var(--accent); }
+
+        /* ── Word Cards Grid ────────────── */
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        @media (max-width: 640px) { .cards-grid { grid-template-columns: 1fr; } }
+
+        .word-card {
+            background: var(--card); border: 1px solid var(--border);
+            border-radius: var(--radius); padding: 20px;
+            box-shadow: var(--shadow); transition: all 0.3s;
+            position: relative;
+        }
+        .word-card:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+        .word-card .card-header {
+            display: flex; justify-content: space-between; align-items: flex-start;
+            margin-bottom: 8px;
+        }
+        .word-card .word {
+            font-size: 1.4rem; font-weight: 700; color: var(--ink);
+            letter-spacing: 0.02em;
+        }
+        .word-card .phonetic {
+            font-size: 0.85rem; color: var(--muted); margin-bottom: 6px;
+            font-style: italic;
+        }
+        .word-card .pos {
+            display: inline-block; padding: 2px 10px; border-radius: 999px;
+            font-size: 0.72rem; background: #eef2f8; color: var(--accent);
+            margin-bottom: 8px; letter-spacing: 0.03em;
+        }
+        .word-card .meaning {
+            font-size: 0.9rem; color: var(--ink); margin-bottom: 8px;
+            line-height: 1.5;
+        }
+        .word-card .section-title {
+            font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em;
+            text-transform: uppercase; margin-bottom: 3px;
+        }
+        .word-card .phrases {
+            font-size: 0.82rem; color: var(--ink); margin-bottom: 8px;
+            line-height: 1.6;
+        }
+        .word-card .example {
+            font-size: 0.82rem; color: #5a6a5a; background: #f6f8f5;
+            padding: 8px 12px; border-radius: 6px; line-height: 1.5;
+            border-left: 3px solid var(--accent2);
+        }
+        .word-card .card-actions {
+            display: flex; gap: 6px; margin-top: 12px;
+            justify-content: flex-end;
+        }
+        .word-card .delete-card-btn {
+            width: 30px; height: 30px; border-radius: 50%;
+            border: 1px solid var(--border); background: var(--card);
+            cursor: pointer; color: var(--muted); font-size: 0.75rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: all 0.2s; position: absolute; top: 14px; right: 14px;
+        }
+        .word-card .delete-card-btn:hover {
+            border-color: var(--danger); color: var(--danger);
+        }
+
+        /* ── Status ─────────────────────── */
+        .status {
+            text-align: center; min-height: 1.5em; font-size: 0.85rem;
+            margin: 8px 0; color: var(--muted);
+        }
+        .status.error { color: var(--danger); }
+        .status.success { color: var(--accent2); }
+
+        /* ── Empty State ────────────────── */
+        .empty-state {
+            text-align: center; padding: 60px 20px; color: #c8bfb0;
+        }
+        .empty-state i { font-size: 3rem; margin-bottom: 16px; display: block; }
+        .empty-state p { font-size: 0.95rem; }
+
+        .page-footer {
+            text-align: center; padding: 0 20px 40px;
+            color: #c8bfb0; font-size: 0.78rem; letter-spacing: 0.04em;
+        }
+
+        .loading-dots { display: inline-block; }
+        .loading-dots:after {
+            content: '...'; animation: dots 1.5s steps(4, end) infinite;
+        }
+        @keyframes dots {
+            0%, 20% { content: '.'; } 40% { content: '..'; } 60%, 100% { content: '...'; }
+        }
+    </style>
+</head>
+<body>
+<script>
+if(!sessionStorage.getItem('_arce_session')){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:-apple-system,sans-serif;color:#999;text-align:center;"><div><div style="font-size:3rem;margin-bottom:16px;">🔒</div><p>请先通过主页登录</p><p style="font-size:.85rem;margin-top:8px;"><a href="/" style="color:#667eea;">返回主页</a></p></div></div>';
+  throw new Error();
+}
+</script>
+
+
+<div class="top-bar">
+    <h1><i class="fas fa-book"></i>单词本</h1>
+    <a class="back-btn" href="index.html"><i class="fas fa-arrow-left"></i> 返回主页</a>
+</div>
+
+<div class="container">
+
+    <!-- Stats -->
+    <div class="stats-bar">
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#eef2f8;color:var(--accent)"><i class="fas fa-book-open"></i></div>
+            <div><div class="stat-num" id="totalCount">0</div><div class="stat-label">已收录单词</div></div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon" style="background:#e8f0e8;color:var(--accent2)"><i class="fas fa-check-circle"></i></div>
+            <div><div class="stat-num" id="todayCount">0</div><div class="stat-label">今日新增</div></div>
+        </div>
+    </div>
+
+    <!-- Add Word -->
+    <div class="add-card">
+        <div class="add-row">
+            <input type="text" class="word-input" id="wordInput"
+                placeholder="输入一个英文单词，AI 将自动生成单词卡片……"
+                onkeydown="if(event.key==='Enter') addWord()">
+            <button class="btn btn-primary" id="addBtn" onclick="addWord()">
+                <i class="fas fa-plus"></i> 添加单词
+            </button>
+        </div>
+        <div class="add-hint">
+            支持批量添加：用逗号或空格分隔多个单词，如 "ubiquitous, ephemeral, serendipity"
+        </div>
+        <div class="api-row" id="apiRow">
+            <label><i class="fas fa-key"></i> DeepSeek API Key</label>
+            <input type="password" class="api-key-inp" id="apiKey" placeholder="sk-...">
+            <button class="btn btn-outline" onclick="toggleKey()" style="padding:6px 12px;font-size:0.8rem">
+                <i class="fas fa-eye" id="eyeIcon"></i>
+            </button>
+            <button class="btn btn-outline" onclick="saveApiKey()" style="padding:6px 14px;font-size:0.8rem">保存</button>
+        </div>
+        <div class="status" id="addStatus"></div>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+        <input type="text" class="search-input" id="searchInput"
+            placeholder="搜索单词……" oninput="renderCards()">
+        <button class="btn btn-outline" onclick="exportCards()">
+            <i class="fas fa-download"></i> 导出备份
+        </button>
+        <button class="btn btn-outline" onclick="document.getElementById('importFile').click()">
+            <i class="fas fa-upload"></i> 导入备份
+        </button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importCards(event)">
+        <button class="btn btn-outline" onclick="clearAllCards()" style="color:var(--danger);border-color:#e8d0d0">
+            <i class="fas fa-trash-alt"></i> 清空全部
+        </button>
+    </div>
+
+    <!-- Cards -->
+    <div class="cards-grid" id="cardsGrid">
+        <div class="empty-state">
+            <i class="fas fa-inbox"></i>
+            <p>还没有单词，在上方输入框添加吧</p>
+        </div>
+    </div>
+
+</div>
+
+<div class="page-footer">&copy; 2024 摇摇乐</div>
+
+<script>
+// ═══ Storage ════════════════════════════════════
+const STORE_KEY = "vocab_cards";
+const API_KEY_STORE = "deepseek_api_key";
+const DS_API = "https://api.deepseek.com/chat/completions";
+
+function loadCards() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || []; }
+    catch(e) { return []; }
+}
+
+function saveCards(cards) {
+    localStorage.setItem(STORE_KEY, JSON.stringify(cards));
+}
+
+function getApiKey() {
+    return localStorage.getItem(API_KEY_STORE) || "";
+}
+
+function saveApiKey() {
+    const key = document.getElementById("apiKey").value.trim();
+    if (!key) { setAddStatus("请输入 API Key", "error"); return; }
+    if (!key.startsWith("sk-")) { setAddStatus("Key 格式不正确，应以 sk- 开头", "error"); return; }
+    localStorage.setItem(API_KEY_STORE, key);
+    setAddStatus("API Key 已保存", "success");
+}
+
+function toggleKey() {
+    const inp = document.getElementById("apiKey");
+    const icon = document.getElementById("eyeIcon");
+    if (inp.type === "password") { inp.type = "text"; icon.className = "fas fa-eye-slash"; }
+    else { inp.type = "password"; icon.className = "fas fa-eye"; }
+}
+
+// ═══ AI Word Lookup ════════════════════════════
+async function fetchWordInfo(word) {
+    const apiKey = getApiKey();
+    if (!apiKey) throw new Error("请先设置 API Key");
+
+    const prompt = `你是一个英语词典助手。请为单词"${word}"生成详细的单词卡片信息。
+
+请严格返回 JSON 格式，不要包含任何其他文字或 markdown 标记：
+{
+  "word": "${word}",
+  "phonetic": "音标，使用 IPA 国际音标，如 /ˈeksəmpəl/",
+  "partOfSpeech": "词性，如 名词/动词/形容词等",
+  "meaning": "中文释义，列出主要义项，用分号分隔",
+  "phrases": "2-3个常用词组或搭配，格式如 look after: 照顾；照料",
+  "example": "一个自然的英文例句，附带中文翻译，格式如 The sun rises in the east. 太阳从东方升起。"
+}
+
+注意：
+- 音标使用标准 IPA 格式
+- 释义简洁准确
+- 例句要自然地道，长度适中
+- 如果单词有多种含义，选取最常见的2-3个义项`;
+
+    const resp = await fetch(DS_API, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": "Bearer " + apiKey,
+        },
+        body: JSON.stringify({
+            model: "deepseek-chat",
+            messages: [
+                { role: "system", content: "你是一个专业的英语词典助手。你只返回JSON，不返回任何其他内容。" },
+                { role: "user", content: prompt },
+            ],
+            temperature: 0.3,
+            max_tokens: 2048,
+        }),
+    });
+
+    const data = await resp.json();
+    if (!resp.ok) throw new Error(data.error?.message || "API 请求失败");
+
+    const content = data.choices[0].message.content.trim();
+    // Try to extract JSON from response (in case model wraps it)
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error("AI 返回格式异常，请重试");
+    const parsed = JSON.parse(jsonMatch[0]);
+    return { ...parsed, id: Date.now(), createdAt: new Date().toISOString() };
+}
+
+// ═══ Add Words ═════════════════════════════════
+async function addWord() {
+    const input = document.getElementById("wordInput").value.trim();
+    if (!input) { setAddStatus("请输入单词", "error"); return; }
+
+    // Split by comma or whitespace
+    const words = input.split(/[，,、\s]+/).filter(Boolean).map(w => w.toLowerCase().trim());
+    const uniqueWords = [...new Set(words)];
+
+    const btn = document.getElementById("addBtn");
+    btn.disabled = true;
+
+    const cards = loadCards();
+    let addedCount = 0;
+    let skipCount = 0;
+
+    for (let i = 0; i < uniqueWords.length; i++) {
+        const w = uniqueWords[i];
+        setAddStatus(`正在查询: ${w} (${i+1}/${uniqueWords.length})...`, "");
+
+        // Check if already exists
+        if (cards.find(c => c.word.toLowerCase() === w)) {
+            skipCount++;
+            continue;
+        }
+
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + `(${i+1}/${uniqueWords.length})`;
+
+        try {
+            const info = await fetchWordInfo(w);
+            cards.unshift(info);
+            saveCards(cards);
+            addedCount++;
+        } catch (err) {
+            setAddStatus(`${w} 查询失败: ${err.message}`, "error");
+            // Continue with next word
+        }
+
+        // Small delay between API calls to avoid rate limiting
+        if (i < uniqueWords.length - 1) await sleep(800);
+    }
+
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-plus"></i> 添加单词';
+    document.getElementById("wordInput").value = "";
+
+    if (addedCount > 0 || skipCount > 0) {
+        const msgs = [];
+        if (addedCount > 0) msgs.push(`成功添加 ${addedCount} 个单词`);
+        if (skipCount > 0) msgs.push(`${skipCount} 个已存在，跳过`);
+        setAddStatus(msgs.join("；"), "success");
+    }
+    renderCards();
+    updateStats();
+}
+
+function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+// ═══ Render ════════════════════════════════════
+function renderCards() {
+    const cards = loadCards();
+    const query = document.getElementById("searchInput").value.trim().toLowerCase();
+    const filtered = query
+        ? cards.filter(c =>
+            c.word.toLowerCase().includes(query) ||
+            (c.meaning && c.meaning.includes(query)) ||
+            (c.example && c.example.toLowerCase().includes(query)))
+        : cards;
+
+    const grid = document.getElementById("cardsGrid");
+    if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state">
+            <i class="fas ${query ? 'fa-search' : 'fa-inbox'}"></i>
+            <p>${query ? '没有匹配的单词' : '还没有单词，在上方输入框添加吧'}</p>
+        </div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map(c => `
+        <div class="word-card">
+            <button class="delete-card-btn" onclick="deleteCard(${c.id})" title="删除">
+                <i class="fas fa-times"></i>
+            </button>
+            <div class="card-header">
+                <div class="word">${esc(c.word)}</div>
+            </div>
+            ${c.phonetic ? `<div class="phonetic">${esc(c.phonetic)}</div>` : ''}
+            ${c.partOfSpeech ? `<div class="pos">${esc(c.partOfSpeech)}</div>` : ''}
+            ${c.meaning ? `<div class="meaning"><span class="section-title">释义</span>${esc(c.meaning)}</div>` : ''}
+            ${c.phrases ? `<div class="phrases"><span class="section-title">常用词组</span>${esc(c.phrases)}</div>` : ''}
+            ${c.example ? `<div class="example"><span class="section-title">语境例句</span>${esc(c.example)}</div>` : ''}
+            <div class="card-actions" style="font-size:0.7rem;color:#c8bfb0;text-align:right;margin-top:8px">
+                ${c.createdAt ? '添加于 ' + new Date(c.createdAt).toLocaleDateString('zh-CN') : ''}
+            </div>
+        </div>
+    `).join("");
+}
+
+function esc(str) {
+    if (!str) return "";
+    const div = document.createElement("div");
+    div.textContent = str;
+    return div.innerHTML;
+}
+
+// ═══ Delete Card ═══════════════════════════════
+function deleteCard(id) {
+    if (!confirm("确定删除这个单词吗？")) return;
+    const cards = loadCards().filter(c => c.id !== id);
+    saveCards(cards);
+    renderCards();
+    updateStats();
+}
+
+function clearAllCards() {
+    if (!confirm("确定要删除全部单词吗？此操作不可恢复。建议先导出备份。")) return;
+    saveCards([]);
+    renderCards();
+    updateStats();
+}
+
+// ═══ Export / Import ═══════════════════════════
+function exportCards() {
+    const cards = loadCards();
+    if (cards.length === 0) { alert("没有单词可导出"); return; }
+    const json = JSON.stringify(cards, null, 2);
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `单词本备份_${new Date().toISOString().slice(0,10)}.json`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function importCards(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            const imported = JSON.parse(e.target.result);
+            if (!Array.isArray(imported)) throw new Error("格式错误");
+            const existing = loadCards();
+            const existingIds = new Set(existing.map(c => c.id));
+            const existingWords = new Set(existing.map(c => c.word.toLowerCase()));
+            let merged = 0;
+            imported.forEach(c => {
+                if (!existingIds.has(c.id) && !existingWords.has(c.word.toLowerCase())) {
+                    existing.push(c);
+                    merged++;
+                }
+            });
+            saveCards(existing);
+            renderCards();
+            updateStats();
+            setAddStatus(`成功导入 ${merged} 个新单词（${imported.length - merged} 个已存在，跳过）`, "success");
+        } catch (err) {
+            alert("导入失败：文件格式不正确");
+        }
+    };
+    reader.readAsText(file);
+    event.target.value = "";
+}
+
+// ═══ Stats ═════════════════════════════════════
+function updateStats() {
+    const cards = loadCards();
+    document.getElementById("totalCount").textContent = cards.length;
+
+    const today = new Date().toISOString().slice(0, 10);
+    const todayCards = cards.filter(c => c.createdAt && c.createdAt.startsWith(today));
+    document.getElementById("todayCount").textContent = todayCards.length;
+}
+
+// ═══ Status ════════════════════════════════════
+function setAddStatus(msg, type) {
+    const el = document.getElementById("addStatus");
+    el.textContent = msg;
+    el.className = "status " + (type || "");
+}
+
+// ═══ Init ══════════════════════════════════════
+document.addEventListener("DOMContentLoaded", () => {
+    const savedKey = getApiKey();
+    if (savedKey) document.getElementById("apiKey").value = savedKey;
+    renderCards();
+    updateStats();
+});
+</script>
+
+</body>
+</html>

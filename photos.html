@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>照片墙</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        :root {
+            --bg: #faf9f7;
+            --card-bg: #fff;
+            --text: #3d3d3d;
+            --muted: #9a9a9a;
+            --accent: #d4a574;
+            --accent-deep: #b8703e;
+            --shadow: 0 2px 16px rgba(0,0,0,0.06);
+            --shadow-hover: 0 12px 40px rgba(0,0,0,0.12);
+            --radius: 6px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, "Times New Roman", serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Header ─────────────────────── */
+        .header {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 48px 32px 36px;
+            display: flex;
+            align-items: baseline;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .header-left h1 {
+            font-size: 2.2rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            color: #2c2c2c;
+        }
+        .header-left .sub {
+            font-size: 0.9rem;
+            color: var(--muted);
+            margin-top: 4px;
+            letter-spacing: 0.06em;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 22px;
+            border: 1px solid #ddd;
+            border-radius: 999px;
+            color: var(--text);
+            text-decoration: none;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.9rem;
+            transition: all 0.25s;
+            background: #fff;
+        }
+        .back-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent-deep);
+            background: #fefaf6;
+            box-shadow: 0 2px 12px rgba(180,120,60,0.08);
+        }
+
+        /* ── Masonry Grid ──────────────── */
+        .masonry {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px 60px;
+            columns: 4;
+            column-gap: 18px;
+        }
+
+        @media (max-width: 1000px) { .masonry { columns: 3; } }
+        @media (max-width: 700px)  { .masonry { columns: 2; column-gap: 12px; } }
+        @media (max-width: 440px)  { .masonry { columns: 1; } }
+
+        .photo-card {
+            break-inside: avoid;
+            margin-bottom: 18px;
+            border-radius: var(--radius);
+            overflow: hidden;
+            cursor: pointer;
+            background: var(--card-bg);
+            box-shadow: var(--shadow);
+            transition: transform 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+                        box-shadow 0.35s ease;
+            position: relative;
+        }
+        .photo-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+        }
+        .photo-card:active { transform: scale(0.985); }
+
+        .photo-card img {
+            display: block;
+            width: 100%;
+            height: auto;
+            transition: filter 0.4s;
+        }
+        .photo-card:hover img {
+            filter: brightness(0.96) saturate(1.05);
+        }
+
+        .photo-card .caption {
+            padding: 12px 14px;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            font-size: 0.85rem;
+            color: #777;
+            letter-spacing: 0.03em;
+            text-align: center;
+        }
+
+        /* ── Lightbox ──────────────────── */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(20,18,16,0.92);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            align-items: center;
+            justify-content: center;
+            animation: lbFadeIn 0.3s ease;
+        }
+        .lightbox.open {
+            display: flex;
+        }
+        @keyframes lbFadeIn {
+            from { opacity: 0; }
+            to   { opacity: 1; }
+        }
+
+        .lightbox-img-wrap {
+            position: relative;
+            max-width: 88vw;
+            max-height: 85vh;
+            animation: lbScaleIn 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes lbScaleIn {
+            from { transform: scale(0.88); opacity: 0; }
+            to   { transform: scale(1);    opacity: 1; }
+        }
+
+        .lightbox-img-wrap img {
+            display: block;
+            max-width: 88vw;
+            max-height: 85vh;
+            border-radius: 4px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.5);
+        }
+        .lightbox-caption {
+            text-align: center;
+            color: #ccc;
+            margin-top: 14px;
+            font-size: 0.95rem;
+            letter-spacing: 0.04em;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 24px;
+            right: 28px;
+            width: 44px; height: 44px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.3);
+            background: rgba(255,255,255,0.08);
+            color: #fff;
+            font-size: 1.3rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s;
+        }
+        .lightbox-close:hover {
+            background: rgba(255,255,255,0.18);
+            border-color: rgba(255,255,255,0.6);
+        }
+
+        .lightbox-prev, .lightbox-next {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 48px; height: 48px;
+            border-radius: 50%;
+            border: 1px solid rgba(255,255,255,0.25);
+            background: rgba(255,255,255,0.06);
+            color: #fff;
+            font-size: 1.2rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.25s;
+            z-index: 10;
+        }
+        .lightbox-prev:hover, .lightbox-next:hover {
+            background: rgba(255,255,255,0.16);
+            border-color: rgba(255,255,255,0.5);
+        }
+        .lightbox-prev { left: 20px; }
+        .lightbox-next { right: 20px; }
+
+        @media (max-width: 600px) {
+            .lightbox-prev, .lightbox-next { width: 36px; height: 36px; font-size: 1rem; }
+            .lightbox-prev { left: 8px; }
+            .lightbox-next { right: 8px; }
+        }
+
+        /* ── Footer ────────────────────── */
+        .page-footer {
+            text-align: center;
+            padding: 10px 20px 40px;
+            color: #bbb;
+            font-size: 0.8rem;
+            letter-spacing: 0.04em;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+    </style>
+</head>
+<body>
+<script>
+if(!sessionStorage.getItem('_arce_session')){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:-apple-system,sans-serif;color:#999;text-align:center;"><div><div style="font-size:3rem;margin-bottom:16px;">🔒</div><p>请先通过主页登录</p><p style="font-size:.85rem;margin-top:8px;"><a href="/" style="color:#667eea;">返回主页</a></p></div></div>';
+  throw new Error();
+}
+</script>
+
+
+    <div class="header">
+        <div class="header-left">
+            <h1>照片墙</h1>
+            <div class="sub">Photo Gallery</div>
+        </div>
+        <a class="back-btn" href="index.html">
+            <i class="fas fa-arrow-left"></i> 返回主页
+        </a>
+    </div>
+
+    <div class="masonry" id="masonry"></div>
+
+    <!-- Lightbox -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" id="lbClose">&times;</button>
+        <button class="lightbox-prev" id="lbPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="lightbox-next" id="lbNext"><i class="fas fa-chevron-right"></i></button>
+        <div class="lightbox-img-wrap">
+            <img id="lbImg" src="" alt="">
+            <div class="lightbox-caption" id="lbCaption"></div>
+        </div>
+    </div>
+
+    <div class="page-footer">&copy; 2024 摇摇乐</div>
+
+<script>
+// ── Base64 SVG photos ──────────────────────────────────
+const photos = [
+    { name: "晨光",     w: 800, h: 1000, hues: ["#f5a97f","#ea8470","#d45b4a"],  shape: "mountain" },
+    { name: "海风",     w: 800, h: 600,  hues: ["#7fb8d0","#5b9ab0","#3d7a90"],  shape: "waves" },
+    { name: "秋叶",     w: 800, h: 800,  hues: ["#c8923f","#a86d2a","#e0b670"],  shape: "leaves" },
+    { name: "星空",     w: 800, h: 1100, hues: ["#1a1a3e","#2d2d6b","#4a4a9e"],  shape: "stars" },
+    { name: "城市剪影", w: 800, h: 600,  hues: ["#2c2c2c","#4a4a4a","#e8a860"],  shape: "city" },
+    { name: "花田",     w: 800, h: 700,  hues: ["#e8a0c0","#d4789c","#f0c8d8"],  shape: "flowers" },
+    { name: "沙漠",     w: 800, h: 600,  hues: ["#d4a76a","#c4944a","#e8c890"],  shape: "dunes" },
+    { name: "雨巷",     w: 800, h: 1000, hues: ["#5a6a6a","#7a8a8a","#3a4a4a"],  shape: "rain" },
+    { name: "极光",     w: 800, h: 600,  hues: ["#1a4a3a","#2a7a5a","#a0f0c0"],  shape: "aurora" },
+    { name: "樱花",     w: 800, h: 800,  hues: ["#f8c8d8","#e8a0b8","#fef0f0"],  shape: "cherry" },
+    { name: "雪山",     w: 800, h: 700,  hues: ["#e0e8f0","#c0d0e0","#f8fcff"],  shape: "snow" },
+    { name: "森林",     w: 800, h: 900,  hues: ["#2a5a2a","#3a7a3a","#1a3a1a"],  shape: "forest" },
+    { name: "日落",     w: 800, h: 600,  hues: ["#e8784a","#f0a060","#d05838"],  shape: "sunset" },
+    { name: "古巷",     w: 800, h: 1000, hues: ["#8a7a6a","#6a5a4a","#a89880"],  shape: "alley" },
+    { name: "虹",       w: 800, h: 600,  hues: ["#f8e8a0","#a0d8f0","#f0a0c0"],  shape: "rainbow" },
+];
+
+function makeSVG(w, h, hues, shape) {
+    const [c1, c2, c3] = hues;
+    let content = "";
+    const svgNS = "http://www.w3.org/2000/svg";
+
+    switch (shape) {
+
+    case "mountain":
+        content = `
+          <defs>
+            <linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient>
+            <radialGradient id="sun" cx="0.7" cy="0.2" r="0.3"><stop offset="0%" stop-color="${c3}" stop-opacity="0.8"/><stop offset="100%" stop-color="${c3}" stop-opacity="0"/></radialGradient>
+          </defs>
+          <rect width="${w}" height="${h}" fill="${c1}"/>
+          <circle cx="${w*0.7}" cy="${h*0.18}" r="${w*0.18}" fill="url(#sun)"/>
+          <polygon points="0,${h} ${w*0.25},${h*0.38} ${w*0.5},${h}" fill="${c2}" opacity="0.7"/>
+          <polygon points="${w*0.3},${h} ${w*0.6},${h*0.28} ${w*0.9},${h}" fill="${c2}" opacity="0.55"/>
+          <polygon points="${w*0.6},${h} ${w*0.85},${h*0.42} ${w+10},${h}" fill="${c3}" opacity="0.5"/>`;
+        break;
+
+    case "waves":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c3}"/></linearGradient></defs>
+          <rect width="${w}" height="${h}" fill="url(#g)"/>
+          ${Array.from({length:6},(_,i)=>`
+            <path d="M0 ${h*0.4+i*35} Q${w*0.25} ${h*0.38+i*35} ${w*0.5} ${h*0.4+i*35} T${w} ${h*0.4+i*35}" fill="none" stroke="rgba(255,255,255,${0.25-i*0.03})" stroke-width="${3+i}"/>
+          `).join('')}
+          <circle cx="${w*0.15}" cy="${h*0.2}" r="${w*0.08}" fill="rgba(255,255,255,0.2)"/>`;
+        break;
+
+    case "leaves":
+        content = `
+          <defs><radialGradient id="g" cx="0.5" cy="0.5" r="0.6"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></radialGradient></defs>
+          <rect width="${w}" height="${h}" fill="${c3}"/>
+          ${Array.from({length:20},(_,i)=>`
+            <ellipse cx="${w*(0.1 + Math.sin(i*2.7)*0.35)}" cy="${h*(0.08 + i*0.046)}" rx="${w*(0.04+Math.random()*0.06)}" ry="${h*0.025}" fill="${c1}" opacity="${0.5+Math.random()*0.5}" transform="rotate(${(i-10)*8},${w*(0.1 + Math.sin(i*2.7)*0.35)},${h*(0.08 + i*0.046)})"/>
+          `).join('')}`;
+        break;
+
+    case "stars":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs>
+          <rect width="${w}" height="${h}" fill="url(#g)"/>
+          ${Array.from({length:80},()=>`
+            <circle cx="${Math.random()*w}" cy="${Math.random()*h*0.7}" r="${0.5+Math.random()*1.8}" fill="rgba(255,255,255,${0.3+Math.random()*0.7})">
+              <animate attributeName="opacity" values="${0.3+Math.random()*0.4};${0.7+Math.random()*0.3};${0.3+Math.random()*0.4}" dur="${2+Math.random()*4}s" repeatCount="indefinite"/>
+            </circle>
+          `).join('')}
+          <polygon points="${w*0.3},${h} ${w*0.15},${h*0.55} ${w*0.05},${h*0.55} ${w*0.08},${h*0.4} 0,${h*0.25} ${w*0.1},${h*0.2} ${w*0.2},0 ${w*0.3},${h*0.14} ${w*0.5},${h}" fill="${c3}" opacity="0.12"/>`;
+        break;
+
+    case "city":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c3}"/><stop offset="60%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs>
+          <rect width="${w}" height="${h}" fill="url(#g)"/>
+          <circle cx="${w*0.5}" cy="${h*0.32}" r="${w*0.14}" fill="${c3}" opacity="0.9"/>
+          ${[0.05,0.2,0.35,0.5,0.65,0.78].map(x=>`
+            <rect x="${w*x}" y="${h*(0.5+Math.random()*0.2)}" width="${w*(0.06+Math.random()*0.08)}" height="${h*0.5}" fill="${c2}" opacity="0.7"/>
+          `).join('')}
+          ${Array.from({length:30},()=>`
+            <rect x="${w*(0.02+Math.random()*0.94)}" y="${h*(0.35+Math.random()*0.5)}" width="${1+Math.random()*2}" height="${1+Math.random()*3}" fill="${c3}" opacity="${0.4+Math.random()*0.6}"/>
+          `).join('')}`;
+        break;
+
+    case "flowers":
+        content = `
+          <defs><radialGradient id="g" cx="0.5" cy="0.5" r="0.7"><stop offset="0%" stop-color="${c3}"/><stop offset="100%" stop-color="${c2}"/></radialGradient></defs>
+          <rect width="${w}" height="${h}" fill="${c3}"/>
+          ${Array.from({length:12},(_,i)=>`
+            <g transform="translate(${w*(0.15+(i%4)*0.23)},${h*(0.15+Math.floor(i/4)*0.23)})">
+              ${Array.from({length:6},(_,j)=>`
+                <ellipse cx="${Math.cos(j*1.047)*w*0.06}" cy="${Math.sin(j*1.047)*w*0.06}" rx="${w*0.04}" ry="${w*0.025}" fill="${c1}" opacity="0.7" transform="rotate(${j*60})"/>
+              `).join('')}
+              <circle cx="0" cy="0" r="${w*0.025}" fill="${c2}"/>
+            </g>
+          `).join('')}`;
+        break;
+
+    case "dunes":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c3}"/></linearGradient></defs>
+          <rect width="${w}" height="${h}" fill="url(#g)"/>
+          <path d="M0 ${h*0.55} Q${w*0.2} ${h*0.42} ${w*0.4} ${h*0.5} T${w*0.7} ${h*0.4} T${w} ${h*0.48} L${w} ${h} L0 ${h} Z" fill="${c2}" opacity="0.5"/>
+          <path d="M0 ${h*0.7} Q${w*0.3} ${h*0.58} ${w*0.55} ${h*0.65} T${w} ${h*0.6} L${w} ${h} L0 ${h} Z" fill="${c2}" opacity="0.35"/>
+          <circle cx="${w*0.8}" cy="${h*0.18}" r="${w*0.1}" fill="${c3}" opacity="0.5"/>`;
+        break;
+
+    case "rain":
+        content = `
+          <rect width="${w}" height="${h}" fill="${c3}"/>
+          <rect x="0" y="0" width="${w}" height="${h*0.7}" fill="${c1}" opacity="0.8"/>
+          ${Array.from({length:100},()=>`
+            <line x1="${Math.random()*w}" y1="${Math.random()*h*0.6}" x2="${Math.random()*w-15}" y2="${Math.random()*h*0.6+40}" stroke="${c2}" stroke-width="${0.5+Math.random()*1.2}" opacity="${0.3+Math.random()*0.5}"/>
+          `).join('')}
+          <rect x="${w*0.3}" y="${h*0.5}" width="${w*0.4}" height="${h*0.5}" fill="${c1}" opacity="0.6" rx="2"/>
+          <polygon points="${w*0.3},${h*0.5} ${w*0.5},${h*0.3} ${w*0.7},${h*0.5}" fill="${c2}" opacity="0.7"/>`;
+        break;
+
+    case "aurora":
+        content = `
+          <rect width="${w}" height="${h}" fill="${c1}"/>
+          ${[0.2,0.3,0.4,0.45].map((y,i)=>`
+            <path d="M0 ${h*y} Q${w*0.3} ${h*(y-0.12)} ${w*0.55} ${h*y} T${w} ${h*(y-0.06)}" fill="none" stroke="${c3}" stroke-width="${40-i*8}" opacity="${0.12-i*0.02}" stroke-linecap="round"/>
+          `).join('')}
+          <path d="M${w*0.1} ${h*0.9} Q${w*0.3} ${h*0.7} ${w*0.5} ${h*0.85} T${w*0.9} ${h*0.75}" fill="none" stroke="${c2}" stroke-width="3" opacity="0.3"/>
+          ${Array.from({length:20},()=>`
+            <circle cx="${Math.random()*w}" cy="${Math.random()*h}" r="${0.5+Math.random()*1.5}" fill="${c3}" opacity="${0.2+Math.random()*0.5}"/>
+          `).join('')}`;
+        break;
+
+    case "cherry":
+        content = `
+          <rect width="${w}" height="${h}" fill="${c3}"/>
+          <rect x="0" y="${h*0.6}" width="${w}" height="${h*0.4}" fill="${c2}" opacity="0.3"/>
+          ${Array.from({length:30},()=>`
+            <circle cx="${Math.random()*w}" cy="${Math.random()*h*0.55}" r="${2+Math.random()*8}" fill="${c1}" opacity="${0.4+Math.random()*0.6}"/>
+          `).join('')}
+          <line x1="${w*0.5}" y1="${h}" x2="${w*0.45}" y2="${h*0.4}" stroke="#8a6a5a" stroke-width="10"/>
+          <line x1="${w*0.45}" y1="${h*0.55}" x2="${w*0.25}" y2="${h*0.35}" stroke="#8a6a5a" stroke-width="5"/>
+          <line x1="${w*0.45}" y1="${h*0.5}" x2="${w*0.65}" y2="${h*0.3}" stroke="#8a6a5a" stroke-width="6"/>`;
+        break;
+
+    case "snow":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c2}"/></linearGradient></defs>
+          <rect width="${w}" height="${h}" fill="url(#g)"/>
+          <polygon points="${w*0.25},${h} ${w*0.45},${h*0.3} ${w*0.55},${h*0.3} ${w*0.75},${h}" fill="#fff" opacity="0.9"/>
+          <polygon points="${w*0.35},${h} ${w*0.5},${h*0.45} ${w*0.65},${h}" fill="#f0f4f8" opacity="0.7"/>
+          ${Array.from({length:40},()=>`
+            <circle cx="${Math.random()*w}" cy="${Math.random()*h}" r="${0.5+Math.random()*3}" fill="#fff" opacity="${0.3+Math.random()*0.7}"/>
+          `).join('')}`;
+        break;
+
+    case "forest":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="100%" stop-color="${c3}"/></linearGradient></defs>
+          <rect width="${w}" height="${h}" fill="url(#g)"/>
+          ${[0.1,0.22,0.35,0.48,0.6,0.72,0.85].map(x=>`
+            <polygon points="${w*x},${h*0.55} ${w*(x+0.14)},${h*0.1} ${w*(x+0.28)},${h*0.55}" fill="${c2}" opacity="${0.5+Math.random()*0.5}"/>
+          `).join('')}
+          ${Array.from({length:15},()=>`
+            <circle cx="${Math.random()*w}" cy="${Math.random()*h*0.3}" r="${1+Math.random()*3}" fill="${c3}" opacity="0.6"/>
+          `).join('')}`;
+        break;
+
+    case "sunset":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="${c1}"/><stop offset="50%" stop-color="${c2}"/><stop offset="100%" stop-color="${c3}"/></linearGradient></defs>
+          <rect width="${w}" height="${h}" fill="url(#g)"/>
+          <circle cx="${w*0.5}" cy="${h*0.6}" r="${w*0.22}" fill="${c2}" opacity="0.7"/>
+          <rect x="0" y="${h*0.7}" width="${w}" height="${h*0.3}" fill="${c3}" opacity="0.4"/>
+          ${Array.from({length:8},(_,i)=>`
+            <rect x="${w*(0.05+i*0.12)}" y="${h*(0.72+i%3*0.03)}" width="${w*0.04}" height="${h*0.2}" fill="${c3}" opacity="0.5"/>
+          `).join('')}`;
+        break;
+
+    case "alley":
+        content = `
+          <rect width="${w}" height="${h}" fill="${c1}"/>
+          <rect x="0" y="${h*0.55}" width="${w}" height="${h*0.45}" fill="${c3}" opacity="0.6"/>
+          <polygon points="${w*0.35},${h*0.15} ${w*0.35},${h*0.55} ${w*0.65},${h*0.55} ${w*0.65},${h*0.15}" fill="${c2}" opacity="0.3"/>
+          ${[0.2,0.4,0.6,0.8].map(x=>`
+            <rect x="${w*(x-0.06)}" y="${h*0.58}" width="${w*0.12}" height="${h*0.42}" fill="${c2}" opacity="0.4" rx="1"/>
+            <rect x="${w*(x-0.04)}" y="${h*0.62}" width="${w*0.03}" height="${h*0.08}" fill="${c1}" opacity="0.5"/>
+          `).join('')}
+          <line x1="0" y1="${h*0.55}" x2="${w}" y2="${h*0.55}" stroke="${c3}" stroke-width="2" opacity="0.5"/>`;
+        break;
+
+    case "rainbow":
+        content = `
+          <defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#e8a0a0"/><stop offset="20%" stop-color="#e8c880"/><stop offset="40%" stop-color="#a0d8a0"/><stop offset="60%" stop-color="#80c0e0"/><stop offset="80%" stop-color="#a0a0e0"/><stop offset="100%" stop-color="#d0a0e0"/>
+          </linearGradient></defs>
+          <rect width="${w}" height="${h*0.6}" fill="${c1}"/>
+          <rect x="0" y="${h*0.4}" width="${w}" height="${h*0.6}" fill="${c2}"/>
+          <path d="M${w*0.15} ${h*0.65} Q${w*0.5} ${h*0.3} ${w*0.85} ${h*0.65}" fill="none" stroke="url(#g)" stroke-width="28" opacity="0.7" stroke-linecap="round"/>
+          <circle cx="${w*0.5}" cy="${h*0.65}" r="${w*0.08}" fill="${c3}" opacity="0.4"/>`;
+        break;
+
+    default:
+        content = `<rect width="${w}" height="${h}" fill="${c1}"/>`;
+    }
+
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${w} ${h}" width="${w}" height="${h}">${content}</svg>`;
+    return "data:image/svg+xml;base64," + btoa(unescape(encodeURIComponent(svg)));
+}
+
+// ── Render ────────────────────────────────────────────
+const masonry = document.getElementById("masonry");
+
+photos.forEach((p, idx) => {
+    const src = makeSVG(p.w, p.h, p.hues, p.shape);
+    const card = document.createElement("div");
+    card.className = "photo-card";
+    card.setAttribute("data-index", idx);
+    card.innerHTML = `
+        <img src="${src}" alt="${p.name}" loading="lazy">
+        <div class="caption">${p.name}</div>
+    `;
+    card.addEventListener("click", () => openLightbox(idx));
+    masonry.appendChild(card);
+});
+
+// ── Lightbox logic ────────────────────────────────────
+let currentIdx = 0;
+const lb = document.getElementById("lightbox");
+const lbImg = document.getElementById("lbImg");
+const lbCaption = document.getElementById("lbCaption");
+
+function openLightbox(idx) {
+    currentIdx = idx;
+    const p = photos[idx];
+    lbImg.src = makeSVG(p.w * 1.5, p.h * 1.5, p.hues, p.shape);
+    lbCaption.textContent = p.name;
+    lb.classList.add("open");
+    document.body.style.overflow = "hidden";
+}
+
+function closeLightbox() {
+    lb.classList.remove("open");
+    document.body.style.overflow = "";
+}
+
+function prevPhoto() {
+    currentIdx = (currentIdx - 1 + photos.length) % photos.length;
+    const p = photos[currentIdx];
+    lbImg.src = makeSVG(p.w * 1.5, p.h * 1.5, p.hues, p.shape);
+    lbCaption.textContent = p.name;
+}
+
+function nextPhoto() {
+    currentIdx = (currentIdx + 1) % photos.length;
+    const p = photos[currentIdx];
+    lbImg.src = makeSVG(p.w * 1.5, p.h * 1.5, p.hues, p.shape);
+    lbCaption.textContent = p.name;
+}
+
+document.getElementById("lbClose").addEventListener("click", closeLightbox);
+document.getElementById("lbPrev").addEventListener("click", prevPhoto);
+document.getElementById("lbNext").addEventListener("click", nextPhoto);
+lb.addEventListener("click", (e) => {
+    if (e.target === lb) closeLightbox();
+});
+
+document.addEventListener("keydown", (e) => {
+    if (!lb.classList.contains("open")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowLeft") prevPhoto();
+    if (e.key === "ArrowRight") nextPhoto();
+});
+</script>
+
+</body>
+</html>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>江湖行 · 侠客游记</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=ZCOOL+XiaoWei&family=Noto+Serif+SC:wght@400;600;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--paper:#f5f0e8;--paper-alpha:rgba(245,240,232,0.88);--ink:#1a1008;--ink-light:#3a2a18;--ink-muted:#7a6a58;--red:#c23a2a;--gold:#b8860b;--jade:#4a7050;--pink:#c06070;--border:#c8b898;--font-title:"Ma Shan Zheng",cursive;--font-heading:"ZCOOL XiaoWei","Noto Serif SC",serif;--font-body:"Noto Serif SC",serif}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:var(--font-body);background:#1a1208;color:var(--ink);min-height:100vh;display:flex;justify-content:center;overflow-x:hidden}
+canvas#bgCanvas{position:fixed;top:0;left:0;width:100vw;height:100vh;z-index:0;image-rendering:pixelated}
+.desk{width:100%;display:flex;flex-direction:column;min-height:100vh;position:relative;z-index:1}
+.topbar{background:var(--paper-alpha);backdrop-filter:blur(8px);border-bottom:1px solid var(--border);padding:10px 28px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+.topbar-brand{font-family:var(--font-title);font-size:2.2rem;color:var(--ink);letter-spacing:.12em;position:relative}
+.topbar-brand .seal{position:absolute;top:-8px;right:-30px;width:28px;height:28px;border:2px solid var(--red);border-radius:3px;display:flex;align-items:center;justify-content:center;font-size:.7rem;color:var(--red);transform:rotate(8deg);font-family:var(--font-heading)}
+.back-link{color:var(--ink-light);text-decoration:none;font-size:.95rem;transition:color .2s;font-family:var(--font-heading)}.back-link:hover{color:var(--red-dark)}
+.layout{display:flex;flex:1;overflow:hidden;z-index:1}@media(max-width:720px){.layout{flex-direction:column}}
+.sidebar{width:220px;min-width:220px;background:linear-gradient(180deg,rgba(245,240,232,0.88),rgba(240,235,225,0.78));backdrop-filter:blur(6px);border-right:1px solid var(--border);padding:12px;display:flex;flex-direction:column;gap:5px;overflow-y:auto}
+.stat-item{background:rgba(0,0,0,0.02);border:1px solid var(--border);border-radius:2px;padding:6px 9px;text-align:center}
+.stat-item .si-label{font-size:.65rem;color:var(--ink-muted);letter-spacing:.1em;font-family:var(--font-heading)}
+.stat-item .si-val{font-family:var(--font-title);font-size:1.1rem;color:var(--ink);line-height:1.2}
+.si-bar{height:3px;border-radius:1px;background:var(--border);margin-top:2px;overflow:hidden}
+.si-bar div{height:100%;border-radius:1px;transition:width .6s}
+.hp-bar div{background:linear-gradient(90deg,var(--red-dark),var(--red))}.qi-bar div{background:linear-gradient(90deg,#3a5080,#5a70a0)}.rep-bar div{background:linear-gradient(90deg,#8b6914,#d4a020)}.wu-bar div{background:linear-gradient(90deg,#5a4080,#7a60a0)}.luck-bar div{background:linear-gradient(90deg,#408060,#60a080)}
+.s-title{font-family:var(--font-heading);font-size:.7rem;color:var(--ink-muted);letter-spacing:.1em;text-align:center;margin:2px 0;border-top:1px dotted rgba(0,0,0,0.1);padding-top:4px}
+.time-display{text-align:center;font-family:var(--font-heading);font-size:.68rem;color:var(--ink-muted);padding:4px 0}
+.inv-item{padding:2px 0;border-bottom:1px dotted rgba(0,0,0,0.06);display:flex;justify-content:space-between;font-size:.7rem;font-family:var(--font-heading);color:var(--ink-light)}
+.inv-item span:last-child{color:var(--ink-muted);cursor:pointer;opacity:0;transition:opacity .2s;font-size:.5rem}.inv-item:hover span:last-child{opacity:1}
+.btn-mini{padding:5px 10px;border:1px solid var(--border);border-radius:2px;background:rgba(0,0,0,0.02);cursor:pointer;font-family:var(--font-heading);font-size:.68rem;color:var(--ink-muted);transition:all .2s;width:100%;text-align:center}
+.btn-mini:hover{border-color:var(--ink);color:var(--ink);background:rgba(0,0,0,0.04)}
+.api-inp{width:100%;padding:4px 6px;font-size:.6rem;font-family:monospace;border:1px solid var(--border);border-radius:2px;background:rgba(0,0,0,0.01);color:var(--ink)}
+@media(max-width:720px){.sidebar{width:100%;min-width:100%;flex-direction:row;flex-wrap:wrap;gap:3px;border-right:none;border-bottom:1px solid var(--border);max-height:24vh;padding:8px}.stat-item{flex:1;min-width:55px;padding:4px}.stat-item .si-val{font-size:.9rem}}
+.main-area{flex:1;overflow-y:auto;padding:16px 24px;display:flex;flex-direction:column;gap:12px}
+.view-toggle{display:flex;gap:0;justify-content:center;flex-wrap:wrap}
+.vt-btn{padding:7px 18px;border:1px solid var(--border);background:var(--paper-alpha);backdrop-filter:blur(4px);cursor:pointer;font-family:var(--font-heading);font-size:.84rem;color:var(--ink-muted);letter-spacing:.05em;transition:all .2s}
+.vt-btn:first-child{border-radius:3px 0 0 3px}.vt-btn:last-child{border-radius:0 3px 3px 0}.vt-btn.active{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.map-wrap{background:var(--paper-alpha);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:4px;padding:18px 12px}
+.map-title{text-align:center;font-family:var(--font-title);font-size:1.35rem;color:var(--ink-muted);letter-spacing:.16em;margin-bottom:14px}
+.map-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;max-width:850px;margin:0 auto}
+@media(max-width:800px){.map-grid{grid-template-columns:repeat(4,1fr);gap:7px}}@media(max-width:500px){.map-grid{grid-template-columns:repeat(3,1fr);gap:5px}}
+.loc-node{aspect-ratio:1;border:1px solid var(--border);border-radius:4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;transition:all .35s;font-family:var(--font-heading);background:rgba(245,240,232,0.55);position:relative}
+.loc-node:hover{border-color:var(--ink);transform:translateY(-3px);box-shadow:0 6px 20px rgba(0,0,0,0.12);background:rgba(245,240,232,0.82)}
+.loc-node.visited{border-color:rgba(0,0,0,0.18)}.loc-node .loc-icon{font-size:1.5rem}.loc-node .loc-name{font-size:.78rem;letter-spacing:.06em;color:var(--ink)}.loc-node .loc-sub{font-size:.55rem;color:var(--ink-muted);position:absolute;bottom:3px}.loc-node .loc-badge{position:absolute;top:3px;right:4px;font-size:.5rem;color:var(--red);border:1px solid var(--red);border-radius:50%;width:14px;height:14px;display:flex;align-items:center;justify-content:center;transform:rotate(5deg)}
+.loc-node.relationship{border-color:var(--pink);background:rgba(192,96,112,0.06)}
+.loc-node.relationship .loc-sub{color:var(--pink)}
+
+.story-panel{background:var(--paper-alpha);backdrop-filter:blur(8px);border:1px solid var(--border);border-radius:4px;overflow:hidden;display:none}
+.story-panel.show{display:block;animation:inkReveal .45s ease}
+@keyframes inkReveal{from{opacity:0;clip-path:inset(0 100% 0 0)}to{opacity:1;clip-path:inset(0 0 0 0)}}
+.story-header{padding:16px 24px 10px;text-align:center;border-bottom:1px solid var(--border)}
+.story-header .sh-title{font-family:var(--font-title);font-size:1.6rem;color:var(--ink);letter-spacing:.1em}
+.story-header .sh-meta{font-size:.72rem;color:var(--ink-muted);font-family:var(--font-heading);margin-top:2px}
+.story-header .sh-lore{display:inline-block;margin-top:4px;padding:2px 10px;border:1px solid var(--red);border-radius:2px;font-size:.65rem;color:var(--red);font-family:var(--font-heading)}
+.story-phase{padding:16px 24px;font-size:.9rem;line-height:2.2;color:var(--ink-light);white-space:pre-line;font-family:var(--font-body);border-bottom:1px solid rgba(0,0,0,0.04)}
+.story-phase .phase-num{font-family:var(--font-title);font-size:1.1rem;color:var(--ink-muted);margin-bottom:4px;display:block;letter-spacing:.06em}
+.story-phase .callback{display:inline-block;margin:4px 0;padding:2px 10px;border:1px dashed var(--border);border-radius:2px;font-size:.72rem;color:var(--ink-muted);font-family:var(--font-heading);background:rgba(0,0,0,0.02)}
+.story-phase .npc-intro{display:inline-block;margin:4px 0;padding:2px 10px;border:1px solid var(--gold);border-radius:2px;font-size:.72rem;color:var(--gold);font-family:var(--font-heading);background:rgba(184,134,11,0.05)}
+.story-phase .rel-change{display:inline-block;margin:4px 0;padding:2px 10px;border:1px solid var(--pink);border-radius:2px;font-size:.72rem;color:var(--pink);font-family:var(--font-heading);background:rgba(192,96,112,0.05)}
+.story-outline{display:none;padding:10px 24px;font-size:.76rem;color:var(--ink-muted);line-height:2;border-bottom:1px solid rgba(0,0,0,0.04);font-family:var(--font-heading);font-style:italic}
+.story-outline.show{display:block}
+.story-choices{padding:10px 24px 14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;border-top:1px solid rgba(0,0,0,0.06)}
+.choice-btn{padding:9px 20px;border:1px solid var(--ink);border-radius:2px;background:transparent;cursor:pointer;font-family:var(--font-heading);font-size:.86rem;color:var(--ink);letter-spacing:.05em;transition:all .25s;position:relative}
+.choice-btn::after{content:'';position:absolute;inset:0;background:var(--ink);opacity:0;transition:opacity .25s}
+.choice-btn:hover{color:var(--paper)}.choice-btn:hover::after{opacity:1}
+.choice-btn span{position:relative;z-index:1}.choice-btn:disabled{opacity:.4;pointer-events:none}
+.treasure-choices{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;padding:6px 24px 4px;border-top:1px dashed var(--border)}
+.tchoice-btn{padding:7px 16px;border:1px solid var(--gold);border-radius:2px;background:rgba(184,134,11,0.04);cursor:pointer;font-family:var(--font-heading);font-size:.78rem;color:var(--gold);transition:all .2s}.tchoice-btn:hover{background:var(--gold);color:#fff}
+.story-outcome{padding:12px 24px;text-align:center;font-family:var(--font-heading);font-size:.84rem;border-top:1px solid rgba(0,0,0,0.06);display:none;background:rgba(0,0,0,0.012)}.story-outcome.show{display:block}
+.out-reward{color:var(--gold)}.out-penalty{color:var(--red-dark)}.out-info{color:var(--ink-muted)}
+.story-close-row{text-align:center;padding:0 24px 12px}
+/* Detail Panel (for viewing treasures/NPCs/journal) */
+.detail-panel{display:none;position:fixed;inset:0;z-index:998;align-items:center;justify-content:center}.detail-panel.show{display:flex}
+.detail-bg{position:absolute;inset:0;background:rgba(20,10,5,0.4)}
+.detail-card{position:relative;background:var(--paper-alpha);backdrop-filter:blur(12px);border:2px solid var(--border);border-radius:8px;padding:28px 32px;max-width:600px;width:90vw;max-height:80vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,0.2);animation:inkReveal .35s ease}
+.detail-card .dc-close{position:absolute;top:12px;right:14px;width:32px;height:32px;border-radius:50%;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--ink-muted);font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .2s}.detail-card .dc-close:hover{border-color:var(--ink);color:var(--ink)}
+.detail-card .dc-title{font-family:var(--font-title);font-size:1.6rem;color:var(--ink);letter-spacing:.08em;margin-bottom:4px}
+.detail-card .dc-sub{font-size:.75rem;color:var(--ink-muted);font-family:var(--font-heading);margin-bottom:12px}
+.detail-card .dc-body{font-size:.88rem;line-height:2;color:var(--ink-light);white-space:pre-line}
+.detail-card .dc-poem{font-size:.78rem;color:var(--red-dark);margin-top:10px;padding:10px 14px;background:rgba(139,26,26,0.04);border-left:2px solid var(--red);border-radius:2px;line-height:2;font-family:var(--font-heading)}
+.detail-card .dc-field{margin-bottom:6px}.detail-card .dc-label{font-size:.68rem;color:var(--ink-muted);letter-spacing:.06em;font-family:var(--font-heading)}
+.btn-close{padding:6px 20px;border:1px solid var(--border);border-radius:2px;background:transparent;cursor:pointer;font-family:var(--font-heading);font-size:.8rem;color:var(--ink-muted);transition:all .2s}.btn-close:hover{border-color:var(--ink);color:var(--ink)}
+
+.sub-view{display:none;flex-direction:column;gap:0}.sub-view.show{display:flex}
+.section-header{text-align:center;padding:10px 0;font-family:var(--font-title);font-size:1.4rem;letter-spacing:.08em;color:var(--ink)}
+.tr-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px;padding:6px 0}
+.tr-card{background:var(--paper-alpha);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:4px;padding:16px;display:flex;gap:12px;transition:all .3s;position:relative}.tr-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);transform:translateY(-2px)}.tr-card .tc-pixel{flex-shrink:0;width:72px;height:72px;image-rendering:pixelated;border:1px solid var(--border);border-radius:2px}.tr-card .tc-info{flex:1;min-width:0}.tr-card .tc-name{font-family:var(--font-title);font-size:1.1rem;color:var(--ink)}.tr-card .tc-origin{font-size:.68rem;color:var(--ink-muted);margin:2px 0 5px;font-family:var(--font-heading)}.tr-card .tc-effect{font-size:.78rem;color:var(--ink-light);line-height:1.6}.tr-card .tc-story{font-size:.74rem;color:var(--ink-muted);margin-top:4px;line-height:1.6;font-style:italic}.tr-card .tc-poem{font-size:.7rem;color:var(--red-dark);margin-top:5px;padding:7px 10px;background:rgba(139,26,26,0.04);border-left:2px solid var(--red);border-radius:2px;line-height:1.8;font-family:var(--font-heading)}.tr-card .tc-del{position:absolute;top:8px;right:10px;width:22px;height:22px;border-radius:50%;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--ink-muted);font-size:.55rem;display:flex;align-items:center;justify-content:center}.tr-card .tc-del:hover{border-color:var(--red-dark);color:var(--red-dark)}
+
+.jl-list{display:flex;flex-direction:column;gap:0;max-height:60vh;overflow-y:auto}
+.jl-entry{padding:10px 14px;border-bottom:1px solid rgba(0,0,0,0.06);cursor:pointer;transition:all .2s;position:relative;background:rgba(245,240,232,0.4)}.jl-entry:hover{background:rgba(245,240,232,0.7)}.jl-entry .je-title{font-family:var(--font-heading);font-size:.88rem;color:var(--ink)}.jl-entry .je-lore{font-size:.62rem;color:var(--red);font-family:var(--font-heading);border:1px solid var(--red);padding:1px 6px;border-radius:2px;margin-left:5px}.jl-entry .je-meta{font-size:.68rem;color:var(--ink-muted);margin-top:2px}.jl-entry .je-del{position:absolute;right:10px;top:50%;transform:translateY(-50%);width:24px;height:24px;border-radius:50%;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--ink-muted);font-size:.55rem;display:flex;align-items:center;justify-content:center}.jl-entry .je-del:hover{border-color:var(--red-dark);color:var(--red-dark)}
+
+.npc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px;padding:6px 0}.npc-card{background:var(--paper-alpha);backdrop-filter:blur(6px);border:1px solid var(--border);border-radius:4px;padding:16px;transition:all .3s;position:relative}.npc-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1)}.npc-card .npc-name{font-family:var(--font-title);font-size:1.2rem;color:var(--ink)}.npc-card .npc-title{font-size:.68rem;color:var(--gold);font-family:var(--font-heading);margin:1px 0 4px}.npc-card .npc-desc{font-size:.78rem;color:var(--ink-light);line-height:1.7;margin-bottom:4px}.npc-card .npc-affection{font-size:.7rem;color:var(--pink);font-family:var(--font-heading);margin:4px 0}.npc-card .npc-affection .aff-bar{display:inline-block;width:80px;height:4px;background:rgba(0,0,0,0.06);border-radius:2px;vertical-align:middle;margin:0 6px;overflow:hidden}.npc-card .npc-affection .aff-bar div{height:100%;border-radius:2px;background:var(--pink)}.npc-card .npc-relations{font-size:.7rem;color:var(--ink-muted);line-height:1.6;margin-top:4px;padding:6px 8px;background:rgba(0,0,0,0.02);border-radius:2px}.npc-card .npc-agreements{font-size:.7rem;color:var(--jade);line-height:1.6;margin-top:3px}.npc-card .npc-visit{position:absolute;bottom:10px;right:10px;padding:4px 12px;border:1px solid var(--pink);border-radius:2px;background:rgba(192,96,112,0.04);cursor:pointer;font-family:var(--font-heading);font-size:.7rem;color:var(--pink);transition:all .2s}.npc-card .npc-visit:hover{background:var(--pink);color:#fff}.npc-card .npc-del{position:absolute;top:8px;right:10px;width:22px;height:22px;border-radius:50%;border:1px solid transparent;background:transparent;cursor:pointer;color:var(--ink-muted);font-size:.55rem;display:flex;align-items:center;justify-content:center}.npc-card .npc-del:hover{border-color:var(--red-dark);color:var(--red-dark)}
+.empty-msg{text-align:center;padding:40px;color:var(--ink-muted);font-family:var(--font-heading);font-size:.88rem}
+
+.load-overlay{display:none;position:fixed;inset:0;background:rgba(20,10,5,0.35);z-index:999;align-items:center;justify-content:center}.load-overlay.show{display:flex}
+.load-card{background:var(--paper-alpha);backdrop-filter:blur(12px);border:1px solid var(--ink);border-radius:4px;padding:22px 36px;text-align:center}.load-card .lc-icon{font-size:2rem;animation:inkFloat 2s ease-in-out infinite}@keyframes inkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}.load-card .lc-text{font-family:var(--font-title);font-size:1.1rem;color:var(--ink);letter-spacing:.06em;margin-top:6px}.load-card .lc-sub{font-size:.72rem;color:var(--ink-muted);font-family:var(--font-heading)}
+.footer{text-align:center;padding:4px 20px 10px;color:var(--ink-muted);font-size:.62rem;font-family:var(--font-heading);letter-spacing:.06em;z-index:1;position:relative}
+</style>
+</head>
+<body>
+<script>
+if(!sessionStorage.getItem('_arce_session')){
+  document.body.innerHTML='<div style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:-apple-system,sans-serif;color:#999;text-align:center;"><div><div style="font-size:3rem;margin-bottom:16px;">🔒</div><p>请先通过主页登录</p><p style="font-size:.85rem;margin-top:8px;"><a href="/" style="color:#667eea;">返回主页</a></p></div></div>';
+  throw new Error();
+}
+</script>
+
+<canvas id="bgCanvas"></canvas>
+<div class="desk">
+<div class="topbar"><div class="topbar-brand">江 湖 行<div class="seal">记</div></div><a class="back-link" href="index.html"><i class="fas fa-arrow-left"></i> 返回主页</a></div>
+<div class="layout">
+
+<div class="sidebar">
+<div class="time-display" id="timeDisplay">☀️ 甲子年 春 · 晨</div>
+<div class="s-title">🗡️ 侠 客</div>
+<div class="stat-item"><div class="si-label">气血</div><div class="si-val" id="hpVal">100</div><div class="si-bar hp-bar"><div id="hpBar" style="width:100%"></div></div></div>
+<div class="stat-item"><div class="si-label">内力</div><div class="si-val" id="qiVal">50</div><div class="si-bar qi-bar"><div id="qiBar" style="width:50%"></div></div></div>
+<div class="stat-item"><div class="si-label">声望</div><div class="si-val" id="repVal">0</div><div class="si-bar rep-bar"><div id="repBar" style="width:0%"></div></div></div>
+<div class="stat-item"><div class="si-label">悟性</div><div class="si-val" id="wuVal">10</div><div class="si-bar wu-bar"><div id="wuBar" style="width:10%"></div></div></div>
+<div class="stat-item"><div class="si-label">机缘</div><div class="si-val" id="luckVal">10</div><div class="si-bar luck-bar"><div id="luckBar" style="width:10%"></div></div></div>
+<div class="s-title">🎒 行 囊</div><div id="inventory" style="font-size:.7rem;font-family:var(--font-heading);color:var(--ink-light);line-height:1.8"></div>
+<div class="s-title">💎 宝 物</div><div id="treasureList" style="font-size:.68rem;font-family:var(--font-heading);color:var(--ink-light);line-height:1.7"></div>
+<div style="margin-top:auto"><div style="font-size:.62rem;color:var(--ink-muted);text-align:center;font-family:var(--font-heading)">步 <span id="totalSteps">0</span> · 闻 <span id="jnlBadge">0</span> · 识 <span id="npcBadge">0</span></div>
+<button class="btn-mini" onclick="exportSave()"><i class="fas fa-save"></i> 存档</button>
+<button class="btn-mini" onclick="document.getElementById('importSave').click()" style="margin-top:2px"><i class="fas fa-folder-open"></i> 读档</button>
+<input type="file" id="importSave" accept=".json" style="display:none" onchange="importSave(event)"></div>
+<div style="padding-top:3px;border-top:1px solid rgba(0,0,0,0.06);margin-top:2px"><input type="password" class="api-inp" id="apiKeyInp" placeholder="API: sk-..."><button class="btn-mini" onclick="saveKey()" style="margin-top:2px">保存</button></div>
+</div>
+
+<div class="main-area">
+<div class="view-toggle">
+<button class="vt-btn active" id="btnMap" onclick="showView('map')">🗺️ 览图</button>
+<button class="vt-btn" id="btnJournal" onclick="showView('journal')">📜 游记(<span id="jnlCount">0</span>)</button>
+<button class="vt-btn" id="btnTreasure" onclick="showView('treasure')">💎 宝物(<span id="trsCount">0</span>)</button>
+<button class="vt-btn" id="btnNPC" onclick="showView('npc')">👥 人物(<span id="npcViewCount">0</span>)</button>
+</div>
+
+<div id="mapView"><div class="map-wrap"><div class="map-title">— 江 湖 览 图 —</div><div class="map-grid" id="mapGrid"></div></div></div>
+<div class="sub-view" id="journalView"><div class="section-header">📜 游 历 见 闻</div><div class="jl-list" id="jlList"></div></div>
+<div class="sub-view" id="treasureView"><div class="section-header">💎 宝 物 名 录</div><div class="tr-grid" id="trGrid"></div></div>
+<div class="sub-view" id="npcView"><div class="section-header">👥 人 物 志</div><div class="npc-grid" id="npcGrid"></div></div>
+
+<div class="story-panel" id="storyPanel">
+<div class="story-header"><div class="sh-title" id="storyTitle"></div><div class="sh-meta" id="storyMeta"></div><div class="sh-lore" id="storyLore"></div></div>
+<div id="storyPhases"></div><div class="story-choices" id="storyChoices"></div><div class="treasure-choices" id="treasureChoices"></div>
+<div class="story-outcome" id="storyOutcome"></div>
+<div class="story-close-row"><button class="btn-close" onclick="closeStory()">收起故事，继续赶路 →</button></div>
+</div>
+
+</div></div>
+<div class="footer">长亭外 · 古道边 · 芳草碧连天</div>
+</div>
+
+<!-- Detail Panel -->
+<div class="detail-panel" id="detailPanel"><div class="detail-bg" onclick="hideDetail()"></div><div class="detail-card" id="detailCard"></div></div>
+
+<div class="load-overlay" id="loadOverlay"><div class="load-card"><div class="lc-icon">🏇</div><div class="lc-text">策马行路中……</div><div class="lc-sub">江湖事正酣</div></div></div>
+<canvas id="pixelCanvas" width="32" height="32" style="display:none"></canvas>
+
+<script>
+const DS_API="https://api.deepseek.com/chat/completions",SAVE_VER=2,STORE_KEY="jh_save_v2";
+const LOCS=[
+    {id:"ancient_temple",n:"古 刹",e:"🏯",s:"深山藏古寺",d:"千年古刹隐于深山，香火已冷钟声犹在。"},
+    {id:"misty_lake",n:"烟波湖",e:"🌊",s:"水怪出没",d:"湖面终年雾锁渔人不敢夜渡。湖底镇着上古水兽。"},
+    {id:"bamboo_forest",n:"翠竹林",e:"🎋",s:"剑气如风",d:"万竿翠竹遮天蔽日，风过如剑鸣。百年前剑仙在此飞升。"},
+    {id:"deserted_village",n:"荒 村",e:"🏚️",s:"鬼气森森",d:"村口石碑字迹模糊，纸钱满地，夜半常有幽幽哭声。"},
+    {id:"inn",n:"悦来客栈",e:"🏮",s:"消息集散",d:"天下江湖消息一半在此。南来北往侠客歇脚处。"},
+    {id:"snow_mountain",n:"大雪坪",e:"🏔️",s:"仙人遗迹",d:"终年积雪，山顶石台刻着无人能识的上古符篆。"},
+    {id:"ferry",n:"忘川渡",e:"⛵",s:"阴阳交界",d:"老船公撑一叶扁舟不索银钱。渡的是人是魂说不清楚。"},
+    {id:"market",n:"鬼 市",e:"🎪",s:"子开卯散",d:"深夜集市灯笼无火自亮。摊主或狐或蛇或枯骨。"},
+    {id:"cliff",n:"断肠崖",e:"⛰️",s:"情深不寿",d:"千仞绝壁下云雾翻涌。据说曾有一对侠侣在此跳崖殉情，崖壁上刻着他们的名字。"},
+    {id:"ancient_tomb",n:"将军冢",e:"⚰️",s:"千年不灭魂",d:"荒山之中一座无名古墓。每逢雷雨之夜，墓中便传出金戈铁马之声。"},
+    {id:"peach_spring",n:"桃花源",e:"🌸",s:"世外之境",d:"沿溪行数百步，忽逢桃花林。此地与外隔绝，不知今夕何夕。"},
+    {id:"sword_grave",n:"剑 冢",e:"⚔️",s:"葬剑之处",d:"历代名剑的埋骨之地。残剑如林，剑意弥漫，寻常人靠近便觉锋芒刺骨。"},
+    {id:"medicine_valley",n:"药王谷",e:"🌿",s:"妙手回春",d:"谷中遍地奇花异草。药王传人世代居于此处，悬壶济世。"},
+    {id:"dragon_abyss",n:"龙 渊",e:"🐉",s:"龙潜于渊",d:"深不见底的寒潭。传说潭底沉睡着一条真龙，鳞爪偶现便引得天象大变。"},
+    {id:"starlight_pavilion",n:"摘星楼",e:"🌠",s:"观星望气",d:"建在孤峰之上的七层木楼。据说此楼可通天地，观星象而知天下大势。"},
+];
+
+function fresh(){return{hp:100,mhp:100,qi:50,mqi:100,rep:40,mrep:100,wu:10,mwu:100,luck:10,mluck:100,bag:["青铜短剑","金疮药×3","干粮×5","火折子"],trs:[],npcs:[],vis:{},jnl:[],steps:0,bg:"ancient_temple",ver:SAVE_VER,time:{year:1,season:0,day:1,period:0}}}
+function ld(){try{let s=JSON.parse(localStorage.getItem(STORE_KEY));if(!s||s.ver!==SAVE_VER)s=fresh();if(!s.time)s.time={year:1,season:0,day:1,period:0};if(s.wu===undefined){s.wu=10;s.mwu=100}if(s.luck===undefined){s.luck=10;s.mluck=100}if(s.rep===undefined){s.rep=40;s.mrep=100}return s}catch(e){return fresh()}}
+function sv(s){localStorage.setItem(STORE_KEY,JSON.stringify(s))}
+let G=ld();
+
+const SEASONS=["🌸春","☀️夏","🍂秋","❄️冬"],PERIODS=["🌅晨","☀️午","🌄暮","🌙夜"];
+function timeStr(){const t=G.time;return PERIODS[t.period]+" 第"+t.year+"年 "+SEASONS[t.season]+" · 第"+t.day+"天"}
+function advanceTime(hours){G.time.period=(G.time.period+Math.floor(hours/6))%4;G.time.day+=Math.floor(hours/24);if(G.time.day>30){G.time.day=1;G.time.season=(G.time.season+1)%4;if(G.time.season===0)G.time.year++}}
+
+// ═══════════════════ BG ═══════════════════════════
+function drawBg(lid){const c=document.getElementById("bgCanvas"),W=c.width=window.innerWidth,H=c.height=window.innerHeight,ctx=c.getContext("2d"),PX=Math.max(2,Math.floor(Math.min(W/240,H/160))),GX=Math.floor(W/PX),GY=Math.floor(H/PX);const R=(x,y,w,h,c)=>{ctx.fillStyle=c;ctx.fillRect(x*PX,y*PX,w*PX,h*PX)},P=(x,y,c)=>{ctx.fillStyle=c;ctx.fillRect(x*PX,y*PX,PX,PX)};const pals={ancient_temple:{sk:["#b0b8c8","#a0a8b8"],mt:["#687080","#586878","#506070"],wt:["#506080","#486078"]},misty_lake:{sk:["#80a0c0","#7090b0"],mt:["#507090","#406880"],wt:["#306090","#285880"]},bamboo_forest:{sk:["#b0c8b0","#a0b8a0"],mt:["#609060","#508050"],wt:["#507050","#406040"]},deserted_village:{sk:["#a09890","#908880"],mt:["#605850","#504840"],wt:["#404040","#383838"]},inn:{sk:["#d0c8b0","#c0b8a0"],mt:["#807860","#706850"],wt:["#605840","#504830"]},snow_mountain:{sk:["#d0d8e8","#c0c8d8"],mt:["#8090a0","#708090"],wt:["#6080a0","#507090"]},ferry:{sk:["#889098","#788088"],mt:["#506068","#405058"],wt:["#283840","#203038"]},market:{sk:["#383040","#302838"],mt:["#403840","#383038"],wt:["#282030","#201828"]},cliff:{sk:["#c0b8a8","#b0a898"],mt:["#706860","#605850"],wt:["#505050","#404040"]},ancient_tomb:{sk:["#706860","#605850"],mt:["#484038","#383028"],wt:["#282020","#201818"]},peach_spring:{sk:["#d8c8c0","#c8b8b0"],mt:["#a08080","#907070"],wt:["#786060","#685050"]},sword_grave:{sk:["#9098a0","#808890"],mt:["#586068","#485058"],wt:["#384048","#283038"]},medicine_valley:{sk:["#b0c0a0","#a0b090"],mt:["#78a078","#689068"],wt:["#587058","#486048"]},dragon_abyss:{sk:["#506070","#405060"],mt:["#304050","#203040"],wt:["#182838","#102028"]},starlight_pavilion:{sk:["#182838","#101828"],mt:["#283848","#203040"],wt:["#182028","#101820"]}};const p=pals[lid]||pals.ancient_temple,horY=Math.floor(GY*0.62);for(let y=0;y<horY;y++)R(0,y,GX,1,p.sk[Math.min(Math.floor(y/horY*2),1)]);for(let l=0;l<3;l++){const bY=horY-4+l*5;for(let x=0;x<GX;x++){const a=6+l*4,f=0.008+l*0.004,h=Math.floor(Math.abs(Math.sin(x*f+l*1.7))*a+Math.abs(Math.sin(x*f*2.3+l*3.1))*a*0.5),t=Math.max(10,bY-h);for(let y=t;y<=bY;y++)P(x,y,(x+y)%3===0?p.mt[2]||p.mt[1]:p.mt[l]);if(l>=1&&h>a*0.65)for(let y=t;y<t+2;y++)P(x,y,"#e8f0f8")}}for(let x=0;x<GX;x++)for(let y=horY-5;y<horY+2;y++)if((x+y)%5===0)P(x,y,p.sk[1]);const wT=horY+1,wB=GY;for(let y=wT;y<wB;y++){const si=Math.floor((y-wT)/(wB-wT)*2);for(let x=0;x<GX;x++){const rip=(x+y*3)%7===0||(x-y*2)%9===0;P(x,y,rip&&y%2===0?p.wt[Math.min(si+1,1)]:p.wt[Math.min(si,1)])}}const cwS=Math.floor(GX*0.08),cwE=Math.floor(GX*0.58),cwY=horY+Math.floor((wB-horY)*0.35);for(let x=cwS;x<cwE;x++){P(x,cwY,(x%4<2?"#706858":"#807868"));if(x%3===0)P(x,cwY-1,"#706858")}for(let x=cwS;x<cwE;x+=Math.floor(GX/15))for(let py=-2;py<=2;py++)P(x,cwY+py,(py===0?"#685848":"#605040"));for(let t=0;t<3;t++){const tx=cwS+Math.floor((cwE-cwS)*(0.15+t*0.2));for(let ty=0;ty<14;ty++){P(tx,cwY-4-ty,"#605040");P(tx+1,cwY-4-ty,"#605040")}for(let b=0;b<4;b++){const bx=tx-2+Math.floor(b*1.8),by=cwY-12+Math.floor(b*2);for(let l=0;l<10;l++){const px=bx+Math.floor(Math.sin(l*0.5+b)*2),py=by+l;if(py<cwY-3)P(px,py,"#687860");if(l<8&&(l+b)%2===0)P(px+1,py,"#789870")}}}const pvX=Math.floor(GX*0.46),pvY=cwY-28;for(let x=-14;x<=14;x++)for(let y=0;y<3;y++)P(pvX+x,pvY+25+y,(x+14)%4<2?"#706858":"#807868");for(let px of[-11,-4,4,11])for(let py=0;py<22;py++)P(pvX+px,pvY+3+py,(py<3?"#807868":"#706050"));for(let x=-16;x<=16;x++){const cr=Math.floor(Math.abs(x)*0.35+Math.sin(Math.abs(x)*0.3)*2);for(let y=0;y<=cr;y++)if(x>-16&&x<16||y<cr)P(pvX+x,pvY+3-y,(y===cr?"#403838":"#504848"))}const fpX=cwS+Math.floor((cwE-cwS)*0.52),fpY=cwY-3;for(let x=-2;x<=2;x++)for(let y=-10;y<=0;y++){if(x===0||(y>-5&&Math.abs(x)<2))P(fpX+x,fpY+y,"#f8f4f0")}for(let x=-1;x<=2;x++)for(let y=-13;y<=-11;y++)P(fpX+x,fpY+y,"#fcf8f4");for(let x=-4;x<=6;x++){P(fpX+x,fpY-7,"#806840");P(fpX+x,fpY-6,"#907850")}const mx=Math.floor(GX*0.78),my=Math.floor(horY*0.2),mr=Math.floor(GX*0.04);for(let dx=-mr;dx<=mr;dx++)for(let dy=-mr;dy<=mr;dy++)if(dx*dx+dy*dy<mr*mr)P(mx+dx,my+dy,lid==="market"?"#f0d0d0":"#f8f4e8");if(lid==="misty_lake")for(let x=0;x<GX;x++)for(let y=horY-8;y<horY+15;y++)if((x+y*2)%8===0)P(x,y,"#b0d8d8");if(lid==="market")for(let i=0;i<12;i++)P(Math.floor(GX*(0.15+i*0.06)),cwY+Math.floor(Math.random()*10-5),"#e06040")}
+window.addEventListener("resize",()=>drawBg(G.bg||"ancient_temple"));
+
+// ═══════════════════ TREASURE PIXEL ═══════════════
+function genPx(name){const c=document.getElementById("pixelCanvas"),ctx=c.getContext("2d");c.width=32;c.height=32;ctx.clearRect(0,0,32,32);let s=0;for(let i=0;i<name.length;i++)s=((s<<5)-s)+name.charCodeAt(i);function r(){s=(s*1103515245+12345)&0x7fffffff;return s/0x7fffffff}let pal=[],ty=0;if(name.includes("剑")||name.includes("刀")){pal=["#e8e0d0","#c8c0b0","#a0a0b0","#707088","#e0d880","#f0e8a0","#ff6060","#404060"];ty=0}else if(name.includes("珠")||name.includes("玉")){pal=["#e8e0d0","#d0f0d0","#80d880","#40a040","#f0f080","#fff"];ty=1}else if(name.includes("镜")){pal=["#e8e0d0","#c0d0e0","#8098b0","#406080","#e0e8ff","#fff"];ty=2}else{pal=["#e8e0d0","#c8c0a8","#988868","#685838","#d8d0b8","#e0b040"];ty=3}ctx.fillStyle=pal[0];ctx.fillRect(0,0,32,32);if(ty===0){ctx.fillStyle=pal[3];ctx.fillRect(14,2,4,22);ctx.fillStyle=pal[5];ctx.fillRect(8,21,16,3);ctx.fillStyle=pal[6];ctx.fillRect(13,24,6,6);ctx.fillStyle="#fff";ctx.fillRect(16,4,1,3)}else if(ty===1){ctx.fillStyle=pal[2];ctx.beginPath();ctx.arc(16,14,10,0,Math.PI*2);ctx.fill();ctx.fillStyle=pal[3];ctx.beginPath();ctx.arc(13,11,6,0,Math.PI*2);ctx.fill();ctx.fillStyle=pal[5];ctx.fillRect(12,24,8,4)}else if(ty===2){ctx.fillStyle=pal[2];ctx.beginPath();ctx.arc(16,14,9,0,Math.PI*2);ctx.fill();ctx.fillStyle=pal[4];ctx.beginPath();ctx.arc(16,14,7,0,Math.PI*2);ctx.fill();ctx.fillStyle="#fff";ctx.beginPath();ctx.arc(14,12,3,0,Math.PI*2);ctx.fill()}else{ctx.fillStyle=pal[2];ctx.beginPath();ctx.moveTo(16,4);ctx.lineTo(26,14);ctx.lineTo(16,24);ctx.lineTo(6,14);ctx.closePath();ctx.fill();ctx.fillStyle=pal[3];ctx.beginPath();ctx.moveTo(16,8);ctx.lineTo(22,14);ctx.lineTo(16,20);ctx.lineTo(10,14);ctx.closePath();ctx.fill()}return c.toDataURL()}
+
+// ═══════════════════ RENDER ═══════════════════════
+function render(){
+    document.getElementById("timeDisplay").textContent=timeStr();
+    document.getElementById("mapGrid").innerHTML=LOCS.map(l=>{const v=G.vis[l.id]||0;const rel=npcAtLoc(l.id);const cls=v>0?" visited":"";const relCls=rel?" relationship":"";return`<div class="loc-node${cls}${relCls}" onclick="go('${l.id}')">${v>0?'<div class="loc-badge">游</div>':''}<div class="loc-icon">${l.e}</div><div class="loc-name">${l.n}</div><div class="loc-sub">${rel?rel:v>0?'游'+v+'次':l.s}</div></div>`}).join("");
+    document.getElementById("hpVal").textContent=G.hp;document.getElementById("qiVal").textContent=G.qi;document.getElementById("repVal").textContent=G.rep;document.getElementById("wuVal").textContent=G.wu;document.getElementById("luckVal").textContent=G.luck;
+    document.getElementById("hpBar").style.width=(G.hp/G.mhp*100)+"%";document.getElementById("qiBar").style.width=(G.qi/G.mqi*100)+"%";document.getElementById("repBar").style.width=(G.rep/G.mrep*100)+"%";document.getElementById("wuBar").style.width=(G.wu/G.mwu*100)+"%";document.getElementById("luckBar").style.width=(G.luck/G.mluck*100)+"%";
+    document.getElementById("totalSteps").textContent=G.steps;document.getElementById("jnlBadge").textContent=G.jnl.length;document.getElementById("npcBadge").textContent=G.npcs.length;
+    document.getElementById("jnlCount").textContent=G.jnl.length;document.getElementById("trsCount").textContent=G.trs.length;document.getElementById("npcViewCount").textContent=G.npcs.length;
+    document.getElementById("inventory").innerHTML=G.bag.map((x,i)=>`<div class="inv-item"><span>${esc(x)}</span><span onclick="drop(${i})">✕</span></div>`).join("");
+    document.getElementById("treasureList").innerHTML=G.trs.length?G.trs.map(t=>`<div class="inv-item"><span>💎 ${esc(t.name)}</span></div>`).join(""):'<div style="font-size:.64rem;color:var(--ink-muted)">暂无</div>';
+    rJnl();rTrs();rNpc();
+}
+function npcAtLoc(lid){const n=G.npcs.find(x=>x.loc===lid&&x.aff>=30);return n?n.name+"在此":null}
+function rJnl(){const l=document.getElementById("jlList");if(!G.jnl.length){l.innerHTML='<div class="empty-msg">尚未游历任何地方</div>';return}l.innerHTML=G.jnl.map((j,i)=>`<div class="jl-entry" onclick="showDetail('journal',${i})"><div class="je-title">${esc(j.ln)} · ${esc(j.t)}${j.lr?`<span class="je-lore">${esc(j.lr)}</span>`:''}</div><div class="je-meta">${esc(j.tmStr||'')} · ${esc(j.fc||'')}</div><button class="je-del" onclick="event.stopPropagation();delJnl(${i})"><i class="fas fa-times"></i></button></div>`).join("")}
+function rTrs(){const g=document.getElementById("trGrid");if(!G.trs.length){g.innerHTML='<div class="empty-msg">尚无宝物</div>';return}g.innerHTML=G.trs.map((t,i)=>`<div class="tr-card" onclick="showDetail('treasure',${i})" style="cursor:pointer"><img class="tc-pixel" src="${t.px}" alt="${esc(t.name)}"><div class="tc-info"><div class="tc-name">${esc(t.name)}</div><div class="tc-origin">${esc(t.or)}</div><div class="tc-effect"><b>作用：</b>${esc(t.ef)}</div>${t.st?`<div class="tc-story"><b>来历：</b>${esc(t.st.substring(0,60))}...</div>`:''}${t.po?`<div class="tc-poem">${esc(t.po.substring(0,50))}...</div>`:''}</div><button class="tc-del" onclick="event.stopPropagation();delTrs(${i})"><i class="fas fa-times"></i></button></div>`).join("")}
+function rNpc(){const g=document.getElementById("npcGrid");if(!G.npcs.length){g.innerHTML='<div class="empty-msg">尚未结识任何人</div>';return}g.innerHTML=G.npcs.map((n,i)=>{const affLvl=n.aff>=80?"❤️ 情深义重":n.aff>=50?"💛 推心置腹":n.aff>=20?"💚 略有交情":"🤍 初识";const relType=n.rel==="romance"?"💕 红线":n.rel==="friend"?"🤝 莫逆":"";return`<div class="npc-card" onclick="showDetail('npc',${i})" style="cursor:pointer"><div class="npc-name">${esc(n.name)} ${relType}</div><div class="npc-title">${esc(n.ti||'')} · 相遇于${esc(n.lm||'')}</div><div class="npc-desc">${esc(n.ds||'')}</div><div class="npc-affection">${affLvl} <div class="aff-bar"><div style="width:${n.aff||0}%"></div></div> ${n.aff||0}</div>${n.ag?`<div class="npc-agreements">📝 ${esc(n.ag)}</div>`:''}${n.rl&&n.rl.length?`<div class="npc-relations">🔗 ${n.rl.map(r=>esc(r)).join(' · ')}</div>`:''}<button class="npc-visit" onclick="event.stopPropagation();visitNPC(${i})"><i class="fas fa-handshake"></i> 寻访</button><button class="npc-del" onclick="event.stopPropagation();delNpc(${i})"><i class="fas fa-times"></i></button></div>`}).join("")}
+function drop(i){G.bag.splice(i,1);sv(G);render()}
+function delTrs(i){if(!confirm("移除此宝物？"))return;G.trs.splice(i,1);sv(G);render()}
+function delNpc(i){if(!confirm("移除此人物？"))return;G.npcs.splice(i,1);sv(G);render()}
+function delJnl(i){if(!confirm("删除此段见闻？"))return;G.jnl.splice(i,1);sv(G);render()}
+
+// ═══════════════════ VIEWS ═══════════════════════
+function showView(v){
+    document.getElementById("btnMap").classList.toggle("active",v==="map");document.getElementById("btnJournal").classList.toggle("active",v==="journal");document.getElementById("btnTreasure").classList.toggle("active",v==="treasure");document.getElementById("btnNPC").classList.toggle("active",v==="npc");
+    document.getElementById("mapView").style.display=v==="map"?"":"none";document.getElementById("journalView").classList.toggle("show",v==="journal");document.getElementById("treasureView").classList.toggle("show",v==="treasure");document.getElementById("npcView").classList.toggle("show",v==="npc");
+    document.getElementById("storyPanel").classList.remove("show");SC=null;
+}
+// ═══════════════════ STORY ENGINE ═════════════════
+let SC=null;
+function gk(){return localStorage.getItem("deepseek_api_key")||""}
+function saveKey(){const k=document.getElementById("apiKeyInp").value.trim();if(k&&k.startsWith("sk-"))localStorage.setItem("deepseek_api_key",k)}
+async function api(sys,usr,mt){const k=gk();const r=await fetch(DS_API,{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+k},body:JSON.stringify({model:"deepseek-chat",messages:[{role:"system",content:sys},{role:"user",content:usr}],temperature:0.85,max_tokens:mt||4096})});const d=await r.json();if(!r.ok)throw new Error(d.error?.message||"API "+r.status);const m=d.choices[0].message.content.trim().match(/\{[\s\S]*\}/);if(!m)throw new Error("JSON解析失败");return JSON.parse(m[0])}
+
+async function go(lid){
+    const loc=LOCS.find(l=>l.id===lid);if(!loc)return;
+    G.vis[loc.id]=(G.vis[loc.id]||0)+1;G.steps++;G.bg=loc.id;drawBg(loc.id);showView("map");advanceTime(4);
+    SC={loc,px:[],ch:[],cn:[],t:"",lr:"",tr:null,it:"",hp:0,qi:0,rep:0,wu:0,luck:0,fo:"",fin:false,tp:0,na:[],cb:"",rel:null,_fb:null,_visit:false};
+    const key=gk();document.getElementById("loadOverlay").classList.add("show");
+    try{if(key)await gn("explore");else fbStart(loc)}catch(e){console.error(e);fbStart(loc)}finally{document.getElementById("loadOverlay").classList.remove("show")}
+}
+
+async function visitNPC(ni){
+    const npc=G.npcs[ni];if(!npc)return;
+    const loc=LOCS.find(l=>l.id===npc.loc)||LOCS[0];
+    G.steps++;G.bg=loc.id;drawBg(loc.id);showView("map");advanceTime(2);
+    SC={loc,px:[],ch:[],cn:[],t:"寻访"+npc.name,lr:"",tr:null,it:"",hp:0,qi:0,rep:0,wu:0,luck:0,fo:"",fin:false,tp:0,na:[],cb:"",rel:{npcIndex:ni,affChange:0},_fb:null,_visit:true};
+    const key=gk();document.getElementById("loadOverlay").classList.add("show");
+    try{if(key)await gn("visit");else fbVisit(ni)}catch(e){console.error(e);fbVisit(ni)}finally{document.getElementById("loadOverlay").classList.remove("show")}
+}
+
+async function gn(mode){
+    const ctx=SC;if(!ctx||ctx.fin)return;
+    const is0=ctx.px.length===0;
+    const hist=G.jnl.slice(-5).map(j=>j.ln+"·"+j.t).join("; "),items=G.bag.join("、"),trs=G.trs.map(t=>t.name).join("、")||"无",npcs=G.npcs.map(n=>n.name+"(好感"+n.aff+")").join("、")||"无";
+
+    let usr="";
+    if(mode==="visit"&&ctx.rel){
+        const npc=G.npcs[ctx.rel.npcIndex];
+        usr="【寻访故人】\n你专程去拜访「"+npc.name+"」（"+npc.ti+"）。你们相识于"+npc.lm+"。当前好感度："+npc.aff+"。\n简介："+npc.ds+"\n约定："+(npc.ag||"无")+"\n\n请写一段寻访故人的场景（150-300字），你们可能闲话家常、切磋武艺、或是ta向你倾诉心事。给出2个选项代表你如何回应。\n如果ta的好感度达到50以上，可以有更深的情感交流（友谊或情愫）。\naffection字段表示好感变化(+5到+15)。\n返回JSON：{\"title\":\"\",\"phases\":[\"正文\"],\"finished\":true,\"finalOutcome\":\"\",\"choices\":[{\"text\":\"\",\"hp\":0,\"qi\":0,\"reputation\":0,\"wu\":0,\"luck\":0}],\"affection\":5,\"relationship\":\"friend/romance/或为空\"}";
+    } else {
+        usr="地点：「"+ctx.loc.n+"」\n侠客：气血"+G.hp+"/"+G.mhp+" 内力"+G.qi+"/"+G.mqi+" 声望"+G.rep+" 悟性"+G.wu+" 机缘"+G.luck+"\n行囊："+items+" | 宝物："+trs+" | 故人："+npcs+"\n经历："+(hist||"初入江湖")+" | "+timeStr();
+        if(is0){usr+="\n\n这是故事开头。请：1)取标题 2)写第一回正文(phases数组1个元素，150-400字，要场景+对话+江湖气) 3)给2-3个选项。若遇人物写入npcs(含初始好感affection 5-20)。"}
+        else{const prev=ctx.px.map((p,i)=>"第"+(i+1)+"回:"+p.substring(0,80)+"...").join("\n");usr+="\n\n已发生：\n"+prev+"\n选了：「"+esc(ctx.cn[ctx.cn.length-1]||"")+"」\n请续写下一回(phases数组1个元素)。故事该结束了就finished=true。"}
+        usr+="\n\n要求：暗合典籍(lore_ref)；可callback往事；宝物(treasure)可获可不获；人物相遇给初始好感；如有好感变化填affection和relationship关系线(friend/romance或空)；遇见已认识的人可在text中提及；长度顺其自然。\n返回JSON：{\"title\":\"\",\"lore_ref\":\"\",\"phases\":[\"正文\"],\"finished\":false,\"finalOutcome\":\"\",\"choices\":[{\"text\":\"\",\"hp\":0,\"qi\":0,\"reputation\":0,\"wu\":0,\"luck\":0}],\"callback\":\"\",\"npcs\":[{\"name\":\"\",\"title\":\"\",\"description\":\"\",\"agreements\":\"\",\"affection\":10,\"relationship\":\"\",\"relations\":[]}],\"hp\":0,\"qi\":0,\"reputation\":0,\"wu\":0,\"luck\":0,\"item\":\"\",\"treasure\":null,\"affection\":0,\"relationship\":\"\"}";
+    }
+    const d=await api("你是江湖说书人，精通中国古典志怪典籍。只返回JSON。",usr);
+    if(is0&&d.title)ctx.t=d.title;if(d.lore_ref)ctx.lr=d.lore_ref;
+    if(d.phases&&d.phases.length)ctx.px.push(d.phases[0]);
+    ctx.ch=d.choices||[];ctx.fin=d.finished||false;ctx.fo=d.finalOutcome||"";ctx.hp+=(d.hp||0);ctx.qi+=(d.qi||0);ctx.rep+=(d.reputation||0);ctx.wu+=(d.wu||0);ctx.luck+=(d.luck||0);
+    if(d.item)ctx.it=d.item;if(d.treasure&&d.treasure.name)ctx.tr=d.treasure;if(d.callback)ctx.cb=d.callback;
+    if(d.npcs&&d.npcs.length)d.npcs.forEach(n=>{if(n.name){const ex=G.npcs.find(x=>x.name===n.name);if(!ex){G.npcs.push({name:n.name,ti:n.title||"",ds:n.description||"",ag:n.agreements||"",rl:n.relations||[],loc:ctx.loc.id,lm:ctx.loc.n,tm:new Date().toISOString(),aff:n.affection||10,rel:n.relationship||""});ctx.na.push(n.name)}else{if(n.affection){ex.aff=Math.min(100,ex.aff+n.affection)}if(n.relationship&&!ex.rel)ex.rel=n.relationship}}});
+    if(d.affection&&ctx.rel){G.npcs[ctx.rel.npcIndex].aff=Math.min(100,(G.npcs[ctx.rel.npcIndex].aff||0)+d.affection);ctx.rel.affChange=d.affection;if(d.relationship)G.npcs[ctx.rel.npcIndex].rel=d.relationship}
+    ctx.tp++;ds();
+}
+
+function ds(){
+    const ctx=SC;if(!ctx)return;
+    const pi=ctx.px.length-1,D={ph:document.getElementById("storyPhases"),ch:document.getElementById("storyChoices"),tc:document.getElementById("treasureChoices"),oc:document.getElementById("storyOutcome")};
+    if(pi===0){document.getElementById("storyTitle").textContent=ctx.t;document.getElementById("storyMeta").textContent=ctx.loc.e+" "+ctx.loc.n+(ctx._visit?" · 寻访故人":"");document.getElementById("storyLore").textContent=ctx.lr||"";D.oc.classList.remove("show");D.oc.innerHTML="";D.ph.innerHTML=""}
+    let h=esc(ctx.px[pi]).replace(/\n/g,'<br>');
+    if(ctx.cb)h=h.replace(/〖回想[^〗]*〗/g,'<span class="callback">🪝 '+esc(ctx.cb)+'</span>');
+    if(ctx.na.length)h+='<br><span class="npc-intro">👤 结识：'+ctx.na.join('、')+'（收录于人物志）</span>';
+    if(ctx.rel&&ctx.rel.affChange)h+='<br><span class="rel-change">💕 '+(ctx.rel.affChange>0?'好感 +'+ctx.rel.affChange:'')+'</span>';
+    D.ph.innerHTML+=`<div class="story-phase"><span class="phase-num">— 第 ${pi+1} 回 —</span>${h}</div>`;
+    if(ctx.fin){end();return}
+    D.ch.innerHTML=ctx.ch.map((c,i)=>`<button class="choice-btn" onclick="pick(${i})"><span>${esc(c.text)}</span></button>`).join("");
+    D.tc.innerHTML=G.trs.length?`<div style="font-size:.68rem;color:var(--ink-muted);text-align:center;padding:3px 0">💎 宝物行动：</div>`+G.trs.map((t,i)=>`<button class="tchoice-btn" onclick="useTr(${i})">${esc(t.name)}</button>`).join(""):"";
+    document.getElementById("storyPanel").classList.add("show");
+}
+
+async function pick(ci){
+    const ctx=SC;if(!ctx||ctx.fin)return;const c=ctx.ch[ci];ctx.cn.push(c.text);if(c.hp)ctx.hp+=(c.hp||0);if(c.qi)ctx.qi+=(c.qi||0);if(c.reputation)ctx.rep+=(c.reputation||0);if(c.wu)ctx.wu+=(c.wu||0);if(c.luck)ctx.luck+=(c.luck||0);
+    document.querySelectorAll(".choice-btn,.tchoice-btn").forEach(b=>b.disabled=true);
+    const key=gk();document.getElementById("loadOverlay").classList.add("show");
+    try{if(key)await gn("explore");else fbCont()}catch(e){console.error(e);fbCont()}finally{document.getElementById("loadOverlay").classList.remove("show")}
+}
+
+async function useTr(ti){
+    const ctx=SC;if(!ctx||ctx.fin)return;const t=G.trs[ti];if(!t)return;ctx.cn.push("使用宝物「"+t.name+"」");
+    document.querySelectorAll(".choice-btn,.tchoice-btn").forEach(b=>b.disabled=true);
+    const key=gk();if(!key){ctx.px.push("你取出「"+t.name+"」——"+t.ef+"。一阵光芒过后，局面变了。");ctx.fin=true;ds();return}
+    document.getElementById("loadOverlay").classList.add("show");
+    try{const prev=ctx.px.map((p,i)=>"第"+(i+1)+"回:"+p.substring(0,60)+"...").join("\n");const d=await api("你是江湖说书人。只返回JSON。","前面故事："+prev+"\n使用了宝物「"+t.name+"」（"+t.ef+"）。续写宝物如何改变局面。返回：{\"phases\":[\"正文\"],\"finished\":true,\"finalOutcome\":\"\",\"hp\":0,\"qi\":0,\"reputation\":0,\"wu\":0,\"luck\":0}",2048);if(d.phases&&d.phases.length)ctx.px.push(d.phases[0]);ctx.hp+=(d.hp||0);ctx.qi+=(d.qi||0);ctx.rep+=(d.reputation||0);ctx.fin=true;ds()}catch(e){ctx.px.push("你取出「"+t.name+"」——光芒过后，一切已然不同。");ctx.fin=true;ds()}finally{document.getElementById("loadOverlay").classList.remove("show")}
+}
+
+function end(){
+    const ctx=SC;if(!ctx)return;
+    document.getElementById("storyChoices").innerHTML="";document.getElementById("treasureChoices").innerHTML="";
+    G.hp=Math.max(0,Math.min(G.mhp,G.hp+ctx.hp));G.qi=Math.max(0,Math.min(G.mqi,G.qi+ctx.qi));G.rep=Math.max(0,Math.min(G.mrep,G.rep+ctx.rep));G.wu=Math.max(0,Math.min(G.mwu,G.wu+ctx.wu));G.luck=Math.max(0,Math.min(G.mluck,G.luck+ctx.luck));
+    if(ctx.it)G.bag.push(ctx.it);
+    if(ctx.tr&&ctx.tr.name&&!G.trs.find(x=>x.name===ctx.tr.name)){G.trs.push({name:ctx.tr.name,or:ctx.tr.origin||ctx.tr.or||"",ef:ctx.tr.effect||ctx.tr.ef||"",st:ctx.tr.story||ctx.tr.st||"",po:ctx.tr.poem||ctx.tr.po||"",px:genPx(ctx.tr.name),tm:new Date().toISOString()})}
+    const sm=ctx.tp+"回"+(ctx.na.length?" · 结识"+ctx.na.join("、"):"")+(ctx.tr?" · 获宝"+ctx.tr.name:"");const tmStr=timeStr();
+    G.jnl.unshift({lid:ctx.loc.id,ln:ctx.loc.n,t:ctx.t,st:ctx.px.join("\n\n"),ol:sm,lr:ctx.lr||"",fc:ctx.cn.join(" → "),oc:ctx.fo||"",hc:ctx.hp,qc:ctx.qi,rc:ctx.rep,wc:ctx.wu,lc:ctx.luck,ig:ctx.it||"",tg:ctx.tr?ctx.tr.name:"",tm:new Date().toISOString(),tmStr});if(G.jnl.length>100)G.jnl.length=100;
+    let h="<p>"+esc(ctx.fo||"江湖路远，后会有期。")+"</p>";if(ctx.it)h+="<p class=\"out-reward\">🎁 获得："+esc(ctx.it)+"</p>";if(ctx.tr&&ctx.tr.name)h+="<p class=\"out-reward\">💎 宝物：「"+esc(ctx.tr.name)+"」</p>";
+    if(ctx.hp!==0)h+="<p class=\""+(ctx.hp<0?"out-penalty":"out-info")+"\">气血 "+(ctx.hp>0?"+":"")+ctx.hp+"</p>";if(ctx.qi!==0)h+="<p class=\"out-info\">内力 "+(ctx.qi>0?"+":"")+ctx.qi+"</p>";if(ctx.rep!==0)h+="<p class=\"out-info\">声望 "+(ctx.rep>0?"+":"")+ctx.rep+"</p>";if(ctx.wu!==0)h+="<p class=\"out-info\">悟性 "+(ctx.wu>0?"+":"")+ctx.wu+"</p>";if(ctx.luck!==0)h+="<p class=\"out-info\">机缘 "+(ctx.luck>0?"+":"")+ctx.luck+"</p>";
+    document.getElementById("storyOutcome").innerHTML=h;document.getElementById("storyOutcome").classList.add("show");sv(G);render();SC=null;
+}
+function closeStory(){document.getElementById("storyPanel").classList.remove("show");SC=null;render()}
+function vJnl(i){showDetail("journal",i)}
+
+// ═══════════════════ FALLBACKS ═══════════════════
+const FB={ancient_temple:{t:"古刹残灯",lr:"典出《洛阳伽蓝记》",px:["暮色四合，古刹飞檐在残阳中投下长影。推开吱呀寺门，院中荒草没膝，一方青苔石碑歪倒殿前——勉强辨出「永宁寺」三字。忽闻身后苍老叹息，回头，灰衣老僧合十立于廊下，面容模糊如隔雾看花。","老僧缓步上前，袖中取出一盏青铜油灯。灯芯无火自燃，映得殿壁画中僧侣诵经、天女散花竟缓缓动了起来。「此灯燃了八百年，等的便是一个带剑的过客。」老僧抬眼望你。","你伸出手——触到灯盏的瞬间眼前景物骤变：你站在巍峨佛塔之巅，俯瞰千年之前的洛阳城。塔下万人诵经，梵音如潮。一个身着龙袍的身影正跪在塔前。","幻境消散。你跪坐在破败殿中，手中灯已熄灭，掌心多了一枚菩提子，温润如玉。老僧已不见，唯有晨光透过残窗洒在青石地上。你起身推门——东方既白，江湖路在脚下延伸。"],ch:[[{text:"合十还礼",hp:0,qi:0,reputation:2},{text:"按住剑柄喝问",hp:0,qi:0,reputation:-1},{text:"问大师在此多久了",hp:0,qi:3,reputation:1}],[{text:"接过灯盏，愿闻其详",hp:0,qi:5,reputation:0},{text:"婉拒：不敢轻受重宝",hp:0,qi:0,reputation:3}],[{text:"凝神观看幻境",hp:0,qi:5,reputation:0},{text:"试图与古人对话",hp:0,qi:0,reputation:2}],[{text:"将菩提子郑重收好",hp:0,qi:0,reputation:0}]],fo:"你在古刹度过一夜。天明时老僧与灯俱已不见，唯掌心一枚菩提子尚有余温。",hp:0,qi:12,rep:5,wu:3,luck:2,it:"",tr:{name:"永宁寺菩提子",or:"北魏·永宁寺",ef:"持之入定，妖魔避退三丈",st:"北魏永宁寺天下第一塔，毁于雷火。此乃寺中千年菩提最后一果，封存着最后一缕梵音。",po:"千年梵刹已成尘，一子菩提寄此身。若问佛光何处是，灯前自有夜归人。"},npc:[{name:"永宁寺老僧",ti:"守灯人",ds:"面容模糊如隔雾看花。守了一盏灯，等了八百年。",ag:"托付了菩提子",affection:15}]},misty_lake:{t:"湖心暗影",lr:"典出《山海经·中山经》",px:["烟波湖水波不兴。月光照在墨色湖面如一面巨大铜镜。正欲取水解渴——湖心深处一团暗影缓缓升起。水花四溅，似蛇非蛇、头生独角的巨兽浮出水面，双目如灯笼盯着你。它没有攻击，只在三丈外停下。","巨兽竟开口了——不是人言，而是直接在脑海中响起的低沉震动：「持剑之人，你可知道这湖底镇着什么？」水兽摆尾，湖底透出暗红光芒。「八百年前有人把我锁在这里。八百年来，你是第一个没有逃跑的人。」"],ch:[[{text:"拔剑对峙",hp:-5,qi:0,reputation:5},{text:"收剑拱手以礼相待",hp:0,qi:0,reputation:8},{text:"问它：你是何方神圣？",hp:0,qi:3,reputation:2}],[{text:"愿闻其详：湖底镇着什么",hp:0,qi:0,reputation:0},{text:"不问缘由，只问如何助你脱困",hp:0,qi:5,reputation:3}]],fo:"巨兽将一枚鳞片推向岸边。你接过鳞片在月光下微微发光。「有朝一日带着它回来。」巨兽缓缓沉入湖底，湖面恢复如镜。",hp:0,qi:5,rep:8,wu:2,luck:3,it:"",tr:{name:"水兽鳞片",or:"上古·烟波湖底",ef:"佩戴入水不沉，可于水下呼吸一炷香",st:"大禹治水时所降水兽之鳞。每至月圆微微发光，仿佛在与湖底故主遥相呼应。",po:"千年湖底锁蛟鳞，一片流光万古春。若问此物何所用，碧波之下自由身。"},npc:[{name:"湖底水兽",ti:"被镇之灵",ds:"似蛇非蛇头生独角。被镇湖底八百年，孤独而威严。",ag:"约定带着鳞片归来",affection:8}]},ferry:{t:"忘川一问",lr:"典出《子不语》",px:["忘川渡雾气弥漫。河水幽黑不见其底。一叶扁舟缓缓靠岸，船公白发苍苍眼神空洞如望穿千年。「上船吧。老朽不问银钱，只问你一句话。」他的声音像从很远的地方传来。","船至河心，老翁停了桨：「你这一生——可有一件至死无悔的事？」他的声音变得幽远。船身晃动，水面下有无数双眼睛正在向上看——那些眼睛属于渡不过忘川的亡魂。老翁盯着你，等待你的答案。"],ch:[[{text:"上船，如实回答",hp:0,qi:0,reputation:3},{text:"转身离去，不渡此河",hp:0,qi:0,reputation:-2}],[{text:"坦然说出心中无悔之事",hp:0,qi:5,reputation:2},{text:"反问他：你自己有无悔之事",hp:0,qi:0,reputation:3}]],fo:"船靠了岸。回头看时——河上已空无一物，仿佛一切只是大梦。但手中握着一枚冰凉石子，是你渡过忘川的凭证。",hp:0,qi:5,rep:3,wu:4,luck:1,it:"忘川石",tr:null,npc:[{name:"忘川船公",ti:"阴阳渡者",ds:"白发苍苍眼神空洞。问问题时一瞬间变回青年模样。",ag:"下次渡河不用付钱",affection:12}]},inn:{t:"客栈夜话",lr:"典出《阅微草堂笔记》",px:["悦来客栈大堂只有三两桌客人。角落中坐着一个青衫书生独自饮酒，桌上摊着一卷泛黄地图。见你进来他抬起头：「这位朋友——可也是来找那东西的？」他压低声音，手指在地图上某处点了点。","书生自称姓柳，从关中来。他摊开地图——上面标注着七处古迹的位置，有些已经在你的游历路线上。「有人在收集散落各处的上古遗物，」他低声道，「我不知道他是谁，但每一个拿到遗物的人，三日之内必有血光之灾。」他盯着你背后的剑。「你带着剑，应该不怕。」"],ch:[[{text:"坐下详谈",hp:0,qi:0,reputation:2},{text:"摇头：我只路过",hp:0,qi:0,reputation:0},{text:"反问：凭什么信你",hp:0,qi:0,reputation:-1}],[{text:"接过地图愿替他追查",hp:0,qi:0,reputation:5},{text:"婉拒：这事太危险",hp:0,qi:0,reputation:-2}]],fo:"柳书生将地图留在了桌上。你看着那张泛黄的纸——上面标注的地方，你已经去过了一两处。也许那些看似偶然的奇遇并非偶然。窗外夜色正浓，远处传来更夫的梆子声。",hp:0,qi:0,rep:3,wu:3,luck:0,it:"关中柳生地图",tr:null,npc:[{name:"柳书生",ti:"关中寻宝人",ds:"青衫书生，独自饮酒。似乎知道很多关于上古遗物的事。",ag:"把地图交给了你",affection:15}]}};
+
+function fbStart(loc){const fb=FB[loc.id]||FB.ancient_temple;const data=JSON.parse(JSON.stringify(fb));const cb=G.jnl.length>1?G.jnl[Math.floor(Math.random()*Math.min(G.jnl.length,8))]:null;if(cb)data.px[0]=data.px[0]+"\n〖回想：你想起在"+cb.ln+"的经历——"+cb.oc+"〗";SC={loc,px:[data.px[0]],ch:data.ch[0]||[],cn:[],t:data.t,lr:data.lr||"",tr:null,it:"",hp:0,qi:0,rep:0,wu:0,luck:0,fo:"",fin:false,tp:1,na:[],cb:"",rel:null,_fb:data,_visit:false};if(data.npc)data.npc.forEach(n=>{if(!G.npcs.find(x=>x.name===n.name)){G.npcs.push({name:n.name,ti:n.title||n.ti||"",ds:n.description||n.ds||"",ag:n.agreements||n.ag||"",rl:n.relations||n.rl||[],loc:loc.id,lm:loc.n,tm:new Date().toISOString(),aff:n.affection||n.aff||10,rel:""});SC.na.push(n.name)}});ds()}
+function fbVisit(ni){const npc=G.npcs[ni];if(!npc)return;const ctx=SC;ctx.px.push("你来到"+npc.lm+"，找到了"+npc.name+"。\n\n"+(npc.ds||"")+"\n\n你们相谈甚欢。临别时，"+npc.name+"目送你的背影远去，眼中似有不舍之意。");ctx.fin=true;ctx.rel={npcIndex:ni,affChange:8};npc.aff=Math.min(100,(npc.aff||0)+8);ds()}
+function fbCont(){const ctx=SC;if(!ctx||ctx.fin||!ctx._fb)return;const fb=ctx._fb,pi=ctx.px.length;if(pi<fb.px.length){ctx.px.push(fb.px[pi]);ctx.ch=fb.ch[pi]||[];ctx.tp++;if(pi===fb.px.length-1){ctx.fin=true;ctx.fo=fb.fo;ctx.hp=fb.hp;ctx.qi=fb.qi;ctx.rep=fb.rep;ctx.wu=fb.wu||0;ctx.luck=fb.luck||0;ctx.it=fb.it;ctx.tr=fb.tr}ds()}else{ctx.fin=true;ctx.fo=fb.fo;ds()}}
+
+// ═══════════════════ DETAIL VIEW ═════════════════
+function showDetail(type,idx){
+    const card=document.getElementById("detailCard");
+    if(type==="treasure"){const t=G.trs[idx];if(!t)return;card.innerHTML=`<button class="dc-close" onclick="hideDetail()"><i class="fas fa-times"></i></button><div style="display:flex;gap:14px;align-items:flex-start"><img src="${t.px}" style="width:72px;height:72px;image-rendering:pixelated;border:1px solid var(--border);border-radius:4px;flex-shrink:0" alt=""><div><div class="dc-title">${esc(t.name)}</div><div class="dc-sub">${esc(t.or)}</div></div></div><div class="dc-body"><div class="dc-field"><div class="dc-label">作用</div>${esc(t.ef)}</div>${t.st?`<div class="dc-field" style="margin-top:8px"><div class="dc-label">来历传说</div>${esc(t.st)}</div>`:''}${t.po?`<div class="dc-poem">${esc(t.po)}</div>`:''}</div>`}
+    else if(type==="npc"){const n=G.npcs[idx];if(!n)return;const affLvl=n.aff>=80?"❤️ 情深义重":n.aff>=50?"💛 推心置腹":n.aff>=20?"💚 略有交情":"🤍 初识";const relType=n.rel==="romance"?"💕 红线":n.rel==="friend"?"🤝 莫逆":"";card.innerHTML=`<button class="dc-close" onclick="hideDetail()"><i class="fas fa-times"></i></button><div class="dc-title">${esc(n.name)} ${relType}</div><div class="dc-sub">${esc(n.ti||'')} · 相遇于${esc(n.lm||'')} · ${affLvl}</div><div class="dc-body"><div class="dc-field"><div class="dc-label">人物描述</div>${esc(n.ds||'无')}</div>${n.ag?`<div class="dc-field" style="margin-top:8px"><div class="dc-label">约定</div>${esc(n.ag)}</div>`:''}${n.rl&&n.rl.length?`<div class="dc-field" style="margin-top:8px"><div class="dc-label">关系网</div>${n.rl.map(r=>esc(r)).join(' · ')}</div>`:''}<div class="dc-field" style="margin-top:8px"><div class="dc-label">好感度</div><div style="display:inline-block;width:120px;height:6px;background:rgba(0,0,0,0.06);border-radius:3px;vertical-align:middle;margin-right:8px;overflow:hidden"><div style="height:100%;border-radius:3px;background:var(--pink);width:${n.aff||0}%"></div></div>${n.aff||0}/100</div></div><div style="margin-top:14px;text-align:right"><button class="npc-visit" onclick="hideDetail();visitNPC(${idx})" style="position:static;padding:7px 18px;font-size:.78rem"><i class="fas fa-handshake"></i> 登门寻访</button></div>`}
+    else if(type==="journal"){const j=G.jnl[idx];if(!j)return;card.innerHTML=`<button class="dc-close" onclick="hideDetail()"><i class="fas fa-times"></i></button><div class="dc-title">${esc(j.t)}</div><div class="dc-sub">📍 ${esc(j.ln)} · ${esc(j.tmStr||'')}${j.lr?` · <span style="color:var(--red)">${esc(j.lr)}</span>`:''}</div><div class="dc-body">${esc(j.st).replace(/\n/g,'<br>')}<div style="margin-top:10px;font-style:italic;color:var(--ink-muted);font-size:.8rem">📋 ${esc(j.ol||'')}</div></div><div style="margin-top:10px;font-size:.82rem;color:var(--ink-muted)"><b>选择：</b>${esc(j.fc||'')}<br><b>结局：</b>${esc(j.oc||'')}</div>`}
+    document.getElementById("detailPanel").classList.add("show");document.body.style.overflow="hidden"}
+function hideDetail(){document.getElementById("detailPanel").classList.remove("show");document.body.style.overflow=""}
+
+// ═══════════════════ SAVE ═══════════════════════
+function exportSave(){const blob=new Blob([JSON.stringify(G,null,2)],{type:"application/json"});const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="江湖行_"+new Date().toISOString().slice(0,10)+".json";a.click()}
+function importSave(e){const f=e.target.files[0];if(!f)return;const reader=new FileReader();reader.onload=function(ev){try{const d=JSON.parse(ev.target.result);if(!d||typeof d.hp!=="number")throw new Error();G=d;G.ver=SAVE_VER;if(!G.bg)G.bg="ancient_temple";if(!G.time)G.time={year:1,season:0,day:1,period:0};if(G.wu===undefined){G.wu=10;G.mwu=100}if(G.luck===undefined){G.luck=10;G.mluck=100}drawBg(G.bg);sv(G);render()}catch(err){alert("存档格式不正确。请确认选择的是江湖行存档JSON文件。")}};reader.readAsText(f);e.target.value=""}
+function esc(s){if(!s)return"";const d=document.createElement("div");d.textContent=s;return d.innerHTML}
+(function(){document.getElementById("apiKeyInp").value=gk();drawBg(G.bg||"ancient_temple");render()})();
+</script>
+</body>
+</html>

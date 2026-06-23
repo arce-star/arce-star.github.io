@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>严亦乐 · 学术主页</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         :root {
             --blue: #0F4B91;
@@ -122,23 +121,6 @@
         .paper-ref { font-size: 0.9rem; color: #444; line-height: 1.6; }
         .skills-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
-        /* ===== 课程树状图 ===== */
-        #tree-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
-        }
-        .tree-card {
-            border: 1px solid var(--border); border-radius: 8px;
-            background: #fcfcfc; overflow: hidden;
-        }
-        .tree-card .tree-title {
-            font-size: 0.9rem; font-weight: 700; padding: 10px 14px;
-            color: #fff; text-align: center; letter-spacing: 0.04em;
-        }
-        .tree-card svg { width: 100%; display: block; }
-        .tree-card .tlink { stroke: #d0d0d0; stroke-width: 1.4px; fill: none; }
-        .tree-card .tnode { cursor: pointer; }
-        .tree-card .tnode:hover circle { filter: brightness(0.92); }
-
         /* ===== 编辑面板 ===== */
         #course-editor {
             display: none; margin-top: 18px; padding: 20px;
@@ -245,7 +227,6 @@
             .sidebar-nav a { padding: 6px 12px; font-size: 0.82rem; }
             .sidebar-footer { display: none; }
             #main-content { margin-left: 0; padding: 30px 18px 60px; }
-            #tree-grid { grid-template-columns: 1fr; }
             .cv-name { font-size: 1.6rem; }
             .cv-contact { gap: 8px; font-size: 0.8rem; }
         }
@@ -381,15 +362,37 @@
 
             <!-- 课程笔记 -->
             <div class="content-panel" id="panel-courses">
-                <div class="cv-header" style="margin-bottom:16px;">
+                <div class="cv-header" style="margin-bottom:20px;">
                     <div class="cv-name">课程笔记</div>
-                    <div class="cv-contact">知识体系 · 树状结构</div>
+                    <div class="cv-contact">整理中，即将更新</div>
                 </div>
-                <div id="tree-grid">
-                    <div class="tree-card" id="tree-quant"><div class="tree-title" style="background:#3da06d;">量化金融</div></div>
-                    <div class="tree-card" id="tree-ai"><div class="tree-title" style="background:#4a90d9;">AI</div></div>
-                    <div class="tree-card" id="tree-math"><div class="tree-title" style="background:#9b59b6;">数学</div></div>
-                    <div class="tree-card" id="tree-cs"><div class="tree-title" style="background:#e0892a;">CS</div></div>
+                <div class="cv-section">
+                    <div class="cv-section-title">量化金融</div>
+                    <div class="skills-row">
+                        <span class="cv-tag">宏观框架</span><span class="cv-tag">微观结构理论</span><span class="cv-tag">套利定价理论</span>
+                        <span class="cv-tag">财务建模</span><span class="cv-tag">时间序列分析</span><span class="cv-tag">回测框架设计</span>
+                        <span class="cv-tag">组合优化</span><span class="cv-tag">实盘追踪</span>
+                    </div>
+                </div>
+                <div class="cv-section">
+                    <div class="cv-section-title">AI / 机器学习</div>
+                    <div class="skills-row">
+                        <span class="cv-tag">深度学习模型开发</span><span class="cv-tag">PyTorch</span><span class="cv-tag">TensorFlow</span>
+                        <span class="cv-tag">大模型微调</span><span class="cv-tag">PINNs</span><span class="cv-tag">数据清洗</span>
+                        <span class="cv-tag">过拟合控制</span>
+                    </div>
+                </div>
+                <div class="cv-section">
+                    <div class="cv-section-title">数学</div>
+                    <div class="skills-row">
+                        <span class="cv-tag">概率统计</span><span class="cv-tag">时间序列分析</span>
+                    </div>
+                </div>
+                <div class="cv-section">
+                    <div class="cv-section-title">CS</div>
+                    <div class="skills-row">
+                        <span class="cv-tag">Python</span><span class="cv-tag">C++</span><span class="cv-tag">Linux</span>
+                    </div>
                 </div>
                 <button id="edit-toggle-btn">⚙️ 编辑可见课程</button>
                 <div id="course-editor">
@@ -528,44 +531,28 @@
             });
         });
 
-        // ===== 课程树状图 =====
+        // ===== 课程可见性编辑 =====
         const STORAGE_KEY = '_arce_course_visibility';
-        const treeColors = { quant:'#3da06d', ai:'#4a90d9', math:'#9b59b6', cs:'#e0892a' };
-
-        const treeData = {
-            quant: { name:'量化金融', children:[
-                { name:'宏观框架' }, { name:'微观结构理论' }, { name:'套利定价理论' },
-                { name:'财务建模' }, { name:'时间序列分析' }, { name:'回测框架设计' },
-                { name:'组合优化' }, { name:'实盘追踪' }
-            ]},
-            ai: { name:'AI', children:[
-                { name:'深度学习模型开发', children:[{name:'PyTorch'},{name:'TensorFlow'}] },
-                { name:'大模型微调' }, { name:'PINNs' }, { name:'数据清洗' }, { name:'过拟合控制' }
-            ]},
-            math: { name:'数学', children:[
-                { name:'概率统计' }, { name:'时间序列分析' }
-            ]},
-            cs: { name:'CS', children:[
-                { name:'Python' }, { name:'C++' }, { name:'Linux' }
-            ]}
-        };
-
-        // 收集所有叶子节点 id (用于编辑面板)
-        function collectIds(tree, prefix) {
-            const ids = [];
-            function walk(node, key) {
-                const id = key || node.name;
-                ids.push({ id, label: node.name, tree: prefix });
-                if (node.children) node.children.forEach(c => walk(c, id));
-            }
-            walk(tree);
-            return ids;
-        }
-        const allCourseIds = [
-            ...collectIds(treeData.quant, 'quant'),
-            ...collectIds(treeData.ai, 'ai'),
-            ...collectIds(treeData.math, 'math'),
-            ...collectIds(treeData.cs, 'cs')
+        const allCourses = [
+            { id:'macro-frame', label:'宏观框架', cat:'量化金融' },
+            { id:'micro-struct', label:'微观结构理论', cat:'量化金融' },
+            { id:'apt', label:'套利定价理论', cat:'量化金融' },
+            { id:'fin-model', label:'财务建模', cat:'量化金融' },
+            { id:'time-series', label:'时间序列分析', cat:'量化金融' },
+            { id:'backtest', label:'回测框架设计', cat:'量化金融' },
+            { id:'portfolio', label:'组合优化', cat:'量化金融' },
+            { id:'live-track', label:'实盘追踪', cat:'量化金融' },
+            { id:'dl-dev', label:'深度学习模型开发', cat:'AI' },
+            { id:'pytorch', label:'PyTorch', cat:'AI' },
+            { id:'tensorflow', label:'TensorFlow', cat:'AI' },
+            { id:'llm-finetune', label:'大模型微调', cat:'AI' },
+            { id:'pinns', label:'PINNs', cat:'AI' },
+            { id:'data-clean', label:'数据清洗', cat:'AI' },
+            { id:'overfit', label:'过拟合控制', cat:'AI' },
+            { id:'prob-stat', label:'概率统计', cat:'数学' },
+            { id:'python', label:'Python', cat:'CS' },
+            { id:'cpp', label:'C++', cat:'CS' },
+            { id:'linux', label:'Linux', cat:'CS' }
         ];
 
         function getVisibility() {
@@ -574,183 +561,17 @@
         }
         function saveVisibility(map) { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }
 
-        function filterTree(node, vis, prefix) {
-            // 递归过滤不可见节点
-            function walk(n, key) {
-                const id = key || n.name;
-                if (vis[id] === false) return null;
-                const filtered = { name: n.name };
-                if (n.children) {
-                    const kids = n.children.map(c => walk(c, id)).filter(Boolean);
-                    if (kids.length) filtered.children = kids;
-                }
-                return filtered;
-            }
-            return walk(node);
-        }
-
-        function drawTree(containerId, data, color) {
-            const card = document.getElementById(containerId);
-            const oldSvg = card.querySelector('svg');
-            if (oldSvg) oldSvg.remove();
-
-            const W = card.clientWidth || 300;
-            const margin = { top: 12, right: 30, bottom: 12, left: 20 };
-            const dx = 18, dy = 80; // node spacing
-
-            const svg = d3.select('#' + containerId).append('svg')
-                .attr('viewBox', [0, 0, W, 300])
-                .style('min-height','180px');
-
-            const gLink = svg.append('g');
-            const gNode = svg.append('g');
-
-            const root = d3.hierarchy(data);
-            root.x0 = 0; root.y0 = 0;
-
-            // 初始：展开第一层，折叠更深层
-            root.descendants().forEach(d => {
-                if (d.depth >= 2 && d.children) {
-                    d._children = d.children; d.children = null;
-                }
-            });
-
-            const treeLayout = d3.tree().nodeSize([dx, dy]);
-
-            function update(source) {
-                treeLayout(root);
-                const nodes = root.descendants();
-                const links = root.links();
-
-                // 动态 SVG 高度
-                const maxX = d3.max(nodes, d => d.x) || 0;
-                const maxY = d3.max(nodes, d => d.y) || 0;
-                const H = Math.max(180, maxX + margin.top + margin.bottom + 20);
-                svg.attr('viewBox', [0, 0, W, H]);
-
-                // Links
-                const link = gLink.selectAll('path').data(links, d => d.target.data.name + d.target.depth);
-                link.join(
-                    enter => enter.append('path')
-                        .attr('class','tlink')
-                        .attr('d', d => {
-                            const src = {x: source.x0 ?? d.source.x, y: source.y0 ?? d.source.y};
-                            const tgt = {x: source.x0 ?? d.source.x, y: source.y0 ?? d.source.y};
-                            return d3.linkHorizontal().x(d => d.y).y(d => d.x)({source: src, target: tgt});
-                        })
-                        .transition().duration(400)
-                        .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x)),
-                    update => update.transition().duration(400)
-                        .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x)),
-                    exit => exit.transition().duration(300)
-                        .attr('d', d => {
-                            const tgt = {x: source.x, y: source.y};
-                            return d3.linkHorizontal().x(d => d.y).y(d => d.x)({source: tgt, target: tgt});
-                        }).remove()
-                );
-
-                // Nodes
-                const node = gNode.selectAll('g').data(nodes, d => d.data.name + d.depth);
-                const nodeEnter = node.enter().append('g')
-                    .attr('class','tnode')
-                    .attr('transform', d => `translate(${source.y0 ?? d.y},${source.x0 ?? d.x})`)
-                    .style('cursor','pointer')
-                    .on('click', (e, d) => {
-                        if (d.children) { d._children = d.children; d.children = null; }
-                        else if (d._children) { d.children = d._children; d._children = null; }
-                        update(d);
-                    });
-
-                nodeEnter.append('circle')
-                    .attr('r', d => d.depth === 0 ? 16 : (d._children || d.children ? 12 : 9))
-                    .attr('fill', d => {
-                        if (d.depth === 0) return color;
-                        if (d._children) return color; // collapsed, show as colored
-                        if (d.children) return '#fff';
-                        return '#f5f5f5'; // leaf
-                    })
-                    .attr('stroke', d => d.depth === 0 ? d3.color(color).darker(0.3) : color)
-                    .attr('stroke-width', d => (d._children || d.children) ? 2 : 1.5);
-
-                nodeEnter.append('text')
-                    .attr('dy', d => d.depth === 0 ? '0.35em' : '-7')
-                    .attr('text-anchor', d => d.depth === 0 ? 'middle' : 'start')
-                    .attr('dx', d => d.depth === 0 ? 0 : 14)
-                    .attr('class', d => d.depth === 0 ? 'troot-text' : '')
-                    .style('font-size', d => d.depth === 0 ? '13px' : '11px')
-                    .style('fill', d => d.depth === 0 ? '#fff' : '#444')
-                    .text(d => d.data.name);
-
-                // 可折叠指示器
-                nodeEnter.filter(d => d._children).append('text')
-                    .attr('dy','0.35em').attr('text-anchor','middle')
-                    .style('font-size','9px').style('fill','#fff')
-                    .text('+');
-
-                nodeEnter.filter(d => d.children && d.depth > 0).append('text')
-                    .attr('dy','0.35em').attr('text-anchor','middle')
-                    .style('font-size','9px').style('fill',color)
-                    .text('−');
-
-                // Transition
-                node.transition().duration(400)
-                    .attr('transform', d => `translate(${d.y},${d.x})`);
-
-                node.select('circle').transition().duration(400)
-                    .attr('r', d => d.depth === 0 ? 16 : (d._children || d.children ? 12 : 9))
-                    .attr('fill', d => {
-                        if (d.depth === 0) return color;
-                        if (d._children) return color;
-                        if (d.children) return '#fff';
-                        return '#f5f5f5';
-                    });
-
-                // Update +/- indicators
-                node.selectAll('text').filter(function() {
-                    return this.textContent === '+' || this.textContent === '−';
-                }).remove();
-
-                node.filter(d => d._children).append('text')
-                    .attr('dy','0.35em').attr('text-anchor','middle')
-                    .style('font-size','9px').style('fill','#fff')
-                    .text('+');
-
-                node.filter(d => d.children && d.depth > 0).append('text')
-                    .attr('dy','0.35em').attr('text-anchor','middle')
-                    .style('font-size','9px').style('fill',color)
-                    .text('−');
-
-                node.exit().transition().duration(300)
-                    .attr('transform', d => `translate(${source.y},${source.x})`)
-                    .style('opacity', 0).remove();
-
-                // Store old positions
-                root.descendants().forEach(d => { d.x0 = d.x; d.y0 = d.y; });
-            }
-
-            update(root);
-        }
-
-        function buildAllTrees() {
-            const vis = getVisibility();
-            ['quant','ai','math','cs'].forEach(key => {
-                const filtered = filterTree(treeData[key], vis, key);
-                if (filtered) drawTree('tree-'+key, filtered, treeColors[key]);
-            });
-        }
-
-        // 编辑面板
         function buildEditor() {
             const grid = document.getElementById('edit-grid');
             grid.innerHTML = '';
             const vis = getVisibility();
-            allCourseIds.forEach(d => {
+            allCourses.forEach(d => {
                 const div = document.createElement('div');
                 div.className = 'edit-item';
                 const cb = document.createElement('input');
                 cb.type = 'checkbox'; cb.checked = vis[d.id] !== false; cb.dataset.id = d.id;
                 const label = document.createElement('label');
-                label.textContent = d.label + ' (' + {quant:'量化',ai:'AI',math:'数学',cs:'CS'}[d.tree] + ')';
+                label.textContent = d.label;
                 div.appendChild(cb); div.appendChild(label);
                 grid.appendChild(div);
             });
@@ -762,7 +583,6 @@
                 map[cb.dataset.id] = cb.checked;
             });
             saveVisibility(map);
-            buildAllTrees();
             document.getElementById('course-editor').classList.remove('show');
         });
 
@@ -785,20 +605,7 @@
             if (Auth.isLoggedIn()) { btn.classList.add('show'); }
             else { btn.classList.remove('show'); }
         }
-
-        // 初次构建 & 窗口 resize 重建
-        buildAllTrees();
         updateEditButton();
-        let treeResizeTimer;
-        window.addEventListener('resize', () => {
-            clearTimeout(treeResizeTimer);
-            treeResizeTimer = setTimeout(buildAllTrees, 300);
-        });
-
-        // 切换到课程笔记面板时重建
-        document.querySelector('[data-panel="courses"]').addEventListener('click', () => {
-            setTimeout(buildAllTrees, 100);
-        });
 
         // ===== 登录系统 =====
         const lockBtn = document.getElementById('lock-btn');

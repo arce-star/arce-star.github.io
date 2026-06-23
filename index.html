@@ -3,63 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>摇摇乐</title>
+    <title>严亦乐 · 学术主页</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            color: #333; background: linear-gradient(135deg, #fdfcfb 0%, #e2d1c3 100%);
-            min-height: 100vh;
+        :root {
+            --blue: #0F4B91;
+            --blue-light: #1a6bc4;
+            --text: #2c2c2c;
+            --text-dim: #666;
+            --text-light: #999;
+            --bg: #fafafa;
+            --card-bg: #fff;
+            --border: #e8e8e8;
+            --radius: 6px;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", "STSong", Georgia, "Times New Roman", serif;
+            color: var(--text); background: var(--bg); line-height: 1.7;
+            -webkit-font-smoothing: antialiased;
+        }
+        a { color: var(--blue); text-decoration: none; }
+        a:hover { color: var(--blue-light); text-decoration: underline; }
 
         /* ===== 公开区 ===== */
         #public-view {
-            display: flex; flex-direction: column; align-items: center;
-            padding: 60px 20px; min-height: 100vh;
+            max-width: 820px; margin: 0 auto; padding: 60px 28px 80px;
         }
-        .avatar {
-            width: 90px; height: 90px; border-radius: 50%;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 2.2rem; color: #fff; margin-bottom: 18px;
-            box-shadow: 0 8px 24px rgba(102,126,234,0.35);
-        }
-        .hero-name { font-size: 2.2rem; font-weight: 700; color: #2d3436; margin-bottom: 4px; }
-        .hero-tagline { font-size: 1rem; color: #888; margin-bottom: 50px; letter-spacing: 0.05em; }
 
-        .public-cards {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 24px; max-width: 780px; width: 100%;
+        /* Header */
+        .cv-header {
+            text-align: center; padding-bottom: 28px; margin-bottom: 32px;
+            border-bottom: 1.5px solid var(--blue);
         }
-        .public-card {
-            background: rgba(255,255,255,0.78); backdrop-filter: blur(8px);
-            border-radius: 16px; padding: 32px 24px; text-align: center;
-            border: 1px solid rgba(0,0,0,0.06);
-            box-shadow: 0 4px 20px rgba(0,0,0,0.04);
-            transition: transform 0.3s, box-shadow 0.3s;
+        .cv-name { font-size: 2.4rem; font-weight: 700; color: var(--blue); letter-spacing: 0.06em; }
+        .cv-contact {
+            margin-top: 10px; font-size: 0.92rem; color: var(--text-dim);
+            display: flex; justify-content: center; gap: 18px; flex-wrap: wrap;
         }
-        .public-card:hover { transform: translateY(-6px); box-shadow: 0 12px 36px rgba(0,0,0,0.1); }
-        .public-card .card-icon { font-size: 2.4rem; margin-bottom: 16px; }
-        .public-card h3 { font-size: 1.15rem; color: #2d3436; margin-bottom: 8px; font-weight: 600; }
-        .public-card p { font-size: 0.9rem; color: #999; }
+        .cv-contact span { white-space: nowrap; }
+        .cv-contact i { margin-right: 5px; color: var(--blue); }
 
-        .public-footer {
-            margin-top: 60px; color: #bbb; font-size: 0.85rem; text-align: center;
+        /* Sections */
+        .cv-section { margin-bottom: 28px; }
+        .cv-section-title {
+            font-size: 1.1rem; font-weight: 700; color: var(--blue);
+            padding-bottom: 4px; margin-bottom: 14px;
+            border-bottom: 1px solid var(--border);
+            letter-spacing: 0.04em;
         }
+        .cv-entry { margin-bottom: 16px; }
+        .cv-entry-title {
+            font-weight: 600; font-size: 0.98rem; color: #1a1a1a;
+            display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;
+        }
+        .cv-entry-title .date {
+            font-weight: 400; font-size: 0.85rem; color: var(--text-light); white-space: nowrap;
+        }
+        .cv-entry-sub {
+            font-size: 0.88rem; color: var(--text-dim); margin-bottom: 4px;
+        }
+        .cv-list {
+            list-style: none; padding-left: 0;
+        }
+        .cv-list li {
+            position: relative; padding-left: 16px; margin-bottom: 5px;
+            font-size: 0.9rem; color: #444; line-height: 1.6;
+        }
+        .cv-list li::before {
+            content: '—'; position: absolute; left: 0; top: 0;
+            color: var(--blue); font-size: 0.75rem;
+        }
+        .cv-highlight { color: var(--blue); font-weight: 600; }
+        .cv-tag {
+            display: inline-block; background: #eef4fb; color: var(--blue);
+            font-size: 0.78rem; padding: 2px 10px; border-radius: 3px;
+            margin: 2px 4px 2px 0;
+        }
+
+        /* Education block */
+        .edu-line {
+            font-size: 0.95rem; line-height: 1.7; color: #444;
+        }
+
+        /* Paper entry */
+        .paper-ref {
+            font-size: 0.9rem; color: #444; line-height: 1.6;
+        }
+
+        /* Skills tags */
+        .skills-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
         /* ===== 锁按钮 ===== */
         #lock-btn {
-            position: fixed; top: 16px; right: 16px;
-            width: 42px; height: 42px; border-radius: 50%;
-            border: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.7);
-            backdrop-filter: blur(6px); font-size: 1.1rem;
+            position: fixed; top: 18px; right: 18px;
+            width: 40px; height: 40px; border-radius: 50%;
+            border: 1px solid var(--border); background: rgba(255,255,255,0.85);
+            backdrop-filter: blur(6px); font-size: 1rem;
             cursor: pointer; z-index: 1000;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            box-shadow: 0 1px 6px rgba(0,0,0,0.06);
             transition: all 0.3s; display: flex; align-items: center; justify-content: center;
         }
-        #lock-btn:hover { background: #fff; box-shadow: 0 4px 16px rgba(0,0,0,0.12); }
-        #lock-btn.logged-in { background: #2d3436; color: #fff; border-color: #2d3436; }
+        #lock-btn:hover { background: #fff; box-shadow: 0 3px 14px rgba(0,0,0,0.1); }
+        #lock-btn.logged-in { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
 
         /* ===== 密码弹窗 ===== */
         #auth-overlay {
@@ -69,33 +116,32 @@
         }
         #auth-overlay.show { display: flex; }
         .auth-dialog {
-            background: #fff; border-radius: 20px; padding: 40px 32px 32px;
-            width: 360px; max-width: 90vw; text-align: center;
+            background: #fff; border-radius: 14px; padding: 38px 30px 30px;
+            width: 340px; max-width: 90vw; text-align: center;
             box-shadow: 0 20px 60px rgba(0,0,0,0.2);
         }
-        .auth-dialog h2 { font-size: 1.4rem; margin-bottom: 6px; color: #2d3436; }
-        .auth-dialog .auth-sub { font-size: 0.85rem; color: #aaa; margin-bottom: 24px; }
+        .auth-dialog h2 { font-size: 1.3rem; margin-bottom: 4px; color: #1a1a1a; font-weight: 600; }
+        .auth-dialog .auth-sub { font-size: 0.85rem; color: #aaa; margin-bottom: 22px; }
         .auth-dialog input {
-            width: 100%; padding: 12px 16px; border: 1px solid #e0e0e0;
-            border-radius: 10px; font-size: 1rem; outline: none;
+            width: 100%; padding: 11px 14px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 1rem; outline: none;
             text-align: center; letter-spacing: 0.15em;
             transition: border-color 0.3s;
         }
-        .auth-dialog input:focus { border-color: #667eea; }
+        .auth-dialog input:focus { border-color: var(--blue); }
         .auth-dialog .auth-btn {
-            width: 100%; margin-top: 16px; padding: 12px;
-            border: none; border-radius: 10px;
-            background: linear-gradient(135deg, #667eea, #764ba2);
-            color: #fff; font-size: 1rem; cursor: pointer;
-            transition: opacity 0.3s; font-weight: 600;
+            width: 100%; margin-top: 14px; padding: 11px;
+            border: none; border-radius: 8px;
+            background: var(--blue); color: #fff; font-size: 0.95rem;
+            cursor: pointer; transition: opacity 0.3s; font-weight: 600;
         }
-        .auth-dialog .auth-btn:hover { opacity: 0.9; }
-        .auth-dialog .auth-hint { display: block; margin-top: 14px; font-size: 0.85rem; color: #ccc; }
+        .auth-dialog .auth-btn:hover { opacity: 0.88; }
+        .auth-dialog .auth-hint { display: block; margin-top: 12px; font-size: 0.85rem; color: #ccc; }
         .auth-dialog .auth-close {
-            margin-top: 12px; font-size: 0.85rem; color: #aaa; cursor: pointer;
+            margin-top: 10px; font-size: 0.85rem; color: #aaa; cursor: pointer;
             background: none; border: none;
         }
-        .auth-error { color: #e74c3c; font-size: 0.85rem; margin-top: 8px; display: none; }
+        .auth-error { color: #c0392b; font-size: 0.85rem; margin-top: 6px; display: none; }
 
         /* ===== 私人区 ===== */
         #private-view {
@@ -104,55 +150,147 @@
         #private-view.show { display: block; }
         #private-frame { width: 100%; height: 100%; border: none; }
 
-        /* ===== 退出私人模式按钮 ===== */
         #exit-private-btn {
             display: none; position: fixed; bottom: 20px; left: 50%;
             transform: translateX(-50%); z-index: 1001;
-            padding: 10px 22px; border-radius: 24px;
-            border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.85);
-            backdrop-filter: blur(6px); font-size: 0.9rem; cursor: pointer;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            padding: 9px 20px; border-radius: 20px;
+            border: 1px solid rgba(0,0,0,0.1); background: rgba(255,255,255,0.9);
+            backdrop-filter: blur(6px); font-size: 0.85rem; cursor: pointer;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.1);
             transition: all 0.3s;
         }
         #exit-private-btn:hover { background: #fff; }
         #exit-private-btn.show { display: block; }
 
         @media (max-width: 600px) {
-            .hero-name { font-size: 1.8rem; }
-            .public-cards { grid-template-columns: 1fr; }
+            #public-view { padding: 40px 18px 60px; }
+            .cv-name { font-size: 1.8rem; }
+            .cv-contact { gap: 10px; font-size: 0.82rem; }
         }
     </style>
 </head>
 <body>
-    <!-- 公开区 -->
+    <!-- 公开区 · 学术简历 -->
     <div id="public-view">
-        <div class="avatar"><i class="fas fa-seedling"></i></div>
-        <div class="hero-name">摇摇乐</div>
-        <div class="hero-tagline">课程笔记 · 项目笔记 · 论文</div>
-
-        <div class="public-cards">
-            <div class="public-card">
-                <div class="card-icon" style="color:#667eea;"><i class="fas fa-graduation-cap"></i></div>
-                <h3>课程笔记</h3>
-                <p>即将更新</p>
-            </div>
-            <div class="public-card">
-                <div class="card-icon" style="color:#764ba2;"><i class="fas fa-project-diagram"></i></div>
-                <h3>项目笔记</h3>
-                <p>即将更新</p>
-            </div>
-            <div class="public-card">
-                <div class="card-icon" style="color:#e17055;"><i class="fas fa-file-alt"></i></div>
-                <h3>论文</h3>
-                <p>即将更新</p>
+        <!-- Header -->
+        <div class="cv-header">
+            <div class="cv-name">严亦乐</div>
+            <div class="cv-contact">
+                <span><i class="fas fa-university"></i> 中国科学技术大学</span>
+                <span><i class="fas fa-phone"></i> 153-4917-9230</span>
+                <span><i class="fas fa-envelope"></i> yan040217@mail.ustc.edu.cn</span>
             </div>
         </div>
 
-        <div class="public-footer">
-            <p>© 2024 摇摇乐</p>
-            <span id="busuanzi_container_site_pv" style="font-size:12px;color:#bbb;">
-                总访问 <span id="busuanzi_value_site_pv"></span> 次
-            </span>
+        <!-- 教育背景 -->
+        <div class="cv-section">
+            <div class="cv-section-title">教育背景</div>
+            <p class="edu-line">
+                <strong>中国科学技术大学</strong> · 物理学院
+                <span style="float:right;color:var(--text-light);font-size:0.85rem;">2022.09 至今</span><br>
+                大一进入赵九章地球和空间科学英才班，大二转至物理学院<br>
+                <strong>GPA</strong>: 3.22/4.3 (Top 50%) &nbsp;|&nbsp;
+                <strong>核心课程</strong>: 计算机程序设计A (95, 4.3)、电磁学A (95, 4.3)、理论力学A (92, 4.0)、数学分析B2 (90, 4.0)、线性代数B1 (85, 3.3)、量化金融工程 (3.3)、概率论与数理统计 (75, 2.7)
+            </p>
+        </div>
+
+        <!-- 科研与项目经历 -->
+        <div class="cv-section">
+            <div class="cv-section-title">科研与项目经历</div>
+
+            <div class="cv-entry">
+                <div class="cv-entry-title">
+                    基于大语言模型在伦理困境中决策研究其倾向性
+                    <span class="date">2024.10 — 2025.11</span>
+                </div>
+                <div class="cv-entry-sub">项目主导 · 大学生研究计划[A-] · 大学生创新创业计划[A]</div>
+                <ul class="cv-list">
+                    <li><span class="cv-highlight">ICWSM 2026 已发表</span>，作为<strong>通讯作者</strong>，系统评估 9 种主流开源与闭源模型</li>
+                    <li>执行 <strong>50,400 次</strong>大规模并发调用测试，从伦理偏好优先级、稳定性和偏好聚类等维度进行深度分析</li>
+                    <li>国际上首次关注大模型在伦理困境中的决策倾向性，发现模型中稳定的系统性偏见，为模型价值观对齐提供评测范式</li>
+                </ul>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-entry-title">
+                    天池AI大模型系列赛 CCL2026-Eval：古诗词赏析
+                    <span class="date">2026.06 至今</span>
+                </div>
+                <div class="cv-entry-sub">296 支队伍中 <strong>Top 10%</strong>（暂列第 27 名）</div>
+                <ul class="cv-list">
+                    <li>采用 <strong>Qwen2.5-7B-instruct</strong>，设计<strong>两阶段 LoRA 微调架构</strong>（领域粗调 + Task精调），完成字词释义、情感推理等六大核心任务</li>
+                    <li>独立完成微调数据收集与清洗，构建并精标 23,000 条粗调数据及 1,800 条精调数据</li>
+                    <li>引入外部大模型生成题库及 CoT 微调，经消融实验验证负优化后舍弃，积累完整的大模型调优与排错经验</li>
+                </ul>
+            </div>
+
+            <div class="cv-entry">
+                <div class="cv-entry-title">
+                    物理实验与算法仿真
+                    <span class="date">2022.12 — 2024.03</span>
+                </div>
+                <ul class="cv-list">
+                    <li><strong>傅里叶变换光谱</strong>: 负责光路搭建与算法实现，获全国大学生物理实验竞赛(创新)三等奖，成果发表于《物理实验》期刊（第二作者）</li>
+                    <li><strong>光纤传输模拟</strong>: 独立完成光传播受色散及非线性效应影响的 MATLAB 仿真，撰写光学课程小论文</li>
+                    <li><strong>法拉第波研究</strong>: 独立完成理论分析与实验，获第五届安徽省物理学术竞赛(CUPT)省一等奖（第四名）</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 论文成果 -->
+        <div class="cv-section">
+            <div class="cv-section-title">论文成果</div>
+            <div class="cv-entry">
+                <p class="paper-ref">
+                    Wentao Xu, Yuqi Zhu, <strong>Yile Yan (通讯作者)</strong>.
+                    <em>Bias in Decision-Making for AI's Ethical Dilemmas: A Comparative Study of Open-source and Closed-source Large Language Models.</em>
+                    ICWSM 2026. <strong>已发表</strong>.
+                    &nbsp;<a href="https://doi.org/10.48550/arXiv.2501.10484" target="_blank">DOI</a>
+                </p>
+            </div>
+            <div class="cv-entry">
+                <p class="paper-ref">
+                    汪家荣, <strong>严亦乐</strong>, 等.
+                    <em>基于傅里叶变换光谱验证维恩位移定律.</em>
+                    物理实验, 2024, 44(8): 38-43. <strong>第二作者</strong>.
+                    &nbsp;<a href="https://wlsy.nenu.edu.cn/2408wjr.pdf" target="_blank">DOI</a>
+                </p>
+            </div>
+        </div>
+
+        <!-- 竞赛奖项 -->
+        <div class="cv-section">
+            <div class="cv-section-title">竞赛奖项</div>
+            <ul class="cv-list">
+                <li>第十七届全国大学生数学竞赛 (非数学A类) <strong>一等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                <li>第十九届"挑战杯"全国大学生课外学术科技作品系列赛 <strong>国家级三等奖、省二等奖、校第二名</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                <li>第九届全国大学生物理实验竞赛 (创新) 命题类 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2023.12</span></li>
+                <li>第五届安徽省大学生物理学术竞赛 (CUPT) <strong>省级一等奖</strong> <span style="float:right;color:var(--text-light);">2023.04</span></li>
+                <li>2022、2023年优秀学生奖学金 <strong>银奖</strong> · 高中阶段获全国物理竞赛<strong>省一、二等奖</strong>、数学联赛<strong>省二等奖</strong></li>
+            </ul>
+        </div>
+
+        <!-- 个人技能 -->
+        <div class="cv-section">
+            <div class="cv-section-title">个人技能</div>
+            <div class="skills-row">
+                <span class="cv-tag">Python</span>
+                <span class="cv-tag">MATLAB</span>
+                <span class="cv-tag">C</span>
+                <span class="cv-tag">LaTeX</span>
+                <span class="cv-tag">LLM 微调</span>
+                <span class="cv-tag">数据清洗</span>
+                <span class="cv-tag">机器学习</span>
+                <span class="cv-tag">数学建模</span>
+                <span class="cv-tag">物理算法仿真</span>
+                <span class="cv-tag">AI 辅助编程</span>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div style="text-align:center;margin-top:40px;color:#bbb;font-size:0.82rem;">
+            <p>© 2025 严亦乐 &nbsp;·&nbsp; arce-star.github.io</p>
+            <span id="busuanzi_container_site_pv">总访问 <span id="busuanzi_value_site_pv"></span> 次</span>
         </div>
     </div>
 
@@ -177,7 +315,6 @@
         <iframe id="private-frame"></iframe>
     </div>
 
-    <!-- 退出私人模式 -->
     <button id="exit-private-btn">← 返回公开页</button>
 
     <script src="js/auth.js"></script>
@@ -194,84 +331,54 @@
         const privateFrame = document.getElementById('private-frame');
         const exitPrivateBtn = document.getElementById('exit-private-btn');
 
-        // 检查是否已有 session
-        if (Auth.isLoggedIn()) {
-            enterPrivateMode();
-        }
+        if (Auth.isLoggedIn()) { enterPrivateMode(); }
 
-        // 打开弹窗
         lockBtn.addEventListener('click', () => {
-            if (Auth.isLoggedIn()) {
-                // 已登录：直接进入私人区
-                enterPrivateMode();
-            } else {
-                authOverlay.classList.add('show');
-                pwdInput.focus();
-            }
+            if (Auth.isLoggedIn()) { enterPrivateMode(); }
+            else { authOverlay.classList.add('show'); pwdInput.focus(); }
         });
         authClose.addEventListener('click', () => {
             authOverlay.classList.remove('show');
-            pwdInput.value = '';
-            authError.style.display = 'none';
+            pwdInput.value = ''; authError.style.display = 'none';
         });
         authOverlay.addEventListener('click', (e) => {
             if (e.target === authOverlay) {
                 authOverlay.classList.remove('show');
-                pwdInput.value = '';
-                authError.style.display = 'none';
+                pwdInput.value = ''; authError.style.display = 'none';
             }
         });
 
-        // 登录
-        loginBtn.addEventListener('click', async () => {
-            await attemptLogin();
-        });
-        pwdInput.addEventListener('keydown', async (e) => {
-            if (e.key === 'Enter') await attemptLogin();
-        });
+        loginBtn.addEventListener('click', () => attemptLogin());
+        pwdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
 
         async function attemptLogin() {
             const pwd = pwdInput.value.trim();
             if (!pwd) return;
-
-            loginBtn.textContent = '验证中...';
-            loginBtn.disabled = true;
+            loginBtn.textContent = '验证中...'; loginBtn.disabled = true;
             authError.style.display = 'none';
-
             try {
                 const html = await Auth.decryptContent(ENCRYPTED_CONTENT, pwd);
                 if (html) {
                     Auth.setSession();
-                    authOverlay.classList.remove('show');
-                    pwdInput.value = '';
+                    authOverlay.classList.remove('show'); pwdInput.value = '';
                     revealPrivateContent(html);
                 } else {
-                    authError.style.display = 'block';
-                    pwdInput.value = '';
-                    pwdInput.focus();
+                    authError.style.display = 'block'; pwdInput.value = ''; pwdInput.focus();
                 }
-            } catch (_) {
-                authError.style.display = 'block';
-            }
-            loginBtn.textContent = '进入';
-            loginBtn.disabled = false;
+            } catch (_) { authError.style.display = 'block'; }
+            loginBtn.textContent = '进入'; loginBtn.disabled = false;
         }
 
         function revealPrivateContent(html) {
-            // 用 Blob URL 加载解密后的内容到 iframe
             const blob = new Blob([html], { type: 'text/html' });
             const url = URL.createObjectURL(blob);
-            // 释放旧 URL
             if (privateFrame.src.startsWith('blob:')) URL.revokeObjectURL(privateFrame.src);
             privateFrame.src = url;
-
             publicView.style.display = 'none';
             privateView.classList.add('show');
             exitPrivateBtn.classList.add('show');
             lockBtn.classList.add('logged-in');
-            lockBtn.innerHTML = '🔓';
-            lockBtn.title = '已解锁';
-            exitPrivateBtn.focus();
+            lockBtn.innerHTML = '🔓'; lockBtn.title = '已解锁';
         }
 
         function enterPrivateMode() {
@@ -279,23 +386,16 @@
             privateView.classList.add('show');
             exitPrivateBtn.classList.add('show');
             lockBtn.classList.add('logged-in');
-            lockBtn.innerHTML = '🔓';
-            lockBtn.title = '已解锁';
-            // iframe 需要重新加载（session 还在但页面刷新后 blob url 丢失）
-            // 这种情况极少，需要重新解密
+            lockBtn.innerHTML = '🔓'; lockBtn.title = '已解锁';
         }
 
-        // 退出私人模式
         exitPrivateBtn.addEventListener('click', () => {
             publicView.style.display = '';
             privateView.classList.remove('show');
             exitPrivateBtn.classList.remove('show');
             lockBtn.classList.remove('logged-in');
-            lockBtn.innerHTML = '🔒';
-            lockBtn.title = '私人区';
-            if (privateFrame.src.startsWith('blob:')) {
-                URL.revokeObjectURL(privateFrame.src);
-            }
+            lockBtn.innerHTML = '🔒'; lockBtn.title = '私人区';
+            if (privateFrame.src.startsWith('blob:')) URL.revokeObjectURL(privateFrame.src);
             privateFrame.src = '';
         });
     </script>

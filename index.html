@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>严亦乐 · 学术主页</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <style>
         :root {
             --blue: #0F4B91;
@@ -121,12 +122,47 @@
         .paper-ref { font-size: 0.9rem; color: #444; line-height: 1.6; }
         .skills-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
-        /* Placeholder */
-        .placeholder-card {
-            text-align: center; padding: 80px 20px; color: #ccc;
+        /* ===== 课程图谱 ===== */
+        #graph-container {
+            width: 100%; height: 520px; border: 1px solid var(--border);
+            border-radius: 8px; background: #fcfcfc; position: relative;
+            overflow: hidden; cursor: grab;
         }
-        .placeholder-card i { font-size: 3rem; margin-bottom: 16px; display: block; }
-        .placeholder-card p { font-size: 0.95rem; }
+        #graph-container:active { cursor: grabbing; }
+        #graph-container svg { width: 100%; height: 100%; }
+        .graph-node { cursor: pointer; }
+        .graph-node circle { stroke-width: 2px; transition: r 0.2s; }
+        .graph-node:hover circle { r: 22; }
+        .graph-node text { font-size: 11px; fill: #333; pointer-events: none; user-select: none; }
+        .graph-link { stroke: #ddd; stroke-width: 1.2px; }
+        .graph-legend { display: flex; gap: 18px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
+        .graph-legend span { font-size: 0.8rem; display: flex; align-items: center; gap: 5px; color: #888; }
+        .graph-legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+
+        /* ===== 编辑面板 ===== */
+        #course-editor {
+            display: none; margin-top: 18px; padding: 20px;
+            background: #f8fafb; border-radius: 8px; border: 1px solid var(--border);
+        }
+        #course-editor.show { display: block; }
+        #course-editor h4 { font-size: 0.95rem; color: var(--blue); margin-bottom: 12px; }
+        .edit-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 8px; }
+        .edit-item { display: flex; align-items: center; gap: 8px; font-size: 0.85rem; color: #444; }
+        .edit-item input[type=checkbox] { accent-color: var(--blue); }
+        #edit-toggle-btn {
+            display: none; margin-top: 14px; padding: 6px 16px;
+            border: 1px solid var(--border); border-radius: 14px;
+            background: #fff; color: var(--text-dim); font-size: 0.8rem;
+            cursor: pointer; transition: all 0.2s;
+        }
+        #edit-toggle-btn.show { display: inline-block; }
+        #edit-toggle-btn:hover { background: #f0f4f8; }
+        #save-courses-btn {
+            padding: 6px 20px; border: none; border-radius: 14px;
+            background: var(--blue); color: #fff; font-size: 0.82rem;
+            cursor: pointer; margin-top: 12px;
+        }
+        #save-courses-btn:hover { opacity: 0.88; }
 
         /* ===== 锁按钮 ===== */
         #lock-btn {
@@ -344,13 +380,21 @@
 
             <!-- 课程笔记 -->
             <div class="content-panel" id="panel-courses">
-                <div class="cv-header">
+                <div class="cv-header" style="margin-bottom:16px;">
                     <div class="cv-name">课程笔记</div>
-                    <div class="cv-contact">物理 · 数学 · 计算机</div>
+                    <div class="cv-contact">拖拽节点 · 滚轮缩放 · 点击查看详情</div>
                 </div>
-                <div class="placeholder-card">
-                    <i class="fas fa-graduation-cap" style="color:#ddd;"></i>
-                    <p>课程笔记整理中，即将更新</p>
+                <div id="graph-container"></div>
+                <div class="graph-legend">
+                    <span><span class="dot" style="background:#4a90d9;"></span> 机器学习/深度学习</span>
+                    <span><span class="dot" style="background:#3da06d;"></span> 量化金融</span>
+                    <span><span class="dot" style="background:#e0892a;"></span> 编程与系统</span>
+                </div>
+                <button id="edit-toggle-btn">⚙️ 编辑可见课程</button>
+                <div id="course-editor">
+                    <h4>勾选在公开页显示的课程（需先登录私人区）</h4>
+                    <div class="edit-grid" id="edit-grid"></div>
+                    <button id="save-courses-btn">保存</button>
                 </div>
             </div>
 
@@ -483,6 +527,176 @@
             });
         });
 
+        // ===== 课程图谱 =====
+        const STORAGE_KEY = '_arce_course_visibility';
+        const courseData = [
+            // { id, label, group, desc }
+            { id:'pinns', label:'物理信息神经网络\n(PINNs)', group:0, desc:'Physics-Informed Neural Networks' },
+            { id:'pytorch', label:'PyTorch', group:0, desc:'深度学习框架' },
+            { id:'tensorflow', label:'TensorFlow', group:0, desc:'深度学习框架' },
+            { id:'dl-dev', label:'深度学习\n模型开发', group:0, desc:'模型架构设计与训练' },
+            { id:'llm-finetune', label:'大模型微调', group:0, desc:'LoRA/QLoRA/P-Tuning' },
+            { id:'overfit', label:'过拟合控制', group:0, desc:'正则化、早停、交叉验证' },
+            { id:'data-clean', label:'数据清洗', group:0, desc:'缺失值、异常值、标准化' },
+            { id:'python', label:'Python', group:2, desc:'科学计算与机器学习' },
+            { id:'linux', label:'Linux', group:2, desc:'服务器环境与部署' },
+            { id:'cpp', label:'C++', group:2, desc:'高性能计算' },
+            { id:'fin-model', label:'财务建模', group:1, desc:'财务报表与估值模型' },
+            { id:'micro-struct', label:'微观结构\n理论', group:1, desc:'订单簿、流动性' },
+            { id:'macro-frame', label:'宏观框架', group:1, desc:'货币政策与经济周期' },
+            { id:'apt', label:'套利定价\n理论', group:1, desc:'Arbitrage Pricing Theory' },
+            { id:'prob-stat', label:'概率统计', group:1, desc:'概率论与数理统计' },
+            { id:'time-series', label:'时间序列\n分析', group:1, desc:'ARIMA, GARCH, 协整' },
+            { id:'backtest', label:'回测框架\n设计', group:1, desc:'策略回测与评估' },
+            { id:'portfolio', label:'组合优化', group:1, desc:'均值方差、风险平价' },
+            { id:'live-track', label:'实盘追踪', group:1, desc:'实时监控与风控' }
+        ];
+        const courseLinks = [
+            ['pinns','pytorch'],['pinns','tensorflow'],['pytorch','dl-dev'],
+            ['pytorch','llm-finetune'],['pytorch','python'],['tensorflow','dl-dev'],
+            ['tensorflow','python'],['dl-dev','llm-finetune'],['dl-dev','overfit'],
+            ['dl-dev','data-clean'],['llm-finetune','data-clean'],['llm-finetune','overfit'],
+            ['data-clean','python'],['python','cpp'],['python','linux'],['cpp','linux'],
+            ['fin-model','micro-struct'],['fin-model','macro-frame'],['fin-model','apt'],
+            ['micro-struct','apt'],['micro-struct','backtest'],['macro-frame','time-series'],
+            ['apt','portfolio'],['apt','prob-stat'],['prob-stat','time-series'],
+            ['prob-stat','overfit'],['time-series','backtest'],['time-series','live-track'],
+            ['backtest','portfolio'],['backtest','live-track'],['portfolio','live-track'],
+            ['prob-stat','fin-model'],['python','prob-stat'],['python','dl-dev']
+        ];
+        const groupColors = ['#4a90d9','#3da06d','#e0892a'];
+
+        function getVisibility() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch(_) { return {}; }
+        }
+        function saveVisibility(map) {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+        }
+
+        function buildGraph() {
+            const vis = getVisibility();
+            // 默认全部可见
+            const nodes = courseData.filter(d => vis[d.id] !== false);
+            const nodeIds = new Set(nodes.map(d => d.id));
+            const links = courseLinks.filter(l => nodeIds.has(l[0]) && nodeIds.has(l[1]));
+
+            const container = document.getElementById('graph-container');
+            container.innerHTML = '';
+            const W = container.clientWidth;
+            const H = container.clientHeight || 520;
+
+            const svg = d3.select('#graph-container').append('svg')
+                .attr('viewBox', [0, 0, W, H]);
+
+            const g = svg.append('g');
+
+            // Zoom
+            svg.call(d3.zoom().scaleExtent([0.3, 3]).on('zoom', (e) => {
+                g.attr('transform', e.transform);
+            }));
+
+            const simulation = d3.forceSimulation(nodes)
+                .force('link', d3.forceLink(links).id(d => d.id).distance(100))
+                .force('charge', d3.forceManyBody().strength(-350))
+                .force('center', d3.forceCenter(W/2, H/2))
+                .force('collision', d3.forceCollide(35));
+
+            const link = g.append('g').selectAll('line').data(links).join('line')
+                .attr('class','graph-link');
+
+            const node = g.append('g').selectAll('g').data(nodes).join('g')
+                .attr('class','graph-node')
+                .call(d3.drag()
+                    .on('start', (e,d) => { if(!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
+                    .on('drag', (e,d) => { d.fx = e.x; d.fy = e.y; })
+                    .on('end', (e,d) => { if(!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
+                );
+
+            node.append('circle')
+                .attr('r', 16)
+                .attr('fill', d => groupColors[d.group])
+                .attr('stroke', d => d3.color(groupColors[d.group]).darker(0.3));
+
+            node.append('text')
+                .text(d => d.label)
+                .attr('text-anchor','middle')
+                .attr('dy', '0.35em')
+                .style('font-size','11px')
+                .style('fill','#fff')
+                .style('font-weight','500');
+
+            // Tooltip on hover
+            node.append('title').text(d => d.label.replace(/\n/g,' ') + (d.desc ? ' — ' + d.desc : ''));
+
+            simulation.on('tick', () => {
+                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
+                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
+                node.attr('transform', d => `translate(${d.x},${d.y})`);
+            });
+        }
+
+        // 编辑面板
+        function buildEditor() {
+            const grid = document.getElementById('edit-grid');
+            grid.innerHTML = '';
+            const vis = getVisibility();
+            courseData.forEach(d => {
+                const div = document.createElement('div');
+                div.className = 'edit-item';
+                const cb = document.createElement('input');
+                cb.type = 'checkbox'; cb.checked = vis[d.id] !== false; cb.dataset.id = d.id;
+                const label = document.createElement('label');
+                label.textContent = d.label.replace(/\n/g,' ');
+                div.appendChild(cb); div.appendChild(label);
+                grid.appendChild(div);
+            });
+        }
+
+        document.getElementById('save-courses-btn').addEventListener('click', () => {
+            const map = {};
+            document.querySelectorAll('#edit-grid input[type=checkbox]').forEach(cb => {
+                map[cb.dataset.id] = cb.checked;
+            });
+            saveVisibility(map);
+            buildGraph();
+            document.getElementById('course-editor').classList.remove('show');
+        });
+
+        document.getElementById('edit-toggle-btn').addEventListener('click', () => {
+            if (!Auth.isLoggedIn()) {
+                alert('请先点击右上角 🔒 登录私人区后，才能编辑课程可见性。');
+                return;
+            }
+            const editor = document.getElementById('course-editor');
+            if (editor.classList.contains('show')) {
+                editor.classList.remove('show');
+            } else {
+                buildEditor();
+                editor.classList.add('show');
+            }
+        });
+
+        // 登录后显示编辑按钮
+        function updateEditButton() {
+            const btn = document.getElementById('edit-toggle-btn');
+            if (Auth.isLoggedIn()) { btn.classList.add('show'); }
+            else { btn.classList.remove('show'); }
+        }
+
+        // 切换到课程笔记面板时重建图谱（处理容器尺寸）
+        const coursesLink = document.querySelector('[data-panel="courses"]');
+        const origClick = coursesLink.onclick;
+        coursesLink.addEventListener('click', () => {
+            setTimeout(buildGraph, 100);
+        });
+
+        // 初始构建
+        buildGraph();
+        updateEditButton();
+
         // ===== 登录系统 =====
         const lockBtn = document.getElementById('lock-btn');
         const authOverlay = document.getElementById('auth-overlay');
@@ -543,6 +757,7 @@
             exitPrivateBtn.classList.add('show');
             lockBtn.classList.add('logged-in');
             lockBtn.innerHTML = '🔓'; lockBtn.title = '已解锁';
+            updateEditButton();
         }
 
         function enterPrivateMode() {
@@ -551,6 +766,7 @@
             exitPrivateBtn.classList.add('show');
             lockBtn.classList.add('logged-in');
             lockBtn.innerHTML = '🔓'; lockBtn.title = '已解锁';
+            updateEditButton();
         }
 
         exitPrivateBtn.addEventListener('click', () => {
@@ -561,6 +777,7 @@
             lockBtn.innerHTML = '🔒'; lockBtn.title = '私人区';
             if (privateFrame.src.startsWith('blob:')) URL.revokeObjectURL(privateFrame.src);
             privateFrame.src = '';
+            updateEditButton();
         });
     </script>
 

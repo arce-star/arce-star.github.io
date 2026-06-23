@@ -122,22 +122,23 @@
         .paper-ref { font-size: 0.9rem; color: #444; line-height: 1.6; }
         .skills-row { display: flex; flex-wrap: wrap; gap: 8px; }
 
-        /* ===== 课程图谱 ===== */
-        #graph-container {
-            width: 100%; height: 520px; border: 1px solid var(--border);
-            border-radius: 8px; background: #fcfcfc; position: relative;
-            overflow: hidden; cursor: grab;
+        /* ===== 课程树状图 ===== */
+        #tree-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
         }
-        #graph-container:active { cursor: grabbing; }
-        #graph-container svg { width: 100%; height: 100%; }
-        .graph-node { cursor: pointer; }
-        .graph-node circle { stroke-width: 2px; transition: r 0.2s; }
-        .graph-node:hover circle { r: 22; }
-        .graph-node text { font-size: 11px; fill: #333; pointer-events: none; user-select: none; }
-        .graph-link { stroke: #ddd; stroke-width: 1.2px; }
-        .graph-legend { display: flex; gap: 18px; justify-content: center; margin-top: 14px; flex-wrap: wrap; }
-        .graph-legend span { font-size: 0.8rem; display: flex; align-items: center; gap: 5px; color: #888; }
-        .graph-legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+        .tree-card {
+            border: 1px solid var(--border); border-radius: 8px;
+            background: #fcfcfc; overflow: hidden;
+        }
+        .tree-card .tree-title {
+            font-size: 0.9rem; font-weight: 700; padding: 10px 14px;
+            color: #fff; text-align: center; letter-spacing: 0.04em;
+        }
+        .tree-card svg { width: 100%; }
+        .tree-card .tlink { stroke: #ccc; stroke-width: 1.3px; fill: none; }
+        .tree-card .tnode circle { stroke-width: 2px; }
+        .tree-card .tnode text { font-size: 11px; fill: #333; text-anchor: middle; }
+        .tree-card .tnode .troot-text { font-size: 13px; font-weight: 700; fill: #fff; }
 
         /* ===== 编辑面板 ===== */
         #course-editor {
@@ -245,6 +246,7 @@
             .sidebar-nav a { padding: 6px 12px; font-size: 0.82rem; }
             .sidebar-footer { display: none; }
             #main-content { margin-left: 0; padding: 30px 18px 60px; }
+            #tree-grid { grid-template-columns: 1fr; }
             .cv-name { font-size: 1.6rem; }
             .cv-contact { gap: 8px; font-size: 0.8rem; }
         }
@@ -382,13 +384,13 @@
             <div class="content-panel" id="panel-courses">
                 <div class="cv-header" style="margin-bottom:16px;">
                     <div class="cv-name">课程笔记</div>
-                    <div class="cv-contact">拖拽节点 · 滚轮缩放 · 点击查看详情</div>
+                    <div class="cv-contact">知识体系 · 树状结构</div>
                 </div>
-                <div id="graph-container"></div>
-                <div class="graph-legend">
-                    <span><span class="dot" style="background:#4a90d9;"></span> 机器学习/深度学习</span>
-                    <span><span class="dot" style="background:#3da06d;"></span> 量化金融</span>
-                    <span><span class="dot" style="background:#e0892a;"></span> 编程与系统</span>
+                <div id="tree-grid">
+                    <div class="tree-card" id="tree-quant"><div class="tree-title" style="background:#3da06d;">量化金融</div></div>
+                    <div class="tree-card" id="tree-ai"><div class="tree-title" style="background:#4a90d9;">AI</div></div>
+                    <div class="tree-card" id="tree-math"><div class="tree-title" style="background:#9b59b6;">数学</div></div>
+                    <div class="tree-card" id="tree-cs"><div class="tree-title" style="background:#e0892a;">CS</div></div>
                 </div>
                 <button id="edit-toggle-btn">⚙️ 编辑可见课程</button>
                 <div id="course-editor">
@@ -527,114 +529,117 @@
             });
         });
 
-        // ===== 课程图谱 =====
+        // ===== 课程树状图 =====
         const STORAGE_KEY = '_arce_course_visibility';
-        const courseData = [
-            // { id, label, group, desc }
-            { id:'pinns', label:'物理信息神经网络\n(PINNs)', group:0, desc:'Physics-Informed Neural Networks' },
-            { id:'pytorch', label:'PyTorch', group:0, desc:'深度学习框架' },
-            { id:'tensorflow', label:'TensorFlow', group:0, desc:'深度学习框架' },
-            { id:'dl-dev', label:'深度学习\n模型开发', group:0, desc:'模型架构设计与训练' },
-            { id:'llm-finetune', label:'大模型微调', group:0, desc:'LoRA/QLoRA/P-Tuning' },
-            { id:'overfit', label:'过拟合控制', group:0, desc:'正则化、早停、交叉验证' },
-            { id:'data-clean', label:'数据清洗', group:0, desc:'缺失值、异常值、标准化' },
-            { id:'python', label:'Python', group:2, desc:'科学计算与机器学习' },
-            { id:'linux', label:'Linux', group:2, desc:'服务器环境与部署' },
-            { id:'cpp', label:'C++', group:2, desc:'高性能计算' },
-            { id:'fin-model', label:'财务建模', group:1, desc:'财务报表与估值模型' },
-            { id:'micro-struct', label:'微观结构\n理论', group:1, desc:'订单簿、流动性' },
-            { id:'macro-frame', label:'宏观框架', group:1, desc:'货币政策与经济周期' },
-            { id:'apt', label:'套利定价\n理论', group:1, desc:'Arbitrage Pricing Theory' },
-            { id:'prob-stat', label:'概率统计', group:1, desc:'概率论与数理统计' },
-            { id:'time-series', label:'时间序列\n分析', group:1, desc:'ARIMA, GARCH, 协整' },
-            { id:'backtest', label:'回测框架\n设计', group:1, desc:'策略回测与评估' },
-            { id:'portfolio', label:'组合优化', group:1, desc:'均值方差、风险平价' },
-            { id:'live-track', label:'实盘追踪', group:1, desc:'实时监控与风控' }
+        const treeColors = { quant:'#3da06d', ai:'#4a90d9', math:'#9b59b6', cs:'#e0892a' };
+
+        const treeData = {
+            quant: { name:'量化金融', children:[
+                { name:'宏观框架' }, { name:'微观结构理论' }, { name:'套利定价理论' },
+                { name:'财务建模' }, { name:'时间序列分析' }, { name:'回测框架设计' },
+                { name:'组合优化' }, { name:'实盘追踪' }
+            ]},
+            ai: { name:'AI', children:[
+                { name:'深度学习模型开发', children:[{name:'PyTorch'},{name:'TensorFlow'}] },
+                { name:'大模型微调' }, { name:'PINNs' }, { name:'数据清洗' }, { name:'过拟合控制' }
+            ]},
+            math: { name:'数学', children:[
+                { name:'概率统计' }, { name:'时间序列分析' }
+            ]},
+            cs: { name:'CS', children:[
+                { name:'Python' }, { name:'C++' }, { name:'Linux' }
+            ]}
+        };
+
+        // 收集所有叶子节点 id (用于编辑面板)
+        function collectIds(tree, prefix) {
+            const ids = [];
+            function walk(node, key) {
+                const id = key || node.name;
+                ids.push({ id, label: node.name, tree: prefix });
+                if (node.children) node.children.forEach(c => walk(c, id));
+            }
+            walk(tree);
+            return ids;
+        }
+        const allCourseIds = [
+            ...collectIds(treeData.quant, 'quant'),
+            ...collectIds(treeData.ai, 'ai'),
+            ...collectIds(treeData.math, 'math'),
+            ...collectIds(treeData.cs, 'cs')
         ];
-        const courseLinks = [
-            ['pinns','pytorch'],['pinns','tensorflow'],['pytorch','dl-dev'],
-            ['pytorch','llm-finetune'],['pytorch','python'],['tensorflow','dl-dev'],
-            ['tensorflow','python'],['dl-dev','llm-finetune'],['dl-dev','overfit'],
-            ['dl-dev','data-clean'],['llm-finetune','data-clean'],['llm-finetune','overfit'],
-            ['data-clean','python'],['python','cpp'],['python','linux'],['cpp','linux'],
-            ['fin-model','micro-struct'],['fin-model','macro-frame'],['fin-model','apt'],
-            ['micro-struct','apt'],['micro-struct','backtest'],['macro-frame','time-series'],
-            ['apt','portfolio'],['apt','prob-stat'],['prob-stat','time-series'],
-            ['prob-stat','overfit'],['time-series','backtest'],['time-series','live-track'],
-            ['backtest','portfolio'],['backtest','live-track'],['portfolio','live-track'],
-            ['prob-stat','fin-model'],['python','prob-stat'],['python','dl-dev']
-        ];
-        const groupColors = ['#4a90d9','#3da06d','#e0892a'];
 
         function getVisibility() {
-            try {
-                const raw = localStorage.getItem(STORAGE_KEY);
-                return raw ? JSON.parse(raw) : {};
-            } catch(_) { return {}; }
+            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+            catch(_) { return {}; }
         }
-        function saveVisibility(map) {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(map));
+        function saveVisibility(map) { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }
+
+        function filterTree(node, vis, prefix) {
+            // 递归过滤不可见节点
+            function walk(n, key) {
+                const id = key || n.name;
+                if (vis[id] === false) return null;
+                const filtered = { name: n.name };
+                if (n.children) {
+                    const kids = n.children.map(c => walk(c, id)).filter(Boolean);
+                    if (kids.length) filtered.children = kids;
+                }
+                return filtered;
+            }
+            return walk(node);
         }
 
-        function buildGraph() {
-            const vis = getVisibility();
-            // 默认全部可见
-            const nodes = courseData.filter(d => vis[d.id] !== false);
-            const nodeIds = new Set(nodes.map(d => d.id));
-            const links = courseLinks.filter(l => nodeIds.has(l[0]) && nodeIds.has(l[1]));
+        function drawTree(containerId, data, color) {
+            const card = document.getElementById(containerId);
+            // 清除旧 SVG
+            const oldSvg = card.querySelector('svg');
+            if (oldSvg) oldSvg.remove();
 
-            const container = document.getElementById('graph-container');
-            container.innerHTML = '';
-            const W = container.clientWidth;
-            const H = container.clientHeight || 520;
+            const W = card.clientWidth || 300;
+            const H = Math.max(180, (data.children ? data.children.length : 1) * 48 + 60);
+            const margin = { top: 10, right: 20, bottom: 10, left: 20 };
 
-            const svg = d3.select('#graph-container').append('svg')
+            const svg = d3.select('#' + containerId).append('svg')
                 .attr('viewBox', [0, 0, W, H]);
 
-            const g = svg.append('g');
+            const root = d3.hierarchy(data);
+            const treeLayout = d3.tree().size([W - margin.left - margin.right, H - margin.top - margin.bottom]);
+            treeLayout(root);
 
-            // Zoom
-            svg.call(d3.zoom().scaleExtent([0.3, 3]).on('zoom', (e) => {
-                g.attr('transform', e.transform);
-            }));
+            const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
 
-            const simulation = d3.forceSimulation(nodes)
-                .force('link', d3.forceLink(links).id(d => d.id).distance(100))
-                .force('charge', d3.forceManyBody().strength(-350))
-                .force('center', d3.forceCenter(W/2, H/2))
-                .force('collision', d3.forceCollide(35));
+            // Links
+            g.selectAll('path').data(root.links()).join('path')
+                .attr('class','tlink')
+                .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x));
 
-            const link = g.append('g').selectAll('line').data(links).join('line')
-                .attr('class','graph-link');
+            // Nodes
+            const node = g.selectAll('g').data(root.descendants()).join('g')
+                .attr('class','tnode')
+                .attr('transform', d => `translate(${d.y},${d.x})`);
 
-            const node = g.append('g').selectAll('g').data(nodes).join('g')
-                .attr('class','graph-node')
-                .call(d3.drag()
-                    .on('start', (e,d) => { if(!e.active) simulation.alphaTarget(0.3).restart(); d.fx = d.x; d.fy = d.y; })
-                    .on('drag', (e,d) => { d.fx = e.x; d.fy = e.y; })
-                    .on('end', (e,d) => { if(!e.active) simulation.alphaTarget(0); d.fx = null; d.fy = null; })
-                );
-
+            const isRoot = d => d.depth === 0;
             node.append('circle')
-                .attr('r', 16)
-                .attr('fill', d => groupColors[d.group])
-                .attr('stroke', d => d3.color(groupColors[d.group]).darker(0.3));
+                .attr('r', d => isRoot(d) ? 16 : 10)
+                .attr('fill', d => isRoot(d) ? color : '#fff')
+                .attr('stroke', d => isRoot(d) ? d3.color(color).darker(0.3) : color);
 
             node.append('text')
-                .text(d => d.label)
-                .attr('text-anchor','middle')
-                .attr('dy', '0.35em')
-                .style('font-size','11px')
-                .style('fill','#fff')
-                .style('font-weight','500');
+                .attr('dy', d => isRoot(d) ? '0.35em' : '-6')
+                .attr('class', d => isRoot(d) ? 'troot-text' : '')
+                .text(d => d.data.name);
 
-            // Tooltip on hover
-            node.append('title').text(d => d.label.replace(/\n/g,' ') + (d.desc ? ' — ' + d.desc : ''));
+            // Move text above circle for non-root, inside for root
+            node.filter(d => !isRoot(d)).select('text').attr('dy','-6');
+            node.filter(d => isRoot(d)).select('text').attr('dy','0.35em');
+        }
 
-            simulation.on('tick', () => {
-                link.attr('x1', d => d.source.x).attr('y1', d => d.source.y)
-                    .attr('x2', d => d.target.x).attr('y2', d => d.target.y);
-                node.attr('transform', d => `translate(${d.x},${d.y})`);
+        function buildAllTrees() {
+            const vis = getVisibility();
+            ['quant','ai','math','cs'].forEach(key => {
+                const filtered = filterTree(treeData[key], vis, key);
+                if (filtered) drawTree('tree-'+key, filtered, treeColors[key]);
             });
         }
 
@@ -643,13 +648,13 @@
             const grid = document.getElementById('edit-grid');
             grid.innerHTML = '';
             const vis = getVisibility();
-            courseData.forEach(d => {
+            allCourseIds.forEach(d => {
                 const div = document.createElement('div');
                 div.className = 'edit-item';
                 const cb = document.createElement('input');
                 cb.type = 'checkbox'; cb.checked = vis[d.id] !== false; cb.dataset.id = d.id;
                 const label = document.createElement('label');
-                label.textContent = d.label.replace(/\n/g,' ');
+                label.textContent = d.label + ' (' + {quant:'量化',ai:'AI',math:'数学',cs:'CS'}[d.tree] + ')';
                 div.appendChild(cb); div.appendChild(label);
                 grid.appendChild(div);
             });
@@ -661,7 +666,7 @@
                 map[cb.dataset.id] = cb.checked;
             });
             saveVisibility(map);
-            buildGraph();
+            buildAllTrees();
             document.getElementById('course-editor').classList.remove('show');
         });
 
@@ -679,23 +684,25 @@
             }
         });
 
-        // 登录后显示编辑按钮
         function updateEditButton() {
             const btn = document.getElementById('edit-toggle-btn');
             if (Auth.isLoggedIn()) { btn.classList.add('show'); }
             else { btn.classList.remove('show'); }
         }
 
-        // 切换到课程笔记面板时重建图谱（处理容器尺寸）
-        const coursesLink = document.querySelector('[data-panel="courses"]');
-        const origClick = coursesLink.onclick;
-        coursesLink.addEventListener('click', () => {
-            setTimeout(buildGraph, 100);
+        // 初次构建 & 窗口 resize 重建
+        buildAllTrees();
+        updateEditButton();
+        let treeResizeTimer;
+        window.addEventListener('resize', () => {
+            clearTimeout(treeResizeTimer);
+            treeResizeTimer = setTimeout(buildAllTrees, 300);
         });
 
-        // 初始构建
-        buildGraph();
-        updateEditButton();
+        // 切换到课程笔记面板时重建
+        document.querySelector('[data-panel="courses"]').addEventListener('click', () => {
+            setTimeout(buildAllTrees, 100);
+        });
 
         // ===== 登录系统 =====
         const lockBtn = document.getElementById('lock-btn');

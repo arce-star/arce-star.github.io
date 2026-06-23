@@ -134,11 +134,10 @@
             font-size: 0.9rem; font-weight: 700; padding: 10px 14px;
             color: #fff; text-align: center; letter-spacing: 0.04em;
         }
-        .tree-card svg { width: 100%; }
-        .tree-card .tlink { stroke: #ccc; stroke-width: 1.3px; fill: none; }
-        .tree-card .tnode circle { stroke-width: 2px; }
-        .tree-card .tnode text { font-size: 11px; fill: #333; text-anchor: middle; }
-        .tree-card .tnode .troot-text { font-size: 13px; font-weight: 700; fill: #fff; }
+        .tree-card svg { width: 100%; display: block; }
+        .tree-card .tlink { stroke: #d0d0d0; stroke-width: 1.4px; fill: none; }
+        .tree-card .tnode { cursor: pointer; }
+        .tree-card .tnode:hover circle { filter: brightness(0.92); }
 
         /* ===== 编辑面板 ===== */
         #course-editor {
@@ -592,47 +591,144 @@
 
         function drawTree(containerId, data, color) {
             const card = document.getElementById(containerId);
-            // 清除旧 SVG
             const oldSvg = card.querySelector('svg');
             if (oldSvg) oldSvg.remove();
 
             const W = card.clientWidth || 300;
-            const H = Math.max(180, (data.children ? data.children.length : 1) * 48 + 60);
-            const margin = { top: 10, right: 20, bottom: 10, left: 20 };
+            const margin = { top: 12, right: 30, bottom: 12, left: 20 };
+            const dx = 18, dy = 80; // node spacing
 
             const svg = d3.select('#' + containerId).append('svg')
-                .attr('viewBox', [0, 0, W, H]);
+                .attr('viewBox', [0, 0, W, 300])
+                .style('min-height','180px');
+
+            const gLink = svg.append('g');
+            const gNode = svg.append('g');
 
             const root = d3.hierarchy(data);
-            const treeLayout = d3.tree().size([W - margin.left - margin.right, H - margin.top - margin.bottom]);
-            treeLayout(root);
+            root.x0 = 0; root.y0 = 0;
 
-            const g = svg.append('g').attr('transform', `translate(${margin.left},${margin.top})`);
+            // 初始：展开第一层，折叠更深层
+            root.descendants().forEach(d => {
+                if (d.depth >= 2 && d.children) {
+                    d._children = d.children; d.children = null;
+                }
+            });
 
-            // Links
-            g.selectAll('path').data(root.links()).join('path')
-                .attr('class','tlink')
-                .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x));
+            const treeLayout = d3.tree().nodeSize([dx, dy]);
 
-            // Nodes
-            const node = g.selectAll('g').data(root.descendants()).join('g')
-                .attr('class','tnode')
-                .attr('transform', d => `translate(${d.y},${d.x})`);
+            function update(source) {
+                treeLayout(root);
+                const nodes = root.descendants();
+                const links = root.links();
 
-            const isRoot = d => d.depth === 0;
-            node.append('circle')
-                .attr('r', d => isRoot(d) ? 16 : 10)
-                .attr('fill', d => isRoot(d) ? color : '#fff')
-                .attr('stroke', d => isRoot(d) ? d3.color(color).darker(0.3) : color);
+                // 动态 SVG 高度
+                const maxX = d3.max(nodes, d => d.x) || 0;
+                const maxY = d3.max(nodes, d => d.y) || 0;
+                const H = Math.max(180, maxX + margin.top + margin.bottom + 20);
+                svg.attr('viewBox', [0, 0, W, H]);
 
-            node.append('text')
-                .attr('dy', d => isRoot(d) ? '0.35em' : '-6')
-                .attr('class', d => isRoot(d) ? 'troot-text' : '')
-                .text(d => d.data.name);
+                // Links
+                const link = gLink.selectAll('path').data(links, d => d.target.data.name + d.target.depth);
+                link.join(
+                    enter => enter.append('path')
+                        .attr('class','tlink')
+                        .attr('d', d => {
+                            const src = {x: source.x0 ?? d.source.x, y: source.y0 ?? d.source.y};
+                            const tgt = {x: source.x0 ?? d.source.x, y: source.y0 ?? d.source.y};
+                            return d3.linkHorizontal().x(d => d.y).y(d => d.x)({source: src, target: tgt});
+                        })
+                        .transition().duration(400)
+                        .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x)),
+                    update => update.transition().duration(400)
+                        .attr('d', d3.linkHorizontal().x(d => d.y).y(d => d.x)),
+                    exit => exit.transition().duration(300)
+                        .attr('d', d => {
+                            const tgt = {x: source.x, y: source.y};
+                            return d3.linkHorizontal().x(d => d.y).y(d => d.x)({source: tgt, target: tgt});
+                        }).remove()
+                );
 
-            // Move text above circle for non-root, inside for root
-            node.filter(d => !isRoot(d)).select('text').attr('dy','-6');
-            node.filter(d => isRoot(d)).select('text').attr('dy','0.35em');
+                // Nodes
+                const node = gNode.selectAll('g').data(nodes, d => d.data.name + d.depth);
+                const nodeEnter = node.enter().append('g')
+                    .attr('class','tnode')
+                    .attr('transform', d => `translate(${source.y0 ?? d.y},${source.x0 ?? d.x})`)
+                    .style('cursor','pointer')
+                    .on('click', (e, d) => {
+                        if (d.children) { d._children = d.children; d.children = null; }
+                        else if (d._children) { d.children = d._children; d._children = null; }
+                        update(d);
+                    });
+
+                nodeEnter.append('circle')
+                    .attr('r', d => d.depth === 0 ? 16 : (d._children || d.children ? 12 : 9))
+                    .attr('fill', d => {
+                        if (d.depth === 0) return color;
+                        if (d._children) return color; // collapsed, show as colored
+                        if (d.children) return '#fff';
+                        return '#f5f5f5'; // leaf
+                    })
+                    .attr('stroke', d => d.depth === 0 ? d3.color(color).darker(0.3) : color)
+                    .attr('stroke-width', d => (d._children || d.children) ? 2 : 1.5);
+
+                nodeEnter.append('text')
+                    .attr('dy', d => d.depth === 0 ? '0.35em' : '-7')
+                    .attr('text-anchor', d => d.depth === 0 ? 'middle' : 'start')
+                    .attr('dx', d => d.depth === 0 ? 0 : 14)
+                    .attr('class', d => d.depth === 0 ? 'troot-text' : '')
+                    .style('font-size', d => d.depth === 0 ? '13px' : '11px')
+                    .style('fill', d => d.depth === 0 ? '#fff' : '#444')
+                    .text(d => d.data.name);
+
+                // 可折叠指示器
+                nodeEnter.filter(d => d._children).append('text')
+                    .attr('dy','0.35em').attr('text-anchor','middle')
+                    .style('font-size','9px').style('fill','#fff')
+                    .text('+');
+
+                nodeEnter.filter(d => d.children && d.depth > 0).append('text')
+                    .attr('dy','0.35em').attr('text-anchor','middle')
+                    .style('font-size','9px').style('fill',color)
+                    .text('−');
+
+                // Transition
+                node.transition().duration(400)
+                    .attr('transform', d => `translate(${d.y},${d.x})`);
+
+                node.select('circle').transition().duration(400)
+                    .attr('r', d => d.depth === 0 ? 16 : (d._children || d.children ? 12 : 9))
+                    .attr('fill', d => {
+                        if (d.depth === 0) return color;
+                        if (d._children) return color;
+                        if (d.children) return '#fff';
+                        return '#f5f5f5';
+                    });
+
+                // Update +/- indicators
+                node.selectAll('text').filter(function() {
+                    return this.textContent === '+' || this.textContent === '−';
+                }).remove();
+
+                node.filter(d => d._children).append('text')
+                    .attr('dy','0.35em').attr('text-anchor','middle')
+                    .style('font-size','9px').style('fill','#fff')
+                    .text('+');
+
+                node.filter(d => d.children && d.depth > 0).append('text')
+                    .attr('dy','0.35em').attr('text-anchor','middle')
+                    .style('font-size','9px').style('fill',color)
+                    .text('−');
+
+                node.exit().transition().duration(300)
+                    .attr('transform', d => `translate(${source.y},${source.x})`)
+                    .style('opacity', 0).remove();
+
+                // Store old positions
+                root.descendants().forEach(d => { d.x0 = d.x; d.y0 = d.y; });
+            }
+
+            update(root);
         }
 
         function buildAllTrees() {

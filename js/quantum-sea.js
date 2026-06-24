@@ -123,12 +123,8 @@ class QuantumSea {
         for (let i = 0; i < this.particles.length; i++) {
             const p = this.particles[i];
             const alpha = alphas[i];
-            const radius = p.mouseDist < this.mouse.radius
-                ? p.radius * (1.3 + 0.4 * (1 - p.mouseDist / this.mouse.radius))
-                : p.radius;
-
             this.ctx.beginPath();
-            this.ctx.arc(p.x, p.y, radius, 0, Math.PI * 2);
+            this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
             this.ctx.fillStyle = `rgba(${r},${g},${b},${alpha})`;
             this.ctx.fill();
         }

@@ -43,10 +43,19 @@ const AiAssistant = (() => {
       system += `\n\n用户当前在浏览项目文件: "${context.path}"`;
     }
 
-    messages.push({ role: 'user', content: text });
-
     const typing = addBubble('assistant', '<em>思考中...</em>');
     try {
+      // 将 system prompt 放进消息列表（兼容不支持 system 参数的代理）
+      const payload = {
+        model: MODEL,
+        max_tokens: 1024,
+        messages: [
+          { role: 'user', content: '[系统指令] ' + system },
+          ...messages.slice(-10),
+          { role: 'user', content: text }
+        ]
+      };
+
       const resp = await fetch(API_URL, {
         method: 'POST',
         headers: {
@@ -54,25 +63,36 @@ const AiAssistant = (() => {
           'Authorization': 'Bearer ' + getApiKey(),
           'anthropic-version': '2023-06-01'
         },
-        body: JSON.stringify({
-          model: MODEL,
-          max_tokens: 1024,
-          system: system,
-          messages: messages.slice(-10)
-        })
+        body: JSON.stringify(payload)
       });
 
       if (!resp.ok) {
         const err = await resp.text();
-        throw new Error(`${resp.status}: ${err.substring(0,200)}`);
+        throw new Error(`${resp.status}: ${err.substring(0,300)}`);
       }
 
       const data = await resp.json();
-      const reply = data.content[0].text;
+      // 兼容不同响应格式
+      let reply = '';
+      if (data.content && data.content[0]) {
+        reply = data.content[0].text || '';
+      } else if (data.choices && data.choices[0]) {
+        reply = data.choices[0].message?.content || data.choices[0].text || '';
+      } else if (data.response) {
+        reply = data.response;
+      } else if (typeof data === 'string') {
+        reply = data;
+      }
+      if (!reply) {
+        console.log('API response:', JSON.stringify(data).substring(0, 500));
+        throw new Error('响应格式异常，请查看控制台');
+      }
       typing.innerHTML = formatReply(reply);
+      messages.push({ role: 'user', content: text });
       messages.push({ role: 'assistant', content: reply });
     } catch(e) {
       typing.innerHTML = '<span style="color:#c0392b;">请求失败: ' + e.message + '</span>';
+      console.error('AI Assistant error:', e);
     }
     document.getElementById('ai-chat-body').scrollTop = 99999;
   }

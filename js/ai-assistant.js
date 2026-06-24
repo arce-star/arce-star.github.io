@@ -128,9 +128,9 @@ const AiAssistant = (() => {
 
   function init() {
     if (!$('ai-chat-btn')) return;
-    $('ai-chat-btn').addEventListener('click', toggle);
+    // 按钮点击已在 HTML onclick 中处理
     $('ai-panel-close').addEventListener('click', () => {
-      $('ai-panel').classList.remove('show'); chatVisible = false;
+      $('ai-panel').classList.remove('show');
     });
     $('ai-msg-send').addEventListener('click', sendMessage);
     $('ai-msg-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });

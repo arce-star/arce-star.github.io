@@ -1,7 +1,7 @@
 // MadEvolve 项目浏览器
 const MadEvolveBrowser = (() => {
   const API = 'https://api.github.com/repos/arce-star/MadEvolve-Item-appearance/contents';
-  const RAW = 'https://raw.githubusercontent.com/arce-star/MadEvolve-Item-appearance/main';
+  const RAW = 'https://raw.githubusercontent.com/arce-star/MadEvolve-Item-appearance/master';
   let currentPath = '';
 
   const IMG = ['png','jpg','jpeg','gif','svg','webp','bmp'];

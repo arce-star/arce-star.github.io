@@ -178,12 +178,6 @@ const AiAssistant = (() => {
     });
     $('ai-msg-send').addEventListener('click', sendMessage);
     $('ai-msg-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
-    $('ai-quick-explain').addEventListener('click', () => {
-      $('ai-msg-input').value = '简要介绍一下这个项目是做什么的'; sendMessage();
-    });
-    $('ai-quick-code').addEventListener('click', () => {
-      $('ai-msg-input').value = '解释一下当前这段代码的核心逻辑'; sendMessage();
-    });
     $('ai-key-section').style.display = 'none';
     $('ai-chat-section').style.display = '';
   }

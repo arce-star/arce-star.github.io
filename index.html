@@ -327,12 +327,6 @@
         .chat-user { align-self: flex-end; background: var(--blue); color: #fff; }
         .chat-assistant { align-self: flex-start; background: #f0f4f8; color: #333; }
         .chat-code { background: #f5f5f5; padding: 6px 10px; border-radius: 4px; font-size: 0.75rem; overflow-x: auto; margin: 4px 0; }
-        #ai-quick-btns { display: flex; gap: 6px; padding: 8px 12px; border-top: 1px solid #eee; }
-        #ai-quick-btns button {
-            flex: 1; padding: 6px 10px; font-size: 0.75rem; border: 1px solid #ddd;
-            border-radius: 8px; background: #fafafa; cursor: pointer; white-space: nowrap;
-        }
-        #ai-quick-btns button:hover { background: #eef3f8; }
         #ai-input-row { display: flex; gap: 6px; padding: 8px 12px 12px; border-top: 1px solid #eee; }
         #ai-input-row input {
             flex: 1; padding: 8px 12px; border: 1px solid #ddd; border-radius: 8px;
@@ -983,10 +977,6 @@
             <div id="ai-chat-body">
                 <div class="chat-bubble chat-assistant">你好！我可以帮你理解这个项目。点击下面的快捷提问，或者直接输入你的问题。</div>
             </div>
-            <div id="ai-quick-btns">
-                <button id="ai-quick-explain">📋 介绍项目</button>
-                <button id="ai-quick-code">💻 解释当前代码</button>
-            </div>
             <div id="ai-input-row">
                 <input type="text" id="ai-msg-input" placeholder="输入问题...">
                 <button id="ai-msg-send"><i class="fas fa-paper-plane"></i></button>
@@ -998,7 +988,7 @@
     <script>document.addEventListener('DOMContentLoaded', () => { new QuantumSea('quantum-bg'); });</script>
     <script src="js/project-browser.js?v=4"></script>
     <script src="js/madevolve-browser.js?v=5"></script>
-    <script src="js/ai-assistant.js?v=5"></script>
+    <script src="js/ai-assistant.js?v=6"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.querySelector('[data-panel="projects"]').addEventListener('click', () => {

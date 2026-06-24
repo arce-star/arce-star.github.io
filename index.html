@@ -359,6 +359,18 @@
         .notes-content p { margin: 8px 0; }
         .notes-content code { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-size: 0.82rem; }
 
+        /* ===== 奖项证书悬浮预览 ===== */
+        .award-item { position: relative; cursor: default; }
+        .award-item.has-cert { cursor: pointer; }
+        .award-item.has-cert:hover .cert-popup { display: block; }
+        .cert-popup {
+            display: none; position: fixed; z-index: 3000;
+            max-width: 420px; background: #fff; border-radius: 10px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.2); padding: 8px;
+            pointer-events: none;
+        }
+        .cert-popup img { width: 100%; border-radius: 6px; display: block; }
+
         /* ===== AI 助手 ===== */
         #ai-chat-btn {
             position: fixed; bottom: 24px; right: 24px; z-index: 1500;
@@ -545,18 +557,18 @@
                 </div>
 
                 <div class="cv-section">
-                    <div class="cv-section-title">竞赛奖项</div>
+                    <div class="cv-section-title">竞赛奖项 <span style="font-weight:400;font-size:0.75rem;color:#999;">(鼠标悬停查看证书)</span></div>
                     <ul class="cv-list">
-                        <li>第十七届全国大学生数学竞赛 (非数学A类) <strong>一等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
-                        <li>第十九届"挑战杯"全国大学生课外学术科技作品竞赛 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
-                        <li>第十一届"挑战杯·华安证券"安徽省大学生课外学术科技作品竞赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
-                        <li>第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组 <strong>第二名</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
-                        <li>第九届全国大学生物理实验竞赛 (创新) 命题类 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2023.12</span></li>
-                        <li>第五届安徽省大学生物理学术竞赛 (CUPT) <strong>省级一等奖</strong> <span style="float:right;color:var(--text-light);">2023.04</span></li>
-                        <li>2022、2023 年优秀学生奖学金 <strong>银奖</strong></li>
-                        <li>第 38 届全国中学生物理竞赛 <strong>省级一等奖（第 25 名）</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
-                        <li>全国中学生数学奥林匹克竞赛预赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
-                        <li>第 37 届全国中学生物理竞赛 <strong>省级二等奖（第 7 名）</strong> <span style="float:right;color:var(--text-light);">2020</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/math-contest.png">第十七届全国大学生数学竞赛 (非数学A类) <strong>一等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/tiaozhanbei-national.png">第十九届"挑战杯"全国大学生课外学术科技作品竞赛 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/tiaozhanbei-province.png">第十一届"挑战杯·华安证券"安徽省大学生课外学术科技作品竞赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/qingfeng-cup.png">第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组 <strong>第二名</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/phys-experiment.png">第九届全国大学生物理实验竞赛 (创新) 命题类 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2023.12</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/cupt.png">第五届安徽省大学生物理学术竞赛 (CUPT) <strong>省级一等奖</strong> <span style="float:right;color:var(--text-light);">2023.04</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/scholarship.png">2022、2023 年优秀学生奖学金 <strong>银奖</strong></li>
+                        <li class="award-item has-cert" data-cert="certificates/physics-highschool.png">第 38 届全国中学生物理竞赛 <strong>省级一等奖（第 25 名）</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/math-highschool.png">全国中学生数学奥林匹克竞赛预赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
+                        <li class="award-item has-cert" data-cert="certificates/physics-highschool2.png">第 37 届全国中学生物理竞赛 <strong>省级二等奖（第 7 名）</strong> <span style="float:right;color:var(--text-light);">2020</span></li>
                     </ul>
                 </div>
 
@@ -1102,6 +1114,23 @@
     <script src="js/madevolve-browser.js?v=7"></script>
     <script src="js/ai-assistant.js?v=6"></script>
     <script>
+        // 奖项证书悬浮预览
+        document.querySelectorAll('.award-item.has-cert').forEach(item => {
+            const popup = document.createElement('div');
+            popup.className = 'cert-popup';
+            popup.innerHTML = '<img src="' + item.dataset.cert + '" alt="证书" onerror="this.parentElement.style.display=\'none\'">';
+            document.body.appendChild(popup);
+            item.addEventListener('mouseenter', (e) => {
+                popup.style.display = 'block';
+            });
+            item.addEventListener('mousemove', (e) => {
+                const x = e.clientX + 18, y = e.clientY - 200;
+                popup.style.left = Math.min(x, window.innerWidth - 440) + 'px';
+                popup.style.top = Math.max(10, y) + 'px';
+            });
+            item.addEventListener('mouseleave', () => { popup.style.display = 'none'; });
+        });
+
         document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.querySelector('[data-panel="projects"]').addEventListener('click', () => {
             setTimeout(() => ProjectBrowser.loadRoot(), 100);

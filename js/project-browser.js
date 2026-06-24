@@ -102,6 +102,7 @@ const ProjectBrowser = (() => {
     });
 
     // 标题
+    html = html.replace(/^##### (.+)$/gm, '<h6>$1</h6>');
     html = html.replace(/^#### (.+)$/gm, '<h5>$1</h5>');
     html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
     html = html.replace(/^## (.+)$/gm, '<h3>$1</h3>');

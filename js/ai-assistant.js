@@ -2,10 +2,30 @@
 const AiAssistant = (() => {
   let context = { path: '', name: '', code: '' };
   let messages = [];
-  let chatVisible = false;
 
   const API_URL = 'https://api.llm.ustc.edu.cn/v1/chat/completions';
-  const MODEL = 'deepseek-v4-pro';
+
+  const MODELS = [
+    { id: 'deepseek-v4-flash-ascend', label: 'DeepSeek Flash (快)' },
+    { id: 'deepseek-v4-pro', label: 'DeepSeek Pro' },
+    { id: 'qwen-chat', label: 'Qwen Chat' },
+    { id: 'qwen-reasoner', label: 'Qwen Reasoner' },
+    { id: 'qwen3.6-chat', label: 'Qwen 3.6 Chat' },
+    { id: 'qwen3.6-reasoner', label: 'Qwen 3.6 Reasoner' },
+    { id: 'glm-chat', label: 'GLM Chat' },
+    { id: 'glm-5.2', label: 'GLM 5.2' },
+    { id: 'glm-reasoner', label: 'GLM Reasoner' },
+    { id: 'smart/default', label: 'Smart 默认' },
+    { id: 'smart/reasoning', label: 'Smart 推理' }
+  ];
+
+  function getModel() {
+    return localStorage.getItem('_ai_model') || 'deepseek-v4-flash-ascend';
+  }
+
+  function setModel(id) {
+    localStorage.setItem('_ai_model', id);
+  }
 
   function decrypt(encB64) {
     const seed = 'arce-star-quantum-2025';
@@ -36,7 +56,6 @@ const AiAssistant = (() => {
 
     addBubble('user', text);
 
-    // 构建系统指令
     let system = '你是编程助手，帮助用户理解 MATLAB/Python 项目和代码。用中文回答，简明扼要。';
     if (context.name && (text.includes('代码') || text.includes('这行') || text.includes('这段'))) {
       system += '\n\n用户正在查看文件 "' + context.path + '"，以下是文件内容片段:\n```\n' + context.code + '\n```';
@@ -46,9 +65,7 @@ const AiAssistant = (() => {
 
     const typing = addBubble('assistant', '<em>思考中...</em>');
 
-    // 构建消息列表 (OpenAI 格式)
     const msgs = [{ role: 'system', content: system }];
-    // 只保留最近几轮对话
     const recent = messages.slice(-8);
     for (let i = 0; i < recent.length; i += 2) {
       if (recent[i]) msgs.push(recent[i]);
@@ -64,7 +81,7 @@ const AiAssistant = (() => {
           'Authorization': 'Bearer ' + getApiKey()
         },
         body: JSON.stringify({
-          model: MODEL,
+          model: getModel(),
           messages: msgs,
           temperature: 0.3,
           max_tokens: 1024
@@ -78,9 +95,6 @@ const AiAssistant = (() => {
       }
 
       const data = await resp.json();
-      console.log('API返回:', JSON.stringify(data).substring(0, 500));
-
-      // OpenAI 格式: choices[0].message.content
       const reply = data.choices?.[0]?.message?.content || '';
       if (!reply) {
         typing.innerHTML = '<span style="color:#c0392b;">API返回异常<br><small>' + JSON.stringify(data).substring(0, 300) + '</small></span>';
@@ -111,24 +125,28 @@ const AiAssistant = (() => {
     t = t.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre class="chat-code">$2</pre>');
     t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
     t = t.replace(/\n/g, '<br>');
-    // Markdown 标题
     t = t.replace(/^### (.+)$/gm, '<strong>$1</strong>');
     t = t.replace(/^## (.+)$/gm, '<strong>$1</strong>');
     return t;
-  }
-
-  function toggle() {
-    const panel = document.getElementById('ai-panel');
-    if (!panel) return;
-    chatVisible = !chatVisible;
-    panel.classList.toggle('show', chatVisible);
   }
 
   function $(id) { return document.getElementById(id); }
 
   function init() {
     if (!$('ai-chat-btn')) return;
-    // 按钮点击已在 HTML onclick 中处理
+    // 初始化模型选择器
+    const sel = $('ai-model-select');
+    MODELS.forEach(m => {
+      const opt = document.createElement('option');
+      opt.value = m.id; opt.textContent = m.label;
+      sel.appendChild(opt);
+    });
+    sel.value = getModel();
+    sel.addEventListener('change', () => {
+      setModel(sel.value);
+      messages = []; // 切换模型清空上下文
+    });
+
     $('ai-panel-close').addEventListener('click', () => {
       $('ai-panel').classList.remove('show');
     });

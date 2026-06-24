@@ -5,7 +5,7 @@ const AiAssistant = (() => {
   let chatVisible = false;
 
   const API_URL = 'https://api.llm.ustc.edu.cn/v1/chat/completions';
-  const MODEL = 'deepseek-v4-flash';
+  const MODEL = 'deepseek-v4-pro';
 
   function decrypt(encB64) {
     const seed = 'arce-star-quantum-2025';

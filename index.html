@@ -661,10 +661,10 @@
                     <div class="cv-contact">LLM-Driven Evolutionary Discovery · 论文分析与代码复现</div>
                 </div>
                 <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);">
-                    <button class="tab-btn active" data-tab="madevolve-notes">📝 思考笔记</button>
-                    <button class="tab-btn" data-tab="madevolve-code">💻 代码浏览</button>
+                    <button class="tab-btn active" data-tab="madevolve-code">💻 代码浏览</button>
+                    <button class="tab-btn" data-tab="madevolve-notes">📝 思考笔记</button>
                 </div>
-                <div id="madevolve-notes" class="tab-panel active">
+                <div id="madevolve-notes" class="tab-panel">
                     <div class="notes-content">
                         <div class="cv-section"><div class="cv-section-title">思想起源</div>
                             <p>MadEvolve 思想来源于 DeepMind 的 Alpha-Evolve。核心流程：<strong>LLM 写程序 → 自动化评估代码 → 好程序放到程序库 → LLM 基于程序库的程序迭代生成下一代程序</strong>。类似于遗传算法，核心在于<strong>环境（考核标准）不变</strong>。</p>
@@ -708,7 +708,7 @@
                         </div>
                     </div>
                 </div>
-                <div id="madevolve-code" class="tab-panel">
+                <div id="madevolve-code" class="tab-panel active">
                     <div id="madevolve-layout" style="display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:480px;">
                         <div id="madevolve-sidebar" style="width:220px;flex-shrink:0;background:#f9fafb;border-right:1px solid var(--border);overflow-y:auto;max-height:560px;">
                             <div class="proj-sidebar-header">📁 MadEvolve 代码</div>

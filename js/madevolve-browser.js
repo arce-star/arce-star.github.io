@@ -87,7 +87,7 @@ const MadEvolveBrowser = (() => {
     try {
       const entries = await fetchContents(path);
       renderTree(entries, tree, path.split('/').length);
-    } catch(e) { tree.innerHTML = '<div class="tree-error">加载失败</div>'; }
+    } catch(e) { tree.innerHTML = '<div class="tree-error">加载失败: ' + e.message + '</div>'; }
   }
 
   async function navigateUp() {
@@ -100,7 +100,7 @@ const MadEvolveBrowser = (() => {
     try {
       const entries = await fetchContents(parent);
       renderTree(entries, tree, parent.split('/').length);
-    } catch(e) { tree.innerHTML = '<div class="tree-error">加载失败</div>'; }
+    } catch(e) { tree.innerHTML = '<div class="tree-error">加载失败: ' + e.message + '</div>'; }
   }
 
   async function openFile(path, name) {
@@ -126,7 +126,7 @@ const MadEvolveBrowser = (() => {
         const lang = ext === 'py' ? 'python' : '';
         viewer.innerHTML = `<pre class="code-block">${highlightCode(text, lang)}</pre>`;
       }
-    } catch(e) { viewer.innerHTML = '<div class="tree-error">加载失败</div>'; }
+    } catch(e) { viewer.innerHTML = '<div class="tree-error">加载失败: ' + e.message + '</div>'; }
   }
 
   async function loadRoot() {
@@ -138,7 +138,10 @@ const MadEvolveBrowser = (() => {
       renderTree(entries, tree, 0);
       const readme = entries.find(e => e.name.toLowerCase() === 'readme.md');
       if (readme) openFile(readme.path, readme.name);
-    } catch(e) { tree.innerHTML = '<div class="tree-error">加载失败</div>'; }
+    } catch(e) {
+      const msg = e.message.includes('403') ? 'GitHub API 限流 (60次/小时)，请稍后再试' : e.message;
+      tree.innerHTML = '<div class="tree-error">加载失败: ' + msg + '</div>';
+    }
   }
 
   return { loadRoot };

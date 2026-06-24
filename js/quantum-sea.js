@@ -35,7 +35,7 @@ class QuantumSea {
                 y: Math.random() * this.canvas.height,
                 vx: Math.cos(angle) * speed,
                 vy: Math.sin(angle) * speed,
-                radius: Math.random() * 2 + 0.8
+                radius: Math.random() * 2.5 + 1.2
             });
         }
     }
@@ -90,9 +90,9 @@ class QuantumSea {
                 const dy = this.particles[i].y - this.particles[j].y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < this.connectionDistance) {
-                    const opacity = (1 - dist / this.connectionDistance) * 0.35;
+                    const opacity = (1 - dist / this.connectionDistance) * 0.5;
                     this.ctx.strokeStyle = `rgba(${r},${g},${b},${opacity})`;
-                    this.ctx.lineWidth = 0.8;
+                    this.ctx.lineWidth = 1.2;
                     this.ctx.beginPath();
                     this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
                     this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
@@ -105,7 +105,7 @@ class QuantumSea {
         for (let p of this.particles) {
             this.ctx.beginPath();
             this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = `rgba(${r},${g},${b},0.6)`;
+            this.ctx.fillStyle = `rgba(${r},${g},${b},0.75)`;
             this.ctx.fill();
         }
     }

@@ -92,7 +92,7 @@ const MadEvolveBrowser = (() => {
   }
 
   async function fetchContents(path) {
-    const url = path ? `${API}/${path}` : API;
+    const url = (path ? `${API}/${path}` : API) + '?t=' + Date.now();
     const resp = await fetch(url);
     if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
     return resp.json();

@@ -51,17 +51,6 @@ const ProjectBrowser = (() => {
     // 统一换行符
     let html = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
 
-    // 保护数学公式: 先提取 $$...$$, 再提取 $...$
-    const mathBlocks = [];
-    html = html.replace(/\$\$([\s\S]*?)\$\$/g, function(m, formula) {
-      mathBlocks.push({ type: 'block', formula: formula.trim() });
-      return '%%MATHBLOCK' + (mathBlocks.length - 1) + '%%';
-    });
-    html = html.replace(/\$([^\$\n]+?)\$/g, function(m, formula) {
-      mathBlocks.push({ type: 'inline', formula: formula.trim() });
-      return '%%MATHINLINE' + (mathBlocks.length - 1) + '%%';
-    });
-
     html = html.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
     // 可折叠块: +++ 标题 ... +++
     html = html.replace(/^\+\+\+ (.+)$\n([\s\S]*?)^\+\+\+$/gm, '<details class="fold-block"><summary>$1</summary>$2</details>');
@@ -128,16 +117,6 @@ const ProjectBrowser = (() => {
     html = html.replace(/<p>\s*<\/p>/g, '');
     html = html.replace(/<p>(<[huo])/g, '$1');
     html = html.replace(/(<\/[huo][^>]*>)\s*<\/p>/g, '$1');
-
-    // 恢复数学公式
-    html = html.replace(/%%MATHBLOCK(\d+)%%/g, function(m, i) {
-      const mb = mathBlocks[parseInt(i)];
-      return mb ? '<div class="math-block">$$' + mb.formula + '$$</div>' : m;
-    });
-    html = html.replace(/%%MATHINLINE(\d+)%%/g, function(m, i) {
-      const mb = mathBlocks[parseInt(i)];
-      return mb ? '<span class="math-inline">$' + mb.formula + '$</span>' : m;
-    });
     return html;
   }
 

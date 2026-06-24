@@ -84,35 +84,48 @@ class QuantumSea {
         const [r, g, b] = this.color;
         this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
-        // Connections
+        // 先算每个粒子的透明度
+        const alphas = this.particles.map(p => {
+            if (p.mouseDist < this.mouse.radius) {
+                const t = 1 - p.mouseDist / this.mouse.radius;
+                return 0.25 + t * 0.6;
+            }
+            return 0.25;
+        });
+
+        // Connections — 渐变透明度
         for (let i = 0; i < this.particles.length; i++) {
             for (let j = i + 1; j < this.particles.length; j++) {
-                const dx = this.particles[i].x - this.particles[j].x;
-                const dy = this.particles[i].y - this.particles[j].y;
+                const pi = this.particles[i], pj = this.particles[j];
+                const dx = pi.x - pj.x;
+                const dy = pi.y - pj.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < this.connectionDistance) {
-                    // 连线透明度也受鼠标影响：两端粒子越靠近鼠标越明显
-                    const avgMouseDist = Math.min(this.particles[i].mouseDist, this.particles[j].mouseDist);
-                    const mouseFactor = avgMouseDist < this.mouse.radius ? 1 - avgMouseDist / this.mouse.radius : 0;
                     const baseOpacity = (1 - dist / this.connectionDistance) * 0.5;
-                    const opacity = baseOpacity + mouseFactor * 0.25;
-                    this.ctx.strokeStyle = `rgba(${r},${g},${b},${Math.min(0.8, opacity)})`;
+                    const alphaI = Math.min(0.8, alphas[i] * baseOpacity * 2);
+                    const alphaJ = Math.min(0.8, alphas[j] * baseOpacity * 2);
+
+                    const grad = this.ctx.createLinearGradient(pi.x, pi.y, pj.x, pj.y);
+                    grad.addColorStop(0, `rgba(${r},${g},${b},${alphaI})`);
+                    grad.addColorStop(1, `rgba(${r},${g},${b},${alphaJ})`);
+
+                    const avgMouseDist = Math.min(pi.mouseDist, pj.mouseDist);
+                    const mouseFactor = avgMouseDist < this.mouse.radius ? 1 - avgMouseDist / this.mouse.radius : 0;
+
+                    this.ctx.strokeStyle = grad;
                     this.ctx.lineWidth = mouseFactor > 0.3 ? 1.8 : 1.0;
                     this.ctx.beginPath();
-                    this.ctx.moveTo(this.particles[i].x, this.particles[i].y);
-                    this.ctx.lineTo(this.particles[j].x, this.particles[j].y);
+                    this.ctx.moveTo(pi.x, pi.y);
+                    this.ctx.lineTo(pj.x, pj.y);
                     this.ctx.stroke();
                 }
             }
         }
 
-        // Particles — 动态透明度 [0.2, 0.8] 越靠近鼠标越明显
-        for (let p of this.particles) {
-            let alpha = 0.25;
-            if (p.mouseDist < this.mouse.radius) {
-                const t = 1 - p.mouseDist / this.mouse.radius; // 0(远) → 1(近)
-                alpha = 0.25 + t * 0.6; // [0.25, 0.85]
-            }
+        // Particles — 动态透明度 [0.25, 0.85]
+        for (let i = 0; i < this.particles.length; i++) {
+            const p = this.particles[i];
+            const alpha = alphas[i];
             const radius = p.mouseDist < this.mouse.radius
                 ? p.radius * (1.3 + 0.4 * (1 - p.mouseDist / this.mouse.radius))
                 : p.radius;

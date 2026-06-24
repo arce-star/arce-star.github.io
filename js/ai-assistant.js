@@ -1,11 +1,11 @@
-// AI 代码助手 — USTC API (Anthropic 协议)
+// AI 代码助手 — USTC API (OpenAI 协议)
 const AiAssistant = (() => {
   let context = { path: '', name: '', code: '' };
   let messages = [];
   let chatVisible = false;
 
-  const API_URL = 'https://api.llm.ustc.edu.cn/v1/messages';
-  const MODEL = 'qwen-chat';
+  const API_URL = 'https://api.llm.ustc.edu.cn/v1/chat/completions';
+  const MODEL = 'deepseek-v4-flash';
 
   function decrypt(encB64) {
     const seed = 'arce-star-quantum-2025';
@@ -36,34 +36,39 @@ const AiAssistant = (() => {
 
     addBubble('user', text);
 
+    // 构建系统指令
     let system = '你是编程助手，帮助用户理解 MATLAB/Python 项目和代码。用中文回答，简明扼要。';
     if (context.name && (text.includes('代码') || text.includes('这行') || text.includes('这段'))) {
-      system += `\n\n用户正在查看文件 "${context.path}"，以下是文件内容片段:\n\`\`\`\n${context.code}\n\`\`\``;
+      system += '\n\n用户正在查看文件 "' + context.path + '"，以下是文件内容片段:\n```\n' + context.code + '\n```';
     } else if (context.name) {
-      system += `\n\n用户当前在浏览项目文件: "${context.path}"`;
+      system += '\n\n用户当前在浏览项目文件: "' + context.path + '"';
     }
 
     const typing = addBubble('assistant', '<em>思考中...</em>');
-    try {
-      // 将 system prompt 放进消息列表（兼容不支持 system 参数的代理）
-      const payload = {
-        model: MODEL,
-        max_tokens: 1024,
-        messages: [
-          { role: 'user', content: '[系统指令] ' + system },
-          ...messages.slice(-10),
-          { role: 'user', content: text }
-        ]
-      };
 
+    // 构建消息列表 (OpenAI 格式)
+    const msgs = [{ role: 'system', content: system }];
+    // 只保留最近几轮对话
+    const recent = messages.slice(-8);
+    for (let i = 0; i < recent.length; i += 2) {
+      if (recent[i]) msgs.push(recent[i]);
+      if (recent[i+1]) msgs.push(recent[i+1]);
+    }
+    msgs.push({ role: 'user', content: text });
+
+    try {
       const resp = await fetch(API_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + getApiKey(),
-          'anthropic-version': '2023-06-01'
+          'Authorization': 'Bearer ' + getApiKey()
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          model: MODEL,
+          messages: msgs,
+          temperature: 0.3,
+          max_tokens: 1024
+        })
       });
 
       if (!resp.ok) {
@@ -73,28 +78,21 @@ const AiAssistant = (() => {
       }
 
       const data = await resp.json();
-      // 显示原始返回用于调试
-      console.log('API返回:', JSON.stringify(data).substring(0, 800));
+      console.log('API返回:', JSON.stringify(data).substring(0, 500));
 
-      let reply = '';
-      if (data.content && data.content[0]) {
-        reply = data.content[0].text || '';
-      } else if (data.choices && data.choices[0]) {
-        reply = data.choices[0].message?.content || data.choices[0].text || '';
-      } else if (data.response) {
-        reply = data.response;
-      } else if (typeof data === 'string') {
-        reply = data;
-      }
+      // OpenAI 格式: choices[0].message.content
+      const reply = data.choices?.[0]?.message?.content || '';
       if (!reply) {
-        typing.innerHTML = '<span style="color:#c0392b;">API返回格式不匹配<br><small>' + JSON.stringify(data).substring(0, 300) + '</small></span>';
+        typing.innerHTML = '<span style="color:#c0392b;">API返回异常<br><small>' + JSON.stringify(data).substring(0, 300) + '</small></span>';
         return;
       }
+
       typing.innerHTML = formatReply(reply);
       messages.push({ role: 'user', content: text });
       messages.push({ role: 'assistant', content: reply });
     } catch(e) {
-      typing.innerHTML = '<span style="color:#c0392b;">' + e.message + '<br><small>可能是CORS跨域或网络问题</small></span>';
+      typing.innerHTML = '<span style="color:#c0392b;">' + e.message + '<br><small>可能是网络或CORS问题</small></span>';
+    }
     document.getElementById('ai-chat-body').scrollTop = 99999;
   }
 
@@ -113,6 +111,9 @@ const AiAssistant = (() => {
     t = t.replace(/```(\w*)\n?([\s\S]*?)```/g, '<pre class="chat-code">$2</pre>');
     t = t.replace(/`([^`]+)`/g, '<code>$1</code>');
     t = t.replace(/\n/g, '<br>');
+    // Markdown 标题
+    t = t.replace(/^### (.+)$/gm, '<strong>$1</strong>');
+    t = t.replace(/^## (.+)$/gm, '<strong>$1</strong>');
     return t;
   }
 
@@ -141,7 +142,6 @@ const AiAssistant = (() => {
       document.getElementById('ai-msg-input').value = '解释一下当前这段代码的核心逻辑';
       sendMessage();
     });
-    // 直接显示聊天区，无需配置 API Key
     document.getElementById('ai-key-section').style.display = 'none';
     document.getElementById('ai-chat-section').style.display = '';
   }

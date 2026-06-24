@@ -30,7 +30,7 @@ const MadEvolveBrowser = (() => {
     h = h.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
     // 可折叠块: +++ 标题 ... +++
-    h = h.replace(/\+\+\+ (.+)\n([\s\S]*?)\+\+\+/g, '<details class="fold-block"><summary>$1</summary>$2</details>');
+    h = h.replace(/^\+\+\+ (.+)$\n([\s\S]*?)^\+\+\+$/gm, '<details class="fold-block"><summary>$1</summary>$2</details>');
     // 代码块: 支持有无语言标签、有无换行
     h = h.replace(/```(\w*)\n?([\s\S]*?)```/g, function(m, lang, code) {
       return '<pre class="md-code">' + code.replace(/^\n/, '') + '</pre>';

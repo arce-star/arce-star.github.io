@@ -289,34 +289,41 @@
         .math-inline { display: inline; }
         .md-preview hr { border: none; border-top: 2px solid #eee; margin: 16px 0; }
 
-        /* ===== 笔记大纲 ===== */
+        /* ===== 笔记大纲 (DeepSeek 风格右侧导航) ===== */
         #note-toc {
-            position: fixed; left: calc(var(--sidebar-w) + 16px); top: 50%; transform: translateY(-50%);
-            z-index: 50; max-height: 60vh; overflow-y: auto;
-            width: 6px; background: rgba(0,0,0,0.06); border-radius: 3px;
-            transition: width 0.2s, background 0.2s, padding 0.2s;
-            padding: 0; white-space: nowrap;
+            position: fixed; right: 16px; top: 50%; transform: translateY(-50%);
+            z-index: 50; width: 28px; padding: 10px 0;
+            display: flex; flex-direction: column; align-items: center; gap: 0;
+            transition: width 0.25s, background 0.25s, box-shadow 0.25s;
+            border-radius: 14px; overflow: hidden;
         }
-        #note-toc:hover, #note-toc.pinned {
-            width: 180px; background: rgba(255,255,255,0.95);
-            backdrop-filter: blur(8px); border: 1px solid rgba(0,0,0,0.08);
-            border-radius: 8px; padding: 12px 14px;
-            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        #note-toc:hover {
+            width: 200px; background: rgba(255,255,255,0.96);
+            backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            border: 1px solid rgba(0,0,0,0.06); padding: 14px 12px;
+            align-items: stretch; gap: 2px;
         }
+        #note-toc .toc-track {
+            width: 2px; background: rgba(0,0,0,0.08); border-radius: 1px;
+            flex: 1; min-height: 60px; position: relative;
+        }
+        #note-toc:hover .toc-track { display: none; }
         #note-toc .toc-title {
-            display: none; font-size: 0.78rem; font-weight: 600; color: var(--blue);
-            margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #eee;
+            display: none; font-size: 0.75rem; font-weight: 600; color: var(--blue);
+            margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #eee;
         }
-        #note-toc:hover .toc-title, #note-toc.pinned .toc-title { display: block; }
+        #note-toc:hover .toc-title { display: block; }
         #note-toc .toc-item {
-            display: none; font-size: 0.73rem; color: #999; cursor: pointer;
-            padding: 3px 0; line-height: 1.4; overflow: hidden;
-            text-overflow: ellipsis; transition: color 0.15s;
+            display: none; font-size: 0.72rem; color: #999; cursor: pointer;
+            padding: 3px 8px; line-height: 1.35; border-radius: 4px;
+            overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+            transition: color 0.15s, background 0.15s;
         }
-        #note-toc:hover .toc-item, #note-toc.pinned .toc-item { display: block; }
-        #note-toc .toc-item:hover { color: var(--blue); }
-        #note-toc .toc-h2 { font-weight: 600; color: #666; }
-        #note-toc .toc-h3 { padding-left: 10px; }
+        #note-toc:hover .toc-item { display: block; }
+        #note-toc .toc-item:hover { color: var(--blue); background: #f0f4f8; }
+        #note-toc .toc-item.toc-active { color: var(--blue); font-weight: 600; }
+        #note-toc .toc-h2 { font-weight: 600; color: #555; }
+        #note-toc .toc-h3 { padding-left: 16px; }
         .md-preview blockquote {
             border-left: 3px solid var(--blue); padding: 4px 14px;
             margin: 10px 0; color: #555; background: #f8fafb;
@@ -623,7 +630,7 @@
                 </div>
 
                 <!-- 笔记大纲 -->
-                <div id="note-toc"><div class="toc-title">大纲</div></div>
+                <div id="note-toc" style="display:none;"><div class="toc-title">大纲</div><div class="toc-track"></div></div>
 
                 <!-- 笔记查看器 -->
                 <div id="note-viewer" style="display:none;margin-top:20px;padding:24px;border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:transparent;">
@@ -1132,14 +1139,17 @@
         });
         document.getElementById('note-close').addEventListener('click', () => {
             document.getElementById('note-viewer').style.display = 'none';
-            document.getElementById('note-toc').innerHTML = '<div class="toc-title">大纲</div>';
+            document.getElementById('note-toc').style.display = 'none';
             document.querySelectorAll('.note-tag').forEach(t => t.classList.remove('active-tag'));
         });
 
         function buildTOC(container) {
             const toc = document.getElementById('note-toc');
-            toc.innerHTML = '<div class="toc-title">大纲</div>';
+            // 清除旧内容，保留 title 和 track
+            toc.querySelectorAll('.toc-item').forEach(el => el.remove());
             const headings = container.querySelectorAll('h2, h3');
+            if (headings.length === 0) { toc.style.display = 'none'; return; }
+            toc.style.display = '';
             headings.forEach((h, i) => {
                 const id = 'note-h-' + i;
                 h.id = id;
@@ -1151,6 +1161,18 @@
                 });
                 toc.appendChild(item);
             });
+            // 滚动高亮
+            const onScroll = () => {
+                let current = '';
+                headings.forEach(h => {
+                    if (h.getBoundingClientRect().top < 120) current = h.id;
+                });
+                toc.querySelectorAll('.toc-item').forEach(el => {
+                    el.classList.toggle('toc-active', el.textContent === (current ? document.getElementById(current)?.textContent : ''));
+                });
+            };
+            document.getElementById('main-content').addEventListener('scroll', onScroll, { once: false });
+            window.addEventListener('scroll', onScroll, { once: false });
         }
 
         // 标签页切换

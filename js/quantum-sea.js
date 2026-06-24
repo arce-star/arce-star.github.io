@@ -88,9 +88,9 @@ class QuantumSea {
         const alphas = this.particles.map(p => {
             if (p.mouseDist < this.mouse.radius) {
                 const t = 1 - p.mouseDist / this.mouse.radius;
-                return 0.25 + t * 0.6;
+                return 0.55 + t * 0.3;
             }
-            return 0.25;
+            return 0.55;
         });
 
         // Connections — 渐变透明度

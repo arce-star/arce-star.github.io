@@ -301,6 +301,28 @@
         .notes-content p { margin: 8px 0; }
         .notes-content code { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-size: 0.82rem; }
 
+        /* ===== 模糊切换开关 ===== */
+        .no-blur * { backdrop-filter: none !important; }
+        #blur-toggle {
+            position: fixed; bottom: 24px; left: 24px; z-index: 1500;
+            display: flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.6); border: 1px solid rgba(0,0,0,0.08);
+            border-radius: 20px; padding: 4px; cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+        }
+        #blur-toggle .toggle-track {
+            width: 40px; height: 22px; border-radius: 11px;
+            background: #ccc; position: relative; transition: background 0.3s;
+        }
+        #blur-toggle.on .toggle-track { background: var(--blue); }
+        #blur-toggle .toggle-thumb {
+            width: 18px; height: 18px; border-radius: 50%; background: #fff;
+            position: absolute; top: 2px; left: 2px;
+            transition: left 0.3s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+        }
+        #blur-toggle.on .toggle-thumb { left: 20px; }
+        #blur-toggle .toggle-labels { font-size: 0.7rem; color: #999; display: flex; gap: 6px; }
+
         /* ===== AI 助手 ===== */
         #ai-chat-btn {
             position: fixed; bottom: 24px; right: 24px; z-index: 1500;
@@ -367,6 +389,7 @@
             #madevolve-layout { flex-direction: column; }
             #madevolve-sidebar { width: 100% !important; max-height: 200px; }
             #madevolve-viewer { max-height: 350px; }
+            #blur-toggle { bottom: 84px; }
             #ai-panel { width: 94vw; right: 3vw; }
             .cv-name { font-size: 1.6rem; }
             .cv-contact { gap: 8px; font-size: 0.8rem; }
@@ -960,6 +983,13 @@
     </script>
 
     <!-- AI 助手按钮与面板 -->
+    <!-- 模糊切换开关 -->
+    <div id="blur-toggle" class="on" title="毛玻璃效果">
+        <span style="font-size:0.75rem;">🔮</span>
+        <div class="toggle-track"><div class="toggle-thumb"></div></div>
+        <span style="font-size:0.75rem;">💎</span>
+    </div>
+
     <!-- AI 助手按钮 -->
     <button id="ai-chat-btn" title="AI 代码助手" onclick="document.getElementById('ai-panel').classList.toggle('show')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1005,6 +1035,18 @@
     <script src="js/madevolve-browser.js?v=7"></script>
     <script src="js/ai-assistant.js?v=6"></script>
     <script>
+        // 模糊切换
+        const blurToggle = document.getElementById('blur-toggle');
+        if (localStorage.getItem('_no_blur') === '1') {
+            document.body.classList.add('no-blur');
+            blurToggle.classList.remove('on');
+        }
+        blurToggle.addEventListener('click', () => {
+            const isBlur = blurToggle.classList.toggle('on');
+            if (isBlur) { document.body.classList.remove('no-blur'); localStorage.removeItem('_no_blur'); }
+            else { document.body.classList.add('no-blur'); localStorage.setItem('_no_blur', '1'); }
+        });
+
         document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.querySelector('[data-panel="projects"]').addEventListener('click', () => {
             setTimeout(() => ProjectBrowser.loadRoot(), 100);

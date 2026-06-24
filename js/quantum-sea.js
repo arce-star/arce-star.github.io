@@ -101,12 +101,13 @@ class QuantumSea {
                 const dy = pi.y - pj.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < this.connectionDistance) {
-                    const baseOpacity = (1 - dist / this.connectionDistance) * 0.5;
-                    const alphaI = Math.min(0.8, alphas[i] * baseOpacity * 2);
-                    const alphaJ = Math.min(0.8, alphas[j] * baseOpacity * 2);
+                    const distFactor = (1 - dist / this.connectionDistance) * 0.55;
+                    const alphaI = Math.min(0.85, alphas[i] * distFactor * 1.8);
+                    const alphaJ = Math.min(0.85, alphas[j] * distFactor * 1.8);
 
                     const grad = this.ctx.createLinearGradient(pi.x, pi.y, pj.x, pj.y);
                     grad.addColorStop(0, `rgba(${r},${g},${b},${alphaI})`);
+                    grad.addColorStop(0.5, `rgba(${r},${g},${b},${(alphaI+alphaJ)/2})`);
                     grad.addColorStop(1, `rgba(${r},${g},${b},${alphaJ})`);
 
                     const avgMouseDist = Math.min(pi.mouseDist, pj.mouseDist);

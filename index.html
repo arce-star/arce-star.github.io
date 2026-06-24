@@ -35,7 +35,7 @@
         /* ===== 左侧导航栏 ===== */
         #sidebar {
             width: var(--sidebar-w); position: fixed; top: 0; left: 0; bottom: 0;
-            background: rgba(255,255,255,0.88); backdrop-filter: blur(4px);
+            background: rgba(255,255,255,0.78); backdrop-filter: blur(4px);
             border-right: 1px solid var(--border);
             padding: 50px 0 30px; z-index: 100;
             display: flex; flex-direction: column;
@@ -65,7 +65,7 @@
         /* ===== 右侧内容区 ===== */
         #main-content {
             margin-left: var(--sidebar-w); flex: 1; padding: 50px 48px 80px;
-            background: rgba(255,255,255,0.82); backdrop-filter: blur(2px);
+            background: rgba(255,255,255,0.72); backdrop-filter: blur(2px);
         }
         .content-panel { display: none; }
         .content-panel.active { display: block; }
@@ -990,7 +990,7 @@
         </div>
     </div>
 
-    <script src="js/quantum-sea.js"></script>
+    <script src="js/quantum-sea.js?v=2"></script>
     <script>document.addEventListener('DOMContentLoaded', () => { new QuantumSea('quantum-bg'); });</script>
     <script src="js/project-browser.js?v=5"></script>
     <script src="js/madevolve-browser.js?v=7"></script>

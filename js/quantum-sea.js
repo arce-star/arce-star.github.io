@@ -6,8 +6,8 @@ class QuantumSea {
         this.ctx = this.canvas.getContext('2d');
         this.particles = [];
         this.mouse = { x: null, y: null, radius: 160 };
-        this.particleCount = 60;
-        this.connectionDistance = 140;
+        this.particleCount = 70;
+        this.connectionDistance = 150;
         this.color = [15, 75, 145]; // theme blue
 
         this.init();
@@ -21,9 +21,8 @@ class QuantumSea {
     }
 
     resize() {
-        const rect = this.canvas.parentElement.getBoundingClientRect();
-        this.canvas.width = rect.width;
-        this.canvas.height = rect.height;
+        this.canvas.width = window.innerWidth;
+        this.canvas.height = window.innerHeight;
     }
 
     createParticles() {
@@ -91,7 +90,7 @@ class QuantumSea {
                 const dy = this.particles[i].y - this.particles[j].y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < this.connectionDistance) {
-                    const opacity = (1 - dist / this.connectionDistance) * 0.22;
+                    const opacity = (1 - dist / this.connectionDistance) * 0.35;
                     this.ctx.strokeStyle = `rgba(${r},${g},${b},${opacity})`;
                     this.ctx.lineWidth = 0.8;
                     this.ctx.beginPath();
@@ -106,7 +105,7 @@ class QuantumSea {
         for (let p of this.particles) {
             this.ctx.beginPath();
             this.ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            this.ctx.fillStyle = `rgba(${r},${g},${b},0.45)`;
+            this.ctx.fillStyle = `rgba(${r},${g},${b},0.6)`;
             this.ctx.fill();
         }
     }

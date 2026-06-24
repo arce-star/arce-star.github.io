@@ -42,25 +42,45 @@ const AiAssistant = (() => {
     catch(_) { return ''; }
   }
 
-  function setContext(path, name, code) {
-    context = { path, name, code: code ? code.substring(0, 6000) : '' };
+  function setContext(path, name, code, isDir, fileList) {
+    context = {
+      path, name,
+      code: code ? code.substring(0, 6000) : '',
+      isDir: !!isDir,
+      files: fileList || ''
+    };
     const btn = document.getElementById('ai-chat-btn');
     if (btn && name) btn.title = 'AI 助手 — ' + name;
   }
 
-  async function sendMessage() {
+  async function sendMessage(overrideText) {
     const input = document.getElementById('ai-msg-input');
-    const text = input.value.trim();
+    const text = overrideText || input.value.trim();
     if (!text) return;
     input.value = '';
 
     addBubble('user', text);
 
     let system = '你是编程助手，帮助用户理解 MATLAB/Python 项目和代码。用中文回答，简明扼要。';
-    if (context.name && (text.includes('代码') || text.includes('这行') || text.includes('这段'))) {
-      system += '\n\n用户正在查看文件 "' + context.path + '"，以下是文件内容片段:\n```\n' + context.code + '\n```';
-    } else if (context.name) {
-      system += '\n\n用户当前在浏览项目文件: "' + context.path + '"';
+
+    // 解释代码: 带上当前文件代码
+    if (context.code && (text.includes('代码') || text.includes('这段') || text.includes('解释'))) {
+      system += '\n\n用户正在查看文件 "' + context.path + '"，以下是完整代码。请解释这段代码的核心逻辑:\n```\n' + context.code + '\n```';
+    }
+    // 介绍项目: 带上目录结构
+    else if (text.includes('项目') || text.includes('介绍')) {
+      if (context.files) {
+        system += '\n\n用户当前在项目目录 "' + (context.path || '根目录') + '"，该目录包含以下文件/子目录:\n' + context.files;
+      }
+      if (context.code && context.name.endsWith('.md')) {
+        system += '\n\n该目录的 README 内容:\n```\n' + context.code.substring(0, 4000) + '\n```';
+      }
+      system += '\n\n请根据目录结构和README内容，介绍这个项目是做什么的。';
+    }
+    // 一般情况: 告知当前浏览的文件
+    else if (context.name) {
+      system += '\n\n用户当前在浏览: "' + context.path + '"';
+      if (context.isDir) system += '（这是一个目录）';
     }
 
     const typing = addBubble('assistant', '<em>思考中...</em>');

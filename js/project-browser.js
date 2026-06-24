@@ -135,6 +135,9 @@ const ProjectBrowser = (() => {
     try {
       const entries = await fetchContents(path);
       renderTree(entries, treeEl, path.split('/').length);
+      // 通知 AI 当前目录结构
+      const fileList = entries.map(e => (e.type === 'dir' ? '📁 ' : '📄 ') + e.name).join('\n');
+      if (window.AiAssistant) AiAssistant.setContext(path, path.split('/').pop() || '根目录', '', true, fileList);
     } catch(e) {
       treeEl.innerHTML = '<div class="tree-error">加载失败: ' + e.message + '</div>';
     }
@@ -166,7 +169,7 @@ const ProjectBrowser = (() => {
     if (IMG_EXT.includes(ext)) {
       const url = `${RAW}/${path}`;
       viewer.innerHTML = `<div style="text-align:center;padding:20px;"><img src="${url}" alt="${name}" style="max-width:100%;max-height:480px;border-radius:4px;box-shadow:0 2px 8px rgba(0,0,0,0.1);"><p style="margin-top:10px;font-size:0.8rem;color:#999;"><a href="${url}" target="_blank">查看原图</a></p></div>`;
-      if (window.AiAssistant) AiAssistant.setContext(path, name, '');
+      if (window.AiAssistant) AiAssistant.setContext(path, name, '', false, '');
       return;
     }
 
@@ -174,7 +177,7 @@ const ProjectBrowser = (() => {
     if (BIN_EXT.includes(ext)) {
       const url = `${RAW}/${path}`;
       viewer.innerHTML = `<div style="text-align:center;padding:40px;color:#888;"><i class="fas fa-download" style="font-size:2.5rem;display:block;margin-bottom:12px;color:#ccc;"></i><p>${name}</p><p style="font-size:0.85rem;">二进制文件，无法在线预览</p><a href="${url}" target="_blank" style="display:inline-block;margin-top:12px;padding:8px 20px;background:var(--blue);color:#fff;border-radius:6px;text-decoration:none;">下载文件</a></div>`;
-      if (window.AiAssistant) AiAssistant.setContext(path, name, '');
+      if (window.AiAssistant) AiAssistant.setContext(path, name, '', false, '');
       return;
     }
 
@@ -187,7 +190,7 @@ const ProjectBrowser = (() => {
       if (ext === 'md') {
         const html = renderMD(text);
         viewer.innerHTML = `<div class="md-preview">${html}</div>`;
-        if (window.AiAssistant) AiAssistant.setContext(path, name, text);
+        if (window.AiAssistant) AiAssistant.setContext(path, name, text, false, '');
         return;
       }
 
@@ -195,7 +198,7 @@ const ProjectBrowser = (() => {
       const lang = guessLang(name);
       const html = highlightCode(text, lang);
       viewer.innerHTML = `<pre class="code-block lang-${lang}">${html}</pre>`;
-      if (window.AiAssistant) AiAssistant.setContext(path, name, text);
+      if (window.AiAssistant) AiAssistant.setContext(path, name, text, false, '');
     } catch(e) {
       viewer.innerHTML = '<div class="tree-error">加载失败: ' + e.message + '</div>';
     }

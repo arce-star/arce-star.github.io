@@ -63,6 +63,8 @@ const ProjectBrowser = (() => {
     });
 
     html = html.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // 可折叠块: +++ 标题 ... +++
+    html = html.replace(/\+\+\+ (.+)\n([\s\S]*?)\+\+\+/g, '<details class="fold-block"><summary>$1</summary>$2</details>');
     // 代码块: 支持有无语言标签、有无换行
     html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, function(m, lang, code) {
       return '<pre class="md-code">' + code.replace(/^\n/, '') + '</pre>';

@@ -275,6 +275,14 @@
         .md-preview h4 { font-size: 1rem; margin: 10px 0 6px; }
         .md-preview h5 { font-size: 0.92rem; color: #555; margin: 8px 0 4px; font-weight: 600; }
         .md-preview h6 { font-size: 0.85rem; color: #777; margin: 6px 0 3px; font-weight: 600; }
+        .fold-block { margin: 8px 0; border: 1px solid #e0e0e0; border-radius: 6px; padding: 0; }
+        .fold-block summary {
+            padding: 8px 14px; background: #f5f6f8; cursor: pointer; border-radius: 6px;
+            font-weight: 600; font-size: 0.88rem; color: var(--blue); user-select: none;
+        }
+        .fold-block summary:hover { background: #eef0f4; }
+        .fold-block[open] summary { border-radius: 6px 6px 0 0; border-bottom: 1px solid #e0e0e0; }
+        .fold-block[open] { padding: 0 0 8px 0; }
         .md-preview p { margin: 8px 0; }
         .md-preview ul, .md-preview ol { padding-left: 20px; margin: 6px 0; }
         .md-preview li { margin: 3px 0; }
@@ -1115,8 +1123,8 @@
 
     <script src="js/quantum-sea.js?v=10"></script>
     <script>document.addEventListener('DOMContentLoaded', () => { new QuantumSea('quantum-bg'); });</script>
-    <script src="js/project-browser.js?v=8"></script>
-    <script src="js/madevolve-browser.js?v=7"></script>
+    <script src="js/project-browser.js?v=9"></script>
+    <script src="js/madevolve-browser.js?v=8"></script>
     <script src="js/ai-assistant.js?v=6"></script>
     <script>
         // 奖项证书悬浮预览

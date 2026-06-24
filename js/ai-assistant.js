@@ -49,6 +49,17 @@ const AiAssistant = (() => {
       isDir: !!isDir,
       files: fileList || ''
     };
+    // 更新上下文显示栏
+    const bar = document.getElementById('ai-context-bar');
+    const text = document.getElementById('ai-context-text');
+    if (bar && text) {
+      if (path) {
+        bar.style.display = '';
+        text.innerHTML = (isDir ? '📁 ' : '📄 ') + path;
+      } else {
+        bar.style.display = 'none';
+      }
+    }
     const btn = document.getElementById('ai-chat-btn');
     if (btn && name) btn.title = 'AI 助手 — ' + name;
   }

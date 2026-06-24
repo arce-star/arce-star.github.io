@@ -1,2 +1,6 @@
 # 明文私人内容 - 仅本地保留
 home-content.html
+.claude/
+.agents/
+.vscode/
+skills-lock.json

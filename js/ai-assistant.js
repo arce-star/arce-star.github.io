@@ -119,31 +119,29 @@ const AiAssistant = (() => {
 
   function toggle() {
     const panel = document.getElementById('ai-panel');
+    if (!panel) return;
     chatVisible = !chatVisible;
-    if (chatVisible) panel.classList.add('show');
-    else panel.classList.remove('show');
+    panel.classList.toggle('show', chatVisible);
   }
 
+  function $(id) { return document.getElementById(id); }
+
   function init() {
-    document.getElementById('ai-chat-btn').addEventListener('click', toggle);
-    document.getElementById('ai-panel-close').addEventListener('click', () => {
-      document.getElementById('ai-panel').classList.remove('show');
-      chatVisible = false;
+    if (!$('ai-chat-btn')) return;
+    $('ai-chat-btn').addEventListener('click', toggle);
+    $('ai-panel-close').addEventListener('click', () => {
+      $('ai-panel').classList.remove('show'); chatVisible = false;
     });
-    document.getElementById('ai-msg-send').addEventListener('click', sendMessage);
-    document.getElementById('ai-msg-input').addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') sendMessage();
+    $('ai-msg-send').addEventListener('click', sendMessage);
+    $('ai-msg-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
+    $('ai-quick-explain').addEventListener('click', () => {
+      $('ai-msg-input').value = '简要介绍一下这个项目是做什么的'; sendMessage();
     });
-    document.getElementById('ai-quick-explain').addEventListener('click', () => {
-      document.getElementById('ai-msg-input').value = '简要介绍一下这个项目是做什么的';
-      sendMessage();
+    $('ai-quick-code').addEventListener('click', () => {
+      $('ai-msg-input').value = '解释一下当前这段代码的核心逻辑'; sendMessage();
     });
-    document.getElementById('ai-quick-code').addEventListener('click', () => {
-      document.getElementById('ai-msg-input').value = '解释一下当前这段代码的核心逻辑';
-      sendMessage();
-    });
-    document.getElementById('ai-key-section').style.display = 'none';
-    document.getElementById('ai-chat-section').style.display = '';
+    $('ai-key-section').style.display = 'none';
+    $('ai-chat-section').style.display = '';
   }
 
   return { init, setContext };

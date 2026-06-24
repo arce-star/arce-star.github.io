@@ -27,15 +27,50 @@ const MadEvolveBrowser = (() => {
 
   function renderMD(text) {
     let h = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+    // 代码块 (在转义后先处理, 保护内部内容)
     h = h.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="md-code">$2</pre>');
     h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // 表格: 检测连续的 | 行
+    h = h.replace(/((?:^\|.+\|\n?)+)/gm, function(match) {
+      const rows = match.trim().split('\n');
+      if (rows.length < 2) return match;
+      let table = '<table class="md-table">';
+      rows.forEach((row, i) => {
+        const cells = row.split('|').filter(c => c.trim() !== '');
+        const tag = i === 0 ? 'th' : 'td';
+        // 跳过分隔行
+        if (cells.every(c => /^[-:]+$/.test(c.trim()))) return;
+        table += '<tr>';
+        cells.forEach(c => { table += `<${tag}>${c.trim()}</${tag}>`; });
+        table += '</tr>';
+      });
+      table += '</table>';
+      return table;
+    });
+
+    // 分割线
+    h = h.replace(/^[-*_]{3,}\s*$/gm, '<hr>');
+
+    // 标题
     h = h.replace(/^### (.+)$/gm, '<h4>$1</h4>');
     h = h.replace(/^## (.+)$/gm, '<h3>$1</h3>');
     h = h.replace(/^# (.+)$/gm, '<h2>$1</h2>');
+
+    // 粗体/斜体
+    h = h.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
     h = h.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    h = h.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+    // 链接
     h = h.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
+
+    // 无序列表
     h = h.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
     h = h.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
+
+    // 段落
     h = h.replace(/\n\n/g, '</p><p>');
     return '<p>' + h + '</p>';
   }

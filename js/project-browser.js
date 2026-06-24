@@ -49,10 +49,29 @@ const ProjectBrowser = (() => {
   // 简易 Markdown 渲染
   function renderMD(text) {
     let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    // 代码块
+    // 代码块 (先处理，保护内部内容)
     html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="md-code">$2</pre>');
-    // 行内代码
     html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+
+    // 表格: 检测连续的 | 行
+    html = html.replace(/((?:^\|.+\|\n?)+)/gm, function(match) {
+      const rows = match.trim().split('\n');
+      if (rows.length < 2) return match;
+      let table = '<table class="md-table">';
+      rows.forEach(row => {
+        const cells = row.split('|').filter(c => c.trim() !== '');
+        if (cells.every(c => /^[-:]+$/.test(c.trim()))) return; // 跳过分隔行
+        table += '<tr>';
+        cells.forEach(c => { table += '<td>' + c.trim() + '</td>'; });
+        table += '</tr>';
+      });
+      table += '</table>';
+      return table;
+    });
+
+    // 分割线
+    html = html.replace(/^[-*_]{3,}\s*$/gm, '<hr>');
+
     // 标题
     html = html.replace(/^#### (.+)$/gm, '<h5>$1</h5>');
     html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');
@@ -62,17 +81,14 @@ const ProjectBrowser = (() => {
     html = html.replace(/\*\*\*(.+?)\*\*\*/g, '<strong><em>$1</em></strong>');
     html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
     html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-    // 链接
-    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
-    // 图片
+    // 链接 & 图片
     html = html.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, '<img src="$2" alt="$1" style="max-width:100%;">');
+    html = html.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank">$1</a>');
     // 无序列表
     html = html.replace(/^[\-\*] (.+)$/gm, '<li>$1</li>');
     html = html.replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>');
     // 有序列表
     html = html.replace(/^\d+\. (.+)$/gm, '<li>$1</li>');
-    // 水平线
-    html = html.replace(/^---+$/gm, '<hr>');
     // 段落
     html = html.replace(/\n\n/g, '</p><p>');
     html = '<p>' + html + '</p>';

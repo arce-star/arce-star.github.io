@@ -70,29 +70,24 @@ const AiAssistant = (() => {
     if (!text) return;
     input.value = '';
 
+    // 构建增强的用户消息——直接把上下文注入进去
+    let enhancedText = text;
+    const explainCode = text.includes('代码') || text.includes('这段') || text.includes('解释');
+    const introProject = text.includes('项目') || text.includes('介绍');
+
+    if (explainCode && context.code) {
+      enhancedText = text + '\n\n【当前文件】' + context.path + '\n【代码内容】\n```\n' + context.code + '\n```';
+    } else if (introProject && context.files) {
+      enhancedText = text + '\n\n【项目目录】' + (context.path || '根目录') + '\n【文件列表】\n' + context.files;
+      if (context.code && context.name && context.name.endsWith('.md')) {
+        enhancedText += '\n\n【README内容】\n```\n' + context.code.substring(0, 4000) + '\n```';
+      }
+    }
+
     addBubble('user', text);
+    console.log('AI context:', { hasCode: !!context.code, hasFiles: !!context.files, path: context.path, name: context.name, explainCode, introProject });
 
-    let system = '你是编程助手，帮助用户理解 MATLAB/Python 项目和代码。用中文回答，简明扼要。';
-
-    // 解释代码: 带上当前文件代码
-    if (context.code && (text.includes('代码') || text.includes('这段') || text.includes('解释'))) {
-      system += '\n\n用户正在查看文件 "' + context.path + '"，以下是完整代码。请解释这段代码的核心逻辑:\n```\n' + context.code + '\n```';
-    }
-    // 介绍项目: 带上目录结构
-    else if (text.includes('项目') || text.includes('介绍')) {
-      if (context.files) {
-        system += '\n\n用户当前在项目目录 "' + (context.path || '根目录') + '"，该目录包含以下文件/子目录:\n' + context.files;
-      }
-      if (context.code && context.name.endsWith('.md')) {
-        system += '\n\n该目录的 README 内容:\n```\n' + context.code.substring(0, 4000) + '\n```';
-      }
-      system += '\n\n请根据目录结构和README内容，介绍这个项目是做什么的。';
-    }
-    // 一般情况: 告知当前浏览的文件
-    else if (context.name) {
-      system += '\n\n用户当前在浏览: "' + context.path + '"';
-      if (context.isDir) system += '（这是一个目录）';
-    }
+    let system = '你是编程助手，帮助用户理解 MATLAB/Python 项目和代码。用中文回答，简明扼要。直接回答用户问题，不要说"请提供代码"之类的话——代码已经包含在用户消息中了。';
 
     const typing = addBubble('assistant', '<em>思考中...</em>');
 
@@ -102,7 +97,7 @@ const AiAssistant = (() => {
       if (recent[i]) msgs.push(recent[i]);
       if (recent[i+1]) msgs.push(recent[i+1]);
     }
-    msgs.push({ role: 'user', content: text });
+    msgs.push({ role: 'user', content: enhancedText });
 
     try {
       const resp = await fetch(API_URL, {
@@ -133,7 +128,7 @@ const AiAssistant = (() => {
       }
 
       typing.innerHTML = formatReply(reply);
-      messages.push({ role: 'user', content: text });
+      messages.push({ role: 'user', content: enhancedText });
       messages.push({ role: 'assistant', content: reply });
     } catch(e) {
       typing.innerHTML = '<span style="color:#c0392b;">' + e.message + '<br><small>可能是网络或CORS问题</small></span>';

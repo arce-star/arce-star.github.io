@@ -211,6 +211,9 @@ const ProjectBrowser = (() => {
     try {
       const entries = await fetchContents('');
       renderTree(entries, treeEl, 0);
+      // 设置根目录上下文
+      const fileList = entries.map(e => (e.type === 'dir' ? '📁 ' : '📄 ') + e.name).join('\n');
+      if (window.AiAssistant) AiAssistant.setContext('matlab-modeling-works', '根目录', '', true, fileList);
       const readme = entries.find(e => e.name.toLowerCase() === 'readme.md');
       if (readme) openFile(readme.path, readme.name);
     } catch(e) {

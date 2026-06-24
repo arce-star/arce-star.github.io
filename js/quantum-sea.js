@@ -101,20 +101,16 @@ class QuantumSea {
                 const dy = pi.y - pj.y;
                 const dist = Math.sqrt(dx * dx + dy * dy);
                 if (dist < this.connectionDistance) {
-                    const distFactor = (1 - dist / this.connectionDistance) * 0.55;
-                    const alphaI = Math.min(0.85, alphas[i] * distFactor * 1.8);
-                    const alphaJ = Math.min(0.85, alphas[j] * distFactor * 1.8);
+                    const distFactor = (1 - dist / this.connectionDistance);
+                    const alphaI = alphas[i] * distFactor;
+                    const alphaJ = alphas[j] * distFactor;
 
                     const grad = this.ctx.createLinearGradient(pi.x, pi.y, pj.x, pj.y);
                     grad.addColorStop(0, `rgba(${r},${g},${b},${alphaI})`);
-                    grad.addColorStop(0.5, `rgba(${r},${g},${b},${(alphaI+alphaJ)/2})`);
                     grad.addColorStop(1, `rgba(${r},${g},${b},${alphaJ})`);
 
-                    const avgMouseDist = Math.min(pi.mouseDist, pj.mouseDist);
-                    const mouseFactor = avgMouseDist < this.mouse.radius ? 1 - avgMouseDist / this.mouse.radius : 0;
-
                     this.ctx.strokeStyle = grad;
-                    this.ctx.lineWidth = mouseFactor > 0.3 ? 1.8 : 1.0;
+                    this.ctx.lineWidth = 0.6 + (alphas[i] + alphas[j]) / 2;
                     this.ctx.beginPath();
                     this.ctx.moveTo(pi.x, pi.y);
                     this.ctx.lineTo(pj.x, pj.y);

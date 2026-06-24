@@ -68,11 +68,14 @@ const AiAssistant = (() => {
 
       if (!resp.ok) {
         const err = await resp.text();
-        throw new Error(`${resp.status}: ${err.substring(0,300)}`);
+        typing.innerHTML = '<span style="color:#c0392b;">HTTP ' + resp.status + ': ' + err.substring(0, 400) + '</span>';
+        return;
       }
 
       const data = await resp.json();
-      // 兼容不同响应格式
+      // 显示原始返回用于调试
+      console.log('API返回:', JSON.stringify(data).substring(0, 800));
+
       let reply = '';
       if (data.content && data.content[0]) {
         reply = data.content[0].text || '';
@@ -84,16 +87,14 @@ const AiAssistant = (() => {
         reply = data;
       }
       if (!reply) {
-        console.log('API response:', JSON.stringify(data).substring(0, 500));
-        throw new Error('响应格式异常，请查看控制台');
+        typing.innerHTML = '<span style="color:#c0392b;">API返回格式不匹配<br><small>' + JSON.stringify(data).substring(0, 300) + '</small></span>';
+        return;
       }
       typing.innerHTML = formatReply(reply);
       messages.push({ role: 'user', content: text });
       messages.push({ role: 'assistant', content: reply });
     } catch(e) {
-      typing.innerHTML = '<span style="color:#c0392b;">请求失败: ' + e.message + '</span>';
-      console.error('AI Assistant error:', e);
-    }
+      typing.innerHTML = '<span style="color:#c0392b;">' + e.message + '<br><small>可能是CORS跨域或网络问题</small></span>';
     document.getElementById('ai-chat-body').scrollTop = 99999;
   }
 

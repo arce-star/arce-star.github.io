@@ -274,6 +274,20 @@
         .md-preview img { max-width: 100%; border-radius: 4px; }
         .md-preview strong { color: #222; }
 
+        /* ===== 标签页 ===== */
+        .tab-btn {
+            padding: 8px 18px; border: none; background: none;
+            font-size: 0.85rem; color: var(--text-dim); cursor: pointer;
+            border-bottom: 2px solid transparent; transition: all 0.2s;
+        }
+        .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+        .tab-btn:hover { color: var(--blue); }
+        .tab-panel { display: none; }
+        .tab-panel.active { display: block; }
+        .notes-content { font-size: 0.9rem; line-height: 1.8; color: #444; }
+        .notes-content p { margin: 8px 0; }
+        .notes-content code { background: #f0f0f0; padding: 1px 6px; border-radius: 3px; font-size: 0.82rem; }
+
         /* ===== AI 助手 ===== */
         #ai-chat-btn {
             position: fixed; bottom: 24px; right: 24px; z-index: 1500;
@@ -343,6 +357,9 @@
             #project-layout { flex-direction: column; }
             #project-sidebar { width: 100%; max-height: 200px; }
             #code-viewer { max-height: 350px; }
+            #madevolve-layout { flex-direction: column; }
+            #madevolve-sidebar { width: 100% !important; max-height: 200px; }
+            #madevolve-viewer { max-height: 350px; }
             #ai-panel { width: 94vw; right: 3vw; }
             .cv-name { font-size: 1.6rem; }
             .cv-contact { gap: 8px; font-size: 0.8rem; }
@@ -367,6 +384,7 @@
                 <a data-panel="proj-notes"><i class="fas fa-project-diagram"></i> 项目笔记</a>
                 <a data-panel="papers"><i class="fas fa-file-alt"></i> 论文</a>
                 <a data-panel="projects"><i class="fas fa-code-branch"></i> MATLAB 项目</a>
+                <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
             </div>
             <div class="sidebar-footer">© 2025 arce-star</div>
         </nav>
@@ -632,6 +650,77 @@
                             <span id="file-path-display"></span>
                         </div>
                         <div id="code-viewer"><div class="tree-loading">选择文件查看代码</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MadEvolve 复现 -->
+            <div class="content-panel" id="panel-madevolve">
+                <div class="cv-header" style="margin-bottom:10px;">
+                    <div class="cv-name">MadEvolve 复现</div>
+                    <div class="cv-contact">LLM-Driven Evolutionary Discovery · 论文分析与代码复现</div>
+                </div>
+                <div style="display:flex;gap:6px;margin-bottom:16px;border-bottom:1px solid var(--border);">
+                    <button class="tab-btn active" data-tab="madevolve-notes">📝 思考笔记</button>
+                    <button class="tab-btn" data-tab="madevolve-code">💻 代码浏览</button>
+                </div>
+                <div id="madevolve-notes" class="tab-panel active">
+                    <div class="notes-content">
+                        <div class="cv-section"><div class="cv-section-title">思想起源</div>
+                            <p>MadEvolve 思想来源于 DeepMind 的 Alpha-Evolve。核心流程：<strong>LLM 写程序 → 自动化评估代码 → 好程序放到程序库 → LLM 基于程序库的程序迭代生成下一代程序</strong>。类似于遗传算法，核心在于<strong>环境（考核标准）不变</strong>。</p>
+                            <p>突变来自于 LLM，适应度函数是回测结果（Fitness Signal: 去掉手续费和冲击成本的 PnL），程序库对应种群。进化目标分两个：<code>set_target</code>（输出归一化目标仓位数值 [-1,1]）即<strong>使用</strong>因子；<code>set_limit_order</code>（输出具体限价单指令）即<strong>执行策略</strong>；<code>default_calcset</code> 是<strong>生成</strong>因子即特征工程。</p>
+                        </div>
+                        <div class="cv-section"><div class="cv-section-title">岛屿模型 & Map-Elites</div>
+                            <p>使用<strong>岛屿模型</strong>：5 个种群独立进化，每 5 代进行 10% 的精英迁移。工程实现上加了全局精英策略档案来保存固定容量的全体最优策略。</p>
+                            <p><strong>Map-Elites</strong> 模型强制保持多样性，每个格子保留格子内最强的策略（代码复杂度和多样性）。</p>
+                            <p>LLM 使用多模型路由：小模型做增量优化，大模型做结构创新。生成模式有差分补丁（~70%）、完整重写（~30%）、多父代合成。</p>
+                        </div>
+                        <div class="cv-section"><div class="cv-section-title">数据与策略</div>
+                            <p>标的：<strong>BTCUSD 一分钟 OHLCV</strong> 柱线，数据来源 Polygon.io。一分钟级别 BTCUSD 市场近乎有效，价格变动近乎完全取决于新信息，走势近似随机游走，OHLCV 信息最多只能解释 0.2%-0.4% 的价格变动。</p>
+                            <p>策略类型：<strong>被动限价单策略</strong>（每分钟一次决策）。被动挂单手续费低，可吃流动性补贴；低频省手续费，网络要求低且大概率没滑点。</p>
+                            <p>数据分割：2022-2023 训练 alpha 模型，2024 验证，2025.1.1-10.10 测试。训练集训练策略学规律，验证集调超参提供无偏调整，测试集展示泛化能力。</p>
+                        </div>
+                        <div class="cv-section"><div class="cv-section-title">实验设计与结论</div>
+                            <p>5 轮实验：run1（目标仓位逻辑）、run2（下单逻辑）、run3（1+2 联合）、run4（特征工程，适应度改为预测质量复合分数 = 0.4×R² + 0.3×IC + 0.3×ICIR/5）、run5（完整流程：生成因子→使用因子→执行策略）。</p>
+                            <p>核心结论：① 执行层的优化贡献最大；② run5 策略和特征联合优化的收益质量很高；③ 好特征要配好策略；④ run5 胜率从 68.6% 降到 49.8% 但 Sharpe 仍很高——模式变成了"少赚大钱"。</p>
+                        </div>
+                        <div class="cv-section"><div class="cv-section-title">关键技术细节</div>
+                            <ul class="cv-list">
+                                <li><strong>EVOLVE-BLOCK 标志</strong>划定可变异区域，防止 gaming the scoreboard</li>
+                                <li><strong>Adam 参数优化被移除</strong>：在量化中会放大多重检验问题（p-hacking），偏向过参数化结构</li>
+                                <li><strong>选择 PnL 而非 Sharpe 作为适应度</strong>：Sharpe 可通过选择性交易刷高，冲击调整 PnL 内含成本惩罚</li>
+                                <li><strong>过拟合检验</strong>：PnL 保留率、Sharpe 保留率、胜率变化 + Z-score 随机最优对比</li>
+                                <li><strong>run4 因子质量评估</strong>：用固定 α=0.5 的 Ridge 回归测试 1/10/100/1000 分钟收益预测能力</li>
+                                <li><strong>日度 IC/ICIR</strong>：避免高频信号被手续费吃光，样本间更接近独立</li>
+                            </ul>
+                        </div>
+                        <div class="cv-section"><div class="cv-section-title">与 Claude Code 的比较</div>
+                            <ul class="cv-list">
+                                <li>CC 没有额外结构，MadEvolve 有种群多样性机制（岛屿模型 + Map-Elites）</li>
+                                <li>CC 有想法树，搜索更系统完整；CC 生成的因子质量很高，R² 约 5 倍提升</li>
+                                <li>CC 限制因子 10 个（贪心选择 + 低相关性），MadEvolve 有 77 个（Ridge 回归分散权重）</li>
+                                <li>CC 表现<strong>高度依赖提示词</strong>，论文表示无法明确判断哪个框架更好</li>
+                            </ul>
+                        </div>
+                        <div class="cv-section"><div class="cv-section-title">复现记录</div>
+                            <p>数据源 Polygon 需付费，改用币安下载 BTCUSDT（BTCUSD 只有 2025 年后数据）。</p>
+                            <p>代码环境配置报错会弹出安装提示，推测代码也是 AI 写的。论文代码成熟，实盘迁移需考虑：订单簿数据格式差异、真实滑点计算、撮合模块、数据/算力成本。</p>
+                        </div>
+                    </div>
+                </div>
+                <div id="madevolve-code" class="tab-panel">
+                    <div id="madevolve-layout" style="display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:480px;">
+                        <div id="madevolve-sidebar" style="width:220px;flex-shrink:0;background:#f9fafb;border-right:1px solid var(--border);overflow-y:auto;max-height:560px;">
+                            <div class="proj-sidebar-header">📁 MadEvolve 代码</div>
+                            <div id="madevolve-tree"><div class="tree-loading">加载中...</div></div>
+                        </div>
+                        <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
+                            <div id="madevolve-header" style="padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.8rem;background:#fcfcfc;display:flex;justify-content:space-between;">
+                                <span id="madevolve-file-name">README.md</span>
+                                <span id="madevolve-file-path" style="color:#aaa;font-size:0.75rem;"></span>
+                            </div>
+                            <div id="madevolve-viewer" style="flex:1;overflow:auto;max-height:500px;background:#fdfdfd;"><div class="tree-loading">选择文件查看代码</div></div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -904,11 +993,28 @@
     <script src="js/quantum-sea.js"></script>
     <script>document.addEventListener('DOMContentLoaded', () => { new QuantumSea('quantum-bg'); });</script>
     <script src="js/project-browser.js?v=2"></script>
+    <script src="js/madevolve-browser.js?v=1"></script>
     <script src="js/ai-assistant.js?v=5"></script>
     <script>
         document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.querySelector('[data-panel="projects"]').addEventListener('click', () => {
             setTimeout(() => ProjectBrowser.loadRoot(), 100);
+        });
+        document.querySelector('[data-panel="madevolve"]').addEventListener('click', () => {
+            setTimeout(() => MadEvolveBrowser.loadRoot(), 100);
+        });
+
+        // 标签页切换
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.addEventListener('click', function() {
+                const tabGroup = this.parentElement;
+                tabGroup.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                const panelId = this.dataset.tab;
+                const parent = tabGroup.parentElement;
+                parent.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+                parent.querySelector('#' + panelId).classList.add('active');
+            });
         });
     </script>
     <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>

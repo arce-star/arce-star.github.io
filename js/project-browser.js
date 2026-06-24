@@ -76,6 +76,19 @@ const ProjectBrowser = (() => {
     // 分割线
     html = html.replace(/^[-*_]{3,}\s*$/gm, '<hr>');
 
+    // 引用块
+    html = html.replace(/((?:^&gt;.*\n?)+)/gm, function(match) {
+      const lines = match.split('\n').filter(l => l.trim());
+      const content = lines.map(l => l.replace(/^&gt;\s?/, '')).join('\n');
+      return '<blockquote>' + content + '</blockquote>';
+    });
+
+    // 任务列表
+    html = html.replace(/^[\-\*] \[(x| )\] (.+)$/gm, function(m, checked, text) {
+      return checked === 'x' ? '<li class="task-done">✅ ' + text + '</li>'
+                             : '<li class="task-pending">☐ ' + text + '</li>';
+    });
+
     // 标题
     html = html.replace(/^#### (.+)$/gm, '<h5>$1</h5>');
     html = html.replace(/^### (.+)$/gm, '<h4>$1</h4>');

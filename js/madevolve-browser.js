@@ -56,6 +56,19 @@ const MadEvolveBrowser = (() => {
     // 分割线
     h = h.replace(/^[-*_]{3,}\s*$/gm, '<hr>');
 
+    // 引用块: 连续的 > 行
+    h = h.replace(/((?:^&gt;.*\n?)+)/gm, function(match) {
+      const lines = match.split('\n').filter(l => l.trim());
+      const content = lines.map(l => l.replace(/^&gt;\s?/, '')).join('\n');
+      return '<blockquote>' + content + '</blockquote>';
+    });
+
+    // 任务列表 [x] / [ ]
+    h = h.replace(/^[\-\*] \[(x| )\] (.+)$/gm, function(m, checked, text) {
+      return checked === 'x' ? '<li class="task-done">✅ ' + text + '</li>'
+                             : '<li class="task-pending">☐ ' + text + '</li>';
+    });
+
     // 标题
     h = h.replace(/^### (.+)$/gm, '<h4>$1</h4>');
     h = h.replace(/^## (.+)$/gm, '<h3>$1</h3>');

@@ -26,11 +26,14 @@ const MadEvolveBrowser = (() => {
   }
 
   function renderMD(text) {
-    let h = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    let h = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    h = h.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 
-    // 代码块 (在转义后先处理, 保护内部内容)
-    h = h.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="md-code">$2</pre>');
-    h = h.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // 代码块: 支持有无语言标签、有无换行
+    h = h.replace(/```(\w*)\n?([\s\S]*?)```/g, function(m, lang, code) {
+      return '<pre class="md-code">' + code.replace(/^\n/, '') + '</pre>';
+    });
+    h = h.replace(/`([^`\n]+)`/g, '<code>$1</code>');
 
     // 表格: 检测连续的 | 行
     h = h.replace(/((?:^\|.+\|\n?)+)/gm, function(match) {

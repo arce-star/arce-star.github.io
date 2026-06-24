@@ -48,10 +48,14 @@ const ProjectBrowser = (() => {
 
   // 简易 Markdown 渲染
   function renderMD(text) {
-    let html = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-    // 代码块 (先处理，保护内部内容)
-    html = html.replace(/```(\w*)\n([\s\S]*?)```/g, '<pre class="md-code">$2</pre>');
-    html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+    // 统一换行符
+    let html = text.replace(/\r\n/g, '\n').replace(/\r/g, '\n');
+    html = html.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    // 代码块: 支持有无语言标签、有无换行
+    html = html.replace(/```(\w*)\n?([\s\S]*?)```/g, function(m, lang, code) {
+      return '<pre class="md-code">' + code.replace(/^\n/, '') + '</pre>';
+    });
+    html = html.replace(/`([^`\n]+)`/g, '<code>$1</code>');
 
     // 表格: 检测连续的 | 行
     html = html.replace(/((?:^\|.+\|\n?)+)/gm, function(match) {

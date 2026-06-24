@@ -216,21 +216,22 @@
         #exit-private-btn.show { display: block; }
 
         /* ===== MATLAB 项目浏览器 ===== */
-        #project-layout { display: flex; gap: 0; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; min-height: 480px; }
+        #project-layout { display: flex; gap: 0; border: 1px solid rgba(0,0,0,0.06); border-radius: 8px; overflow: hidden; min-height: 480px; backdrop-filter: blur(4px); }
         #project-sidebar {
-            width: 220px; flex-shrink: 0; background: #f9fafb; border-right: 1px solid var(--border);
-            overflow-y: auto; max-height: 560px;
+            width: 220px; flex-shrink: 0; background: rgba(249,250,251,0.55); backdrop-filter: blur(4px);
+            border-right: 1px solid var(--border); overflow-y: auto; max-height: 560px;
         }
         .proj-sidebar-header {
             font-size: 0.82rem; font-weight: 600; padding: 10px 14px;
-            border-bottom: 1px solid var(--border); color: var(--text-dim); position: sticky; top: 0; background: #f9fafb;
+            border-bottom: 1px solid var(--border); color: var(--text-dim); position: sticky; top: 0;
+            background: rgba(249,250,251,0.7); backdrop-filter: blur(4px);
         }
         #project-tree { padding: 6px 0; }
         .tree-item {
             padding: 7px 14px; font-size: 0.83rem; cursor: pointer; color: #444;
             display: flex; align-items: center; gap: 7px; transition: background 0.15s;
         }
-        .tree-item:hover { background: #eef3f8; }
+        .tree-item:hover { background: rgba(238,243,248,0.6); }
         .tree-item i { width: 16px; text-align: center; font-size: 0.78rem; color: var(--blue); }
         .tree-back { color: var(--blue); font-weight: 500; border-bottom: 1px solid #eee; }
         .tree-loading, .tree-error { padding: 20px; text-align: center; color: #999; font-size: 0.85rem; }
@@ -239,15 +240,16 @@
         #project-main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
         #project-header {
             padding: 8px 16px; border-bottom: 1px solid var(--border);
-            font-size: 0.8rem; background: #fcfcfc; display: flex; justify-content: space-between; align-items: center;
+            font-size: 0.8rem; background: rgba(252,252,252,0.55); backdrop-filter: blur(4px);
+            display: flex; justify-content: space-between; align-items: center;
         }
         #file-name-display { font-weight: 600; color: #333; }
         #file-path-display { color: #aaa; font-size: 0.75rem; }
-        #code-viewer { flex: 1; overflow: auto; max-height: 500px; background: #fdfdfd; }
+        #code-viewer { flex: 1; overflow: auto; max-height: 500px; background: rgba(253,253,253,0.45); backdrop-filter: blur(2px); }
         .code-block {
             margin: 0; padding: 12px 0; font-family: 'JetBrains Mono','Fira Code','Consolas',monospace;
             font-size: 0.8rem; line-height: 1.55; counter-reset: line; white-space: pre-wrap;
-            background: #fdfdfd; color: #333;
+            background: transparent; color: #333;
         }
         .line-num {
             display: inline-block; width: 42px; text-align: right; padding-right: 12px;
@@ -260,7 +262,7 @@
         .hl-number { color: #b5cea8; }
 
         /* Markdown 预览 */
-        .md-preview { padding: 20px 24px; font-size: 0.88rem; line-height: 1.7; color: #333; }
+        .md-preview { padding: 20px 24px; font-size: 0.88rem; line-height: 1.7; color: #333; background: transparent; }
         .md-preview h2 { font-size: 1.3rem; color: var(--blue); margin: 18px 0 10px; border-bottom: 1px solid #eee; padding-bottom: 6px; }
         .md-preview h3 { font-size: 1.1rem; color: #333; margin: 14px 0 8px; }
         .md-preview h4 { font-size: 1rem; margin: 10px 0 6px; }
@@ -719,17 +721,17 @@
                     </div>
                 </div>
                 <div id="madevolve-code" class="tab-panel active">
-                    <div id="madevolve-layout" style="display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;min-height:480px;">
-                        <div id="madevolve-sidebar" style="width:220px;flex-shrink:0;background:#f9fafb;border-right:1px solid var(--border);overflow-y:auto;max-height:560px;">
+                    <div id="madevolve-layout" style="display:flex;gap:0;border:1px solid rgba(0,0,0,0.06);border-radius:8px;overflow:hidden;min-height:480px;backdrop-filter:blur(4px);">
+                        <div id="madevolve-sidebar" style="width:220px;flex-shrink:0;background:rgba(249,250,251,0.55);backdrop-filter:blur(4px);border-right:1px solid var(--border);overflow-y:auto;max-height:560px;">
                             <div class="proj-sidebar-header">📁 MadEvolve 代码</div>
                             <div id="madevolve-tree"><div class="tree-loading">加载中...</div></div>
                         </div>
                         <div style="flex:1;display:flex;flex-direction:column;overflow:hidden;">
-                            <div id="madevolve-header" style="padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.8rem;background:#fcfcfc;display:flex;justify-content:space-between;">
+                            <div id="madevolve-header" style="padding:8px 16px;border-bottom:1px solid var(--border);font-size:0.8rem;background:rgba(252,252,252,0.55);backdrop-filter:blur(4px);display:flex;justify-content:space-between;">
                                 <span id="madevolve-file-name">README.md</span>
                                 <span id="madevolve-file-path" style="color:#aaa;font-size:0.75rem;"></span>
                             </div>
-                            <div id="madevolve-viewer" style="flex:1;overflow:auto;max-height:500px;background:#fdfdfd;"><div class="tree-loading">选择文件查看代码</div></div>
+                            <div id="madevolve-viewer" style="flex:1;overflow:auto;max-height:500px;background:rgba(253,253,253,0.45);backdrop-filter:blur(2px);"><div class="tree-loading">选择文件查看代码</div></div>
                         </div>
                     </div>
                 </div>

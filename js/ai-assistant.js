@@ -14,8 +14,25 @@ const AiAssistant = (() => {
     if (btn && name) btn.title = 'AI 助手 — 当前文件: ' + name;
   }
 
+  function decrypt(encB64) {
+    const seed = 'arce-star-quantum-2025';
+    const bytes = atob(encB64);
+    let out = '';
+    for (let i = 0; i < bytes.length; i++) {
+      out += String.fromCharCode(bytes.charCodeAt(i) ^ seed.charCodeAt(i % seed.length));
+    }
+    return out;
+  }
+
   function loadApiKey() {
     apiKey = localStorage.getItem('_ai_api_key') || '';
+    // 如果本地没有，自动填入预置密钥
+    if (!apiKey) {
+      try { apiKey = decrypt('EhlOAB5BTAVGH0RBBFtGQQtIVAkEDQcRBgFLRExQQR1EQlY='); } catch(_) {}
+      if (apiKey) {
+        document.getElementById('ai-key-input').value = apiKey;
+      }
+    }
     if (apiKey) {
       document.getElementById('ai-key-input').value = apiKey;
       document.getElementById('ai-key-section').style.display = 'none';

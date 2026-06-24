@@ -409,11 +409,11 @@
                 <div class="cv-section">
                     <div class="cv-section-title">教育背景</div>
                     <p class="edu-line">
-                        <strong>中国科学技术大学</strong> · 应用物理学
-                        <span style="float:right;color:var(--text-light);font-size:0.82rem;">2022.09 — 2026.06</span><br>
-                        大一在地空学院，大二转至物理学院 · GPA: 3.23/4.3（排名 85/160）<br>
-                        <strong>主修课程</strong>: 热学A [90]、力学A [90]、电磁学A+ [95]、理论力学A [92]、计算机程序设计A+ [95]<br>
-                        <strong>英语水平</strong>: CET-4 [616]、CET-6 [573]
+                        <strong>中国科学技术大学</strong> · 物理学院
+                        <span style="float:right;color:var(--text-light);font-size:0.82rem;">2022.09 至今</span><br>
+                        大一进入赵九章地球和空间科学英才班，大二转至物理学院<br>
+                        <strong>GPA</strong>: 3.22/4.3 (Top 50%)<br>
+                        <strong>核心课程</strong>: 计算机程序设计A (95, 4.3)、电磁学A (95, 4.3)、理论力学A (92, 4.0)、数学分析B2 (90, 4.0)、线性代数B1 (85, 3.3)、量化金融工程 (3.3)、概率论与数理统计 (75, 2.7)
                     </p>
                 </div>
 
@@ -421,52 +421,42 @@
                     <div class="cv-section-title">科研与项目经历</div>
 
                     <div class="cv-entry">
-                        <div class="cv-entry-title">大模型伦理困境决策倾向性研究 <span class="date">2024.10 — 2025.11</span></div>
-                        <div class="cv-entry-sub">项目主导 · 大学生研究计划[A-] · 大创计划[A] · <span class="cv-highlight">ICWSM 2025</span></div>
+                        <div class="cv-entry-title">天池AI大模型系列赛 CCL2026-Eval：古诗词赏析 <span class="date">2026.06 至今</span></div>
+                        <div class="cv-entry-sub">296 支队伍中 <strong>Top 10%</strong>（暂列第 27 名）</div>
                         <ul class="cv-list">
-                            <li>提出核心 Idea，在导师把关后自主开展实验</li>
-                            <li>项目获第七届庆峰杯挑战杯自然科学类学术论文组<strong>第二名</strong>、第十一届挑战杯·华安证券安徽省赛<strong>二等奖</strong>、第十九届挑战杯全国赛<strong>三等奖</strong></li>
-                            <li>研究分为四个子方向：
-                                <br>① 模型基本伦理倾向性测试（<span class="cv-highlight">ICWSM 2025，共同第一作者 Accept</span>）
-                                <br>② 提出 PERC 框架降低模型伦理歧视性（EMNLP 2025，Reject）
-                                <br>③ 模型大五人格测试及人格赋予检测
-                                <br>④ 人格赋予后伦理倾向性测试
-                            </li>
+                            <li>采用 <strong>Qwen2.5-7B-instruct</strong>，设计<strong>两阶段 LoRA 微调架构</strong>（领域粗调 + Task精调），完成字词释义、情感推理等六大核心任务</li>
+                            <li>独立完成微调数据的收集与清洗，共构建并精标 23,000 条粗调数据及 1,800 条精调数据</li>
+                            <li>引入外部大模型生成题库及 CoT 微调，经消融实验验证存在负优化后舍弃，积累了完整的大模型调优与排错经验</li>
                         </ul>
                     </div>
 
                     <div class="cv-entry">
-                        <div class="cv-entry-title">CCL2026-Eval 古诗词赏析 <span class="date">2026.06 至今</span></div>
-                        <div class="cv-entry-sub">天池AI大模型系列赛 · 296 队 <strong>Top 10%</strong>（暂列第 27 名）</div>
+                        <div class="cv-entry-title">LLM 驱动的量化交易系统进化优化（独立复现顶会架构） <span class="date">2026.06 至今</span></div>
+                        <div class="cv-entry-sub">独立复现 MadEvolve (arXiv:2605.23007) 进化优化框架</div>
                         <ul class="cv-list">
-                            <li>基于 Qwen2.5-7B-instruct，设计两阶段 LoRA 微调架构，完成字词释义、情感推理等六大核心任务</li>
-                            <li>独立完成数据收集与清洗，构建并精标 23,000 条粗调数据及 1,800 条精调数据</li>
+                            <li><strong>回测引擎</strong>: 从零实现逐分钟级 BTCUSDT 回测引擎，严格按论文实现被动限价单填充逻辑、PnL 分解公式与 6 参数平方根市场冲击模型</li>
+                            <li><strong>性能优化</strong>: 针对冲击模型 O(n²) 用 numpy 向量化替代循环、预计算衰减查表、滑动窗口裁剪，单次全年回测从 42 分钟压缩至 7 分钟；逐条 dict 存储转为连续数组，内存占用降低约 98%（200MB→4MB）</li>
+                            <li><strong>进化算法与 LLM 集成</strong>: 接入 DeepSeek v4 驱动代码探索变异，采用 MAP-Elites 与岛屿模型管理策略种群；开发鲁棒的自动检测与修正重排机制处理 LLM 代码容错</li>
+                            <li><strong>实验结果</strong>: 快速 demo 将基线策略从 −$44K 优化至 +$5.3K，全量实验进行中</li>
                         </ul>
                     </div>
 
                     <div class="cv-entry">
-                        <div class="cv-entry-title">傅里叶变换光谱 · 验证维恩位移定律 <span class="date">2023.07 — 2023.12</span></div>
+                        <div class="cv-entry-title">基于大语言模型在伦理困境中决策研究其倾向性 <span class="date">2024.10 — 2025.11</span></div>
+                        <div class="cv-entry-sub">项目主导 · 大学生研究计划[A-] · 大学生创新创业计划[A] · <span class="cv-highlight">ICWSM 2026 已发表</span></div>
                         <ul class="cv-list">
-                            <li>负责光路搭建、数据处理、算法创新及代码实现</li>
-                            <li>获第九届全国大学生物理实验竞赛(创新)命题类<span class="cv-highlight"> 国家级三等奖</span></li>
-                            <li>成果发表于《物理实验》期刊第44卷第8期（第二作者）</li>
+                            <li>提出核心 Idea 并主导实验开展，作为<strong>通讯作者</strong>系统评估 9 种主流开源与闭源模型，执行 <strong>50,400 次</strong>大规模并发调用测试</li>
+                            <li>从伦理偏好优先级、稳定性和偏好聚类等维度进行深度可观测性分析</li>
+                            <li>国际上首次关注大模型在伦理困境中的决策倾向性并为模型价值观对齐提供评测范式，在模型中发现了稳定的系统性偏见</li>
                         </ul>
                     </div>
 
                     <div class="cv-entry">
-                        <div class="cv-entry-title">法拉第波研究 <span class="date">2022.12 — 2023.04</span></div>
+                        <div class="cv-entry-title">物理实验与算法仿真 <span class="date">2022.12 — 2024.03</span></div>
                         <ul class="cv-list">
-                            <li>独立完成题目分解、实验设计、装置搭建、数据处理、理论分析全过程</li>
-                            <li>获第五届安徽省大学生物理学术竞赛(CUPT) <strong>省级一等奖（第四名）</strong></li>
-                        </ul>
-                    </div>
-
-                    <div class="cv-entry">
-                        <div class="cv-entry-title">量子信息实验室 · 光纤传输模拟 <span class="date">2023.09 — 2024.03</span></div>
-                        <div class="cv-entry-sub">王双老师课题组</div>
-                        <ul class="cv-list">
-                            <li>独立完成光纤中光传播受色散和非线性效应影响的 MATLAB 模拟</li>
-                            <li>成果总结为光学小论文《基于MATLAB对光脉冲在光纤中的传输特性研究》</li>
+                            <li><strong>傅里叶变换光谱</strong>: 负责光路搭建与算法实现，获全国大学生物理实验竞赛(创新)三等奖，成果发表于《物理实验》期刊（第二作者）</li>
+                            <li><strong>光纤传输模拟</strong>: 独立完成光传播受色散及非线性效应影响的 MATLAB 仿真，撰写《基于MATLAB对光脉冲在光纤中的传输特性研究》光学课程小论文</li>
+                            <li><strong>法拉第波研究</strong>: 独立完成理论分析与实验，获第五届安徽省物理学术竞赛(CUPT)省一等奖（第四名）</li>
                         </ul>
                     </div>
                 </div>
@@ -474,32 +464,22 @@
                 <div class="cv-section">
                     <div class="cv-section-title">竞赛奖项</div>
                     <ul class="cv-list">
-                        <li>第十九届"挑战杯"全国大学生课外学术科技作品竞赛 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
-                        <li>第十一届"挑战杯·华安证券"安徽省大学生课外学术科技作品竞赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
-                        <li>第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组 <strong>第二名</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
-                        <li>第九届全国大学生物理实验竞赛(创新)命题类 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2023</span></li>
-                        <li>第五届安徽省大学生物理学术竞赛(CUPT) <strong>省级一等奖</strong> <span style="float:right;color:var(--text-light);">2023</span></li>
-                        <li>2022、2023 年优秀学生奖学金 <strong>银奖</strong></li>
-                        <li>第 38 届全国中学生物理竞赛 <strong>省级一等奖（第 25 名）</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
-                        <li>全国中学生数学奥林匹克竞赛预赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
-                        <li>第 37 届全国中学生物理竞赛 <strong>省级二等奖（第 7 名）</strong> <span style="float:right;color:var(--text-light);">2020</span></li>
+                        <li>第十七届全国大学生数学竞赛 (非数学A类) <strong>一等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                        <li>第十九届"挑战杯"全国大学生课外学术科技作品系列赛 <strong>国家级三等奖、省二等奖、校第二名</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                        <li>第九届全国大学生物理实验竞赛 (创新) 命题类 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2023.12</span></li>
+                        <li>第五届安徽省大学生物理学术竞赛 (CUPT) <strong>省级一等奖</strong> <span style="float:right;color:var(--text-light);">2023.04</span></li>
+                        <li>2022、2023 年优秀学生奖学金 <strong>银奖</strong> | 高中阶段获全国物理竞赛<strong>省一、二等奖</strong>、数学联赛<strong>省二等奖</strong></li>
                     </ul>
                 </div>
 
                 <div class="cv-section">
-                    <div class="cv-section-title">技能专长</div>
+                    <div class="cv-section-title">个人技能</div>
                     <div class="skills-row">
-                        <span class="cv-tag">MATLAB</span>
-                        <span class="cv-tag">Python</span>
-                        <span class="cv-tag">LaTeX</span>
-                        <span class="cv-tag">Origin</span>
+                        <span class="cv-tag">Python</span><span class="cv-tag">MATLAB</span><span class="cv-tag">C</span><span class="cv-tag">LaTeX</span>
                     </div>
-                    <ul class="cv-list" style="margin-top:10px;">
-                        <li><strong>MATLAB</strong>: 丰富外包项目经验及物理模拟经验</li>
-                        <li><strong>Python</strong>: 大研大创两年的项目应用经验及基本科研绘图能力</li>
-                        <li><strong>LaTeX</strong>: 4 篇计算机外文会议论文撰写经验</li>
-                        <li><strong>Origin</strong>: 在大物实验和外包项目中有所应用</li>
-                    </ul>
+                    <p class="edu-line" style="margin-top:8px;">
+                        熟练使用 LaTeX 编写文档，灵活使用 AI 辅助编程。对复杂数据清洗、LLM 并发调用微调、机器学习建模及物理算法仿真有较丰富经验。
+                    </p>
                 </div>
             </div>
 
@@ -567,7 +547,7 @@
                     <ul class="cv-list">
                         <li><strong>研究构思</strong>: 提出核心 Idea，在导师把关后自主设计并开展实验</li>
                         <li><strong>子方向① — 模型基本伦理倾向性测试</strong>: 系统评估主流开源与闭源模型的伦理决策偏好，论文发表于 ICWSM 2025（共同第一作者）</li>
-                        <li><strong>子方向② — PERC 框架</strong>: 提出降低模型伦理歧视性的方法框架，投稿 EMNLP 2025（Reject）</li>
+                        <li><strong>子方向②</strong>: 模型大五人格测试及人格赋予检测</li>
                         <li><strong>子方向③ — 大五人格测试</strong>: 对模型进行大五人格测试及人格赋予检测</li>
                         <li><strong>子方向④ — 人格赋予后伦理测试</strong>: 研究人格赋予对模型伦理倾向性的影响</li>
                         <li><strong>竞赛成果</strong>: 庆峰杯挑战杯第二名 → 挑战杯省二等奖 → 挑战杯国三等奖</li>

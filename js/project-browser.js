@@ -254,5 +254,5 @@ const ProjectBrowser = (() => {
     }
   }
 
-  return { loadRoot, navigateInto, openFile };
+  return { loadRoot, navigateInto, openFile, renderMD };
 })();

@@ -114,6 +114,9 @@
             color: var(--blue); font-size: 0.75rem;
         }
         .cv-highlight { color: var(--blue); font-weight: 600; }
+        .note-tag { cursor: pointer; transition: all 0.15s; }
+        .note-tag:hover { background: #dce8f5; }
+        .note-tag.has-note { border-bottom: 2px solid var(--blue); }
         .cv-tag {
             display: inline-block; background: #eef4fb; color: var(--blue);
             font-size: 0.78rem; padding: 2px 10px; border-radius: 3px;
@@ -533,47 +536,63 @@
 
             <!-- 课程笔记 -->
             <div class="content-panel" id="panel-courses">
-                <div class="cv-header" style="margin-bottom:20px;">
+                <div class="cv-header" style="margin-bottom:16px;">
                     <div class="cv-name">课程笔记</div>
-                    <div class="cv-contact">整理中，即将更新</div>
+                    <div class="cv-contact">点击标签查看笔记</div>
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title">量化金融</div>
-                    <div class="skills-row">
-                        <span class="cv-tag">宏观框架</span><span class="cv-tag">微观结构理论</span><span class="cv-tag">套利定价理论</span>
-                        <span class="cv-tag">财务建模</span><span class="cv-tag">时间序列分析</span><span class="cv-tag">常见因子类型</span>
-                        <span class="cv-tag">回测框架设计</span><span class="cv-tag">组合优化</span><span class="cv-tag">实盘追踪</span>
-                        <span class="cv-tag">个人量化项目</span>
+                    <div class="skills-row" id="cat-quant">
+                        <span class="cv-tag note-tag" data-note="常见因子类型">常见因子类型</span>
+                        <span class="cv-tag note-tag" data-note="回测框架设计">回测框架设计</span>
+                        <span class="cv-tag note-tag">宏观框架</span>
+                        <span class="cv-tag note-tag">微观结构理论</span>
+                        <span class="cv-tag note-tag">套利定价理论</span>
+                        <span class="cv-tag note-tag">财务建模</span>
+                        <span class="cv-tag note-tag">时间序列分析</span>
+                        <span class="cv-tag note-tag">组合优化</span>
+                        <span class="cv-tag note-tag">实盘追踪</span>
+                        <span class="cv-tag note-tag">个人量化项目</span>
                     </div>
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title">AI / 机器学习</div>
                     <div class="skills-row">
-                        <span class="cv-tag">机器学习</span><span class="cv-tag">深度学习模型开发</span><span class="cv-tag">PyTorch</span>
-                        <span class="cv-tag">TensorFlow</span><span class="cv-tag">大模型微调</span><span class="cv-tag">PINNs</span>
-                        <span class="cv-tag">模式识别</span><span class="cv-tag">自然语言处理</span><span class="cv-tag">决策树</span>
-                        <span class="cv-tag">GBDT</span><span class="cv-tag">强化学习</span><span class="cv-tag">推荐系统</span>
-                        <span class="cv-tag">图像识别</span><span class="cv-tag">Kaggle</span><span class="cv-tag">数据清洗</span><span class="cv-tag">过拟合控制</span>
+                        <span class="cv-tag note-tag">机器学习</span><span class="cv-tag note-tag">深度学习模型开发</span>
+                        <span class="cv-tag note-tag">PyTorch</span><span class="cv-tag note-tag">TensorFlow</span>
+                        <span class="cv-tag note-tag">大模型微调</span><span class="cv-tag note-tag">PINNs</span>
+                        <span class="cv-tag note-tag">模式识别</span><span class="cv-tag note-tag">自然语言处理</span>
+                        <span class="cv-tag note-tag">决策树</span><span class="cv-tag note-tag">GBDT</span>
+                        <span class="cv-tag note-tag">强化学习</span><span class="cv-tag note-tag">推荐系统</span>
+                        <span class="cv-tag note-tag">图像识别</span><span class="cv-tag note-tag">Kaggle</span>
+                        <span class="cv-tag note-tag">数据清洗</span><span class="cv-tag note-tag">过拟合控制</span>
                     </div>
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title">量化项目</div>
                     <div class="skills-row">
-                        <span class="cv-tag">因子挖掘</span><span class="cv-tag">量化策略</span><span class="cv-tag">期权策略</span>
+                        <span class="cv-tag note-tag">因子挖掘</span><span class="cv-tag note-tag">量化策略</span><span class="cv-tag note-tag">期权策略</span>
                     </div>
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title">数学</div>
                     <div class="skills-row">
-                        <span class="cv-tag">概率统计</span><span class="cv-tag">时间序列分析</span>
+                        <span class="cv-tag note-tag">概率统计</span><span class="cv-tag note-tag">时间序列分析</span>
                     </div>
                 </div>
                 <div class="cv-section">
                     <div class="cv-section-title">CS</div>
                     <div class="skills-row">
-                        <span class="cv-tag">Python</span><span class="cv-tag">C++</span><span class="cv-tag">Linux</span><span class="cv-tag">SQL</span>
+                        <span class="cv-tag note-tag">Python</span><span class="cv-tag note-tag">C++</span><span class="cv-tag note-tag">Linux</span><span class="cv-tag note-tag">SQL</span>
                     </div>
                 </div>
+
+                <!-- 笔记查看器 -->
+                <div id="note-viewer" style="display:none;margin-top:20px;padding:24px;border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:transparent;">
+                    <button id="note-close" style="float:right;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999;">&times;</button>
+                    <div id="note-content" class="md-preview"></div>
+                </div>
+
                 <button id="edit-toggle-btn">⚙️ 编辑可见课程</button>
                 <div id="course-editor">
                     <h4>勾选在公开页显示的课程（需先登录私人区）</h4>
@@ -1020,7 +1039,7 @@
 
     <script src="js/quantum-sea.js?v=10"></script>
     <script>document.addEventListener('DOMContentLoaded', () => { new QuantumSea('quantum-bg'); });</script>
-    <script src="js/project-browser.js?v=5"></script>
+    <script src="js/project-browser.js?v=6"></script>
     <script src="js/madevolve-browser.js?v=7"></script>
     <script src="js/ai-assistant.js?v=6"></script>
     <script>
@@ -1030,6 +1049,43 @@
         });
         document.querySelector('[data-panel="madevolve"]').addEventListener('click', () => {
             setTimeout(() => MadEvolveBrowser.loadRoot(), 100);
+        });
+
+        // 课程笔记: 点击标签加载 markdown
+        document.querySelectorAll('.note-tag').forEach(tag => {
+            tag.addEventListener('click', async function() {
+                const noteName = this.dataset.note || this.textContent.trim();
+                const viewer = document.getElementById('note-viewer');
+                const content = document.getElementById('note-content');
+                // 关闭
+                if (viewer.style.display !== 'none' && this.classList.contains('active-tag')) {
+                    viewer.style.display = 'none';
+                    this.classList.remove('active-tag');
+                    return;
+                }
+                // 加载
+                document.querySelectorAll('.note-tag').forEach(t => t.classList.remove('active-tag'));
+                this.classList.add('active-tag');
+                viewer.style.display = '';
+                content.innerHTML = '<div class="tree-loading">加载中...</div>';
+                try {
+                    const resp = await fetch('notes/' + encodeURIComponent(noteName) + '.md');
+                    if (!resp.ok) {
+                        content.innerHTML = '<p style="color:#999;">笔记尚未撰写，敬请期待。</p>';
+                        return;
+                    }
+                    const text = await resp.text();
+                    // 使用 project-browser 的 renderMD
+                    content.innerHTML = ProjectBrowser ? ProjectBrowser.renderMD(text) : text.replace(/\n/g,'<br>');
+                    document.getElementById('note-viewer').scrollIntoView({ behavior: 'smooth' });
+                } catch(e) {
+                    content.innerHTML = '<p style="color:#999;">笔记尚未撰写，敬请期待。</p>';
+                }
+            });
+        });
+        document.getElementById('note-close').addEventListener('click', () => {
+            document.getElementById('note-viewer').style.display = 'none';
+            document.querySelectorAll('.note-tag').forEach(t => t.classList.remove('active-tag'));
         });
 
         // 标签页切换

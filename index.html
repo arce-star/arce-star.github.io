@@ -289,35 +289,45 @@
         .math-inline { display: inline; }
         .md-preview hr { border: none; border-top: 2px solid #eee; margin: 16px 0; }
 
-        /* ===== 笔记大纲 (DeepSeek 风格右侧导航) ===== */
+        /* ===== 笔记大纲 (DeepSeek 风格右侧横线导航) ===== */
         #note-toc {
-            position: fixed; right: 16px; top: 80px; bottom: 80px;
-            z-index: 50; width: 28px; padding: 10px 0;
-            display: flex; flex-direction: column; align-items: center; gap: 0;
-            transition: width 0.25s, background 0.25s, box-shadow 0.25s;
-            border-radius: 14px; overflow: hidden;
+            position: fixed; right: 10px; top: 80px; bottom: 80px;
+            z-index: 50; width: 30px;
+            transition: width 0.25s, background 0.25s, box-shadow 0.25s, padding 0.25s;
+            border-radius: 16px;
+            display: flex; flex-direction: column; align-items: center;
+            overflow: hidden;
         }
         #note-toc:hover {
-            width: 200px; background: rgba(255,255,255,0.96);
+            width: 190px; background: rgba(255,255,255,0.96);
             backdrop-filter: blur(12px); box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            border: 1px solid rgba(0,0,0,0.06); padding: 14px 12px;
-            align-items: stretch; gap: 2px;
+            border: 1px solid rgba(0,0,0,0.06); padding: 14px 10px;
+            align-items: stretch; overflow-y: auto;
         }
-        #note-toc .toc-track {
-            width: 2px; background: rgba(0,0,0,0.08); border-radius: 1px;
-            flex: 1; min-height: 60px; position: relative;
+        /* 横线容器 */
+        #note-toc .toc-dashes {
+            flex: 1; width: 100%; position: relative;
         }
-        #note-toc:hover .toc-track { display: none; }
+        #note-toc:hover .toc-dashes { display: none; }
+        /* 每个横线 */
+        #note-toc .toc-dash {
+            position: absolute; right: 8px; height: 2px; width: 14px;
+            background: #ccc; border-radius: 1px;
+            transition: width 0.15s, background 0.15s;
+            cursor: pointer;
+        }
+        #note-toc .toc-dash:hover { width: 20px; background: var(--blue); }
+        #note-toc .toc-dash.toc-active { width: 22px; background: var(--blue); }
         #note-toc .toc-title {
             display: none; font-size: 0.75rem; font-weight: 600; color: var(--blue);
-            margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #eee;
+            margin-bottom: 6px; padding-bottom: 6px; border-bottom: 1px solid #eee; flex-shrink: 0;
         }
         #note-toc:hover .toc-title { display: block; }
         #note-toc .toc-item {
             display: none; font-size: 0.72rem; color: #999; cursor: pointer;
             padding: 3px 8px; line-height: 1.35; border-radius: 4px;
             overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-            transition: color 0.15s, background 0.15s;
+            transition: color 0.15s, background 0.15s; flex-shrink: 0;
         }
         #note-toc:hover .toc-item { display: block; }
         #note-toc .toc-item:hover { color: var(--blue); background: #f0f4f8; }
@@ -630,7 +640,7 @@
                 </div>
 
                 <!-- 笔记大纲 -->
-                <div id="note-toc" style="display:none;"><div class="toc-title">大纲</div><div class="toc-track"></div></div>
+                <div id="note-toc" style="display:none;"><div class="toc-title">大纲</div><div class="toc-dashes"></div></div>
 
                 <!-- 笔记查看器 -->
                 <div id="note-viewer" style="display:none;margin-top:20px;padding:24px;border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:transparent;">
@@ -1145,14 +1155,32 @@
 
         function buildTOC(container) {
             const toc = document.getElementById('note-toc');
-            // 清除旧内容，保留 title 和 track
-            toc.querySelectorAll('.toc-item').forEach(el => el.remove());
+            // 清除旧内容
+            toc.querySelectorAll('.toc-item, .toc-dash').forEach(el => el.remove());
+            const dashesContainer = toc.querySelector('.toc-dashes');
             const headings = container.querySelectorAll('h2, h3');
             if (headings.length === 0) { toc.style.display = 'none'; return; }
             toc.style.display = '';
+
+            const docH = container.scrollHeight;
+            const tocH = dashesContainer.clientHeight || 400;
+
             headings.forEach((h, i) => {
                 const id = 'note-h-' + i;
                 h.id = id;
+
+                // 横线标记（按比例定位）
+                const dash = document.createElement('div');
+                dash.className = 'toc-dash';
+                const pct = (h.offsetTop / docH) * 100;
+                dash.style.top = pct + '%';
+                dash.title = h.textContent;
+                dash.addEventListener('click', () => {
+                    h.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                });
+                dashesContainer.appendChild(dash);
+
+                // 悬停展开的标题项
                 const item = document.createElement('div');
                 item.className = 'toc-item ' + (h.tagName === 'H2' ? 'toc-h2' : 'toc-h3');
                 item.textContent = h.textContent;
@@ -1161,17 +1189,20 @@
                 });
                 toc.appendChild(item);
             });
+
             // 滚动高亮
             const onScroll = () => {
-                let current = '';
+                let currentId = '';
                 headings.forEach(h => {
-                    if (h.getBoundingClientRect().top < 120) current = h.id;
+                    if (h.getBoundingClientRect().top < 120) currentId = h.id;
                 });
-                toc.querySelectorAll('.toc-item').forEach(el => {
-                    el.classList.toggle('toc-active', el.textContent === (current ? document.getElementById(current)?.textContent : ''));
+                toc.querySelectorAll('.toc-dash').forEach((d, i) => {
+                    d.classList.toggle('toc-active', headings[i] && headings[i].id === currentId);
+                });
+                toc.querySelectorAll('.toc-item').forEach((el, i) => {
+                    el.classList.toggle('toc-active', headings[i] && headings[i].id === currentId);
                 });
             };
-            document.getElementById('main-content').addEventListener('scroll', onScroll, { once: false });
             window.addEventListener('scroll', onScroll, { once: false });
         }
 

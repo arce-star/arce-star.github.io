@@ -802,48 +802,145 @@
                 </div>
                 <div id="madevolve-report" class="tab-panel active">
                     <div class="notes-content">
-                        <div class="cv-section"><div class="cv-section-title">Baseline 策略 (run1/run2)</div>
-                            <p><code>baseline_run1.py</code> / <code>baseline_run2.py</code> — Baseline 策略，EVOLVE-BLOCK 只包裹 set_target（run1）或 set_limit_order（run2），另一函数固定不变。</p>
-                            <p><strong>Baseline 表现</strong>: PnL(adj)=$-325,958, Sharpe=-26.92, Calmar=-1.00, Trades=290,201, Impact=0.3bps, Win=38.3%</p>
+                        <div class="cv-section"><div class="cv-section-title">Baseline 策略</div>
+                            <p>基线策略，代码框架固定。EVOLVE-BLOCK 标注了 LLM 可变异区域。Run1 只进化 set_target（仓位逻辑），run2 只进化 set_limit_order（下单逻辑）。</p>
+                            <p><strong>Baseline 表现</strong>: PnL(adj)=$-325,958, Sharpe=-26.92, Calmar=-1.00, Trades=290,201 — 无利可图的高频噪音交易。</p>
+                            <pre class="md-code">class DefaultPassiveExecutor:
+    def __init__(self, sizing_factor=10_000, q_max=200_000, ...):
+        self.context_correction_factor = 0  # 无上下文修正
+
+    # EVOLVE-BLOCK-START run1 — LLM 只能改这个函数
+    def set_target(self, state):
+        alpha = state["alpha"]; alpha_sd = state["alpha_sd"]
+        q_x = state["position_btc"]; mid_book = state["mid_book"]
+        q_usd = q_x * mid_book
+        k = self.sizing_factor / alpha_sd
+        # 固定逻辑: alpha → 目标仓位
+        long_target = self.sizing_factor * (alpha - fee) / alpha_sd
+        short_target = self.sizing_factor * (alpha + fee) / alpha_sd
+        target_pos_usd = np.clip(...)
+        return {"side": side, "target_trade_qty": ..., "limit_order_depth": ...}
+    # EVOLVE-BLOCK-END
+
+    # 固定不变的下单逻辑
+    def set_limit_order(self, state, target):
+        if target["side"] is None: return None
+        limit_price = mid_book * np.exp(-sign * depth)
+        return {"side": ..., "limit_price": limit_price, ...}</pre>
                         </div>
+
                         <div class="cv-section"><div class="cv-section-title">Run1 Best — set_target 进化</div>
-                            <p><strong>PnL(adj)=$34,559, Sharpe=0.88, Calmar=0.81</strong>, Trades=23, Impact=0.6bps, Win=49.3%</p>
-                            <p>核心改进：引入 TOTAL_COST_RETURN 死区过滤弱信号、INVENTORY_DECAY 持仓均值回归、SMOOTHING EMA 降低换手、LAG_DECAY_RATE 数据延迟惩罚。</p>
-                            <pre class="md-code">SIZING_FACTOR = 20000.0
-TOTAL_COST_RETURN = 0.0003
-POSITION_LIMIT = 200000.0
-INVENTORY_DECAY = 0.02
-SMOOTHING = 0.85</pre>
+                            <p><strong>PnL(adj)=$34,559, Sharpe=0.88, Calmar=0.81</strong>, Trades=23, Win=49.3%</p>
+                            <p><strong>从 -$326K 到 +$34.6K，交易次数从 290K 降到 23 次</strong>——策略学会了"少而精"。</p>
+                            <pre class="md-code"># === Run1 进化出的核心改进 ===
+SIZING_FACTOR = 20000.0         # 基线 10K → 20K（更大胆的仓位）
+TOTAL_COST_RETURN = 0.0003      # [新增] 死区阈值：信号弱于成本则不交易
+POSITION_LIMIT = 200000.0       # 仓位上限
+INVENTORY_DECAY = 0.02          # [新增] 持仓均值回归：已持仓→减少追仓
+RISK_REDUCTION_FACTOR = 0.8     # 风险模式：减仓至 80%
+SMOOTHING = 0.85                # [新增] EMA 平滑：防过度换手
+LAG_DECAY_RATE = 0.1            # [新增] 数据延迟指数衰减
+
+# [关键改进 1] 死区过滤 — 信号太弱直接放弃
+if abs(signal) < TOTAL_COST_RETURN:
+    return {"side": None, ...}  # 不交易
+
+# [关键改进 2] 持仓均值回归 — 已有多仓→减少继续追多
+raw_target_usd = SIZING_FACTOR * (signal - cost) / alpha_sd
+target_usd = raw_target_usd - INVENTORY_DECAY * pos_usd
+
+# [关键改进 3] EMA 平滑 — 新旧目标加权，避免剧烈翻转
+target_usd = SMOOTHING * target_usd + (1 - SMOOTHING) * prev_target
+
+# [关键改进 4] 延迟惩罚 — 数据越旧，信号越弱
+lag_factor = np.exp(-LAG_DECAY_RATE * data_lag_minutes)
+target_usd *= lag_factor</pre>
                         </div>
+
                         <div class="cv-section"><div class="cv-section-title">Run2 Best — set_limit_order 进化</div>
-                            <p>PnL(adj)=$-86,942, Sharpe=-7.70, Calmar=-0.98, Trades=2,072, Impact=0.4bps, <strong>Win=49.2%</strong></p>
-                            <p>核心改进：动态限价深度 = base + alpha_adj + size_adj，乘 lag_adj 延迟衰减，clip 到 [MIN_DEPTH, MAX_DEPTH]。</p>
+                            <p>PnL(adj)=$-86,942, Sharpe=-7.70, Trades=2,072, <strong>Win=49.2%</strong></p>
+                            <p>Run2 只改下单逻辑——尽管绝对收益仍负，但胜率接近 50%，说明<strong>下单层的优化确实有效</strong>。论文结论"执行层贡献最大"在这里体现。</p>
+                            <pre class="md-code"># === Run2 进化出的核心改进 ===
+# [关键改进] 动态限价深度 — 不再用固定值
+base = OUTER_RISK_OFF if risk_reduction else OUTER_BASE
+alpha_adj = 0.15 * abs(alpha) / alpha_sd    # 信号越强→挂单越激进
+size_adj  = 0.10 * abs(qty) / q_max         # 仓位越大→挂单越深
+lag_adj   = 1.0 - min(lag, 10) * 0.20       # 数据延迟→挂单更保守
+depth = np.clip(base + alpha_adj + size_adj) * lag_adj
+limit_price = mid_book * np.exp(-side * depth)</pre>
                         </div>
-                        <div class="cv-section"><div class="cv-section-title">Baseline Run4 — 因子工程</div>
-                            <p>Baseline: 3 因子 — ema_ret_1/5/10 分钟。Ridge α=0.5 固定，每次评估重训。</p>
+
+                        <div class="cv-section"><div class="cv-section-title">Run4 Baseline — 因子工程起点</div>
+                            <p>3 个简单因子：ema_ret_1/5/10 分钟 EMA 收益率。用固定 α=0.5 Ridge 回归预测 1/10/100/1000 分钟未来收益。</p>
+                            <pre class="md-code">def default_calcset(ohlcv):
+    close = ohlcv["close"]; returns = close.pct_change()
+    return pd.DataFrame({
+        "ema_ret_1":  returns.ewm(span=1).mean(),
+        "ema_ret_5":  returns.ewm(span=5).mean(),
+        "ema_ret_10": returns.ewm(span=10).mean(),
+    })
+
+# Ridge α=0.5 固定，预测 1/10/100/1000 分钟收益
+model = Ridge(alpha=0.5)
+model.fit(X, y[["return_1m","return_10m","return_100m","return_1000m"]])</pre>
                         </div>
-                        <div class="cv-section"><div class="cv-section-title">Run4 Best — 900/1400 发现</div>
-                            <p>22 因子完整版（ICIR 未归一化但趋势一致）：</p>
-                            <table class="md-table">
-                                <tr><th>因子</th><th>含义</th></tr>
-                                <tr><td>ema_ret_1/5/10/20</td><td>不同时间范围的指数移动平均收益率（动量）</td></tr>
-                                <tr><td>volatility_10</td><td>10 周期滚动收益率标准差（波动率）</td></tr>
-                                <tr><td>vol_short</td><td>短期波动率（3 周期）</td></tr>
-                                <tr><td>vol_of_vol</td><td>波动率的波动率（波动率聚集/风险变化率）</td></tr>
-                                <tr><td>close_mom_10</td><td>价格相对于其自身 EMA 的归一化偏差（均值回归/趋势强度）</td></tr>
-                                <tr><td>volume_rel_10</td><td>成交量相对于其自身 EMA 的偏差（成交量激增/异常）</td></tr>
-                                <tr><td>hl_range</td><td>归一化的高低价差（日内波动性/噪音）</td></tr>
-                                <tr><td>hl_smooth</td><td>平滑的高低差价差（基础波动率水平）</td></tr>
-                                <tr><td>ret_lag1/lag3/lag5/lag10</td><td>滞后收益率（自相关/短期反转/延续）</td></tr>
-                                <tr><td>vol_ema_ratio</td><td>波动率相对于其自身 EMA 的比率（高/低波动率状态）</td></tr>
-                                <tr><td>close_open</td><td>归一化的日内收益率（开盘 vs 收盘，捕捉日内趋势）</td></tr>
-                                <tr><td>ret_accel</td><td>快速 EMA 与中速 EMA 之差（动量加速度/减速）</td></tr>
-                                <tr><td>vwr</td><td>成交量加权收益率（成交量确认的动量）</td></tr>
-                                <tr><td>atr</td><td>归一化的平均真实波幅（对跳空更稳健）</td></tr>
-                                <tr><td>ret_zscore</td><td>收益率 Z 分数（极值信号）</td></tr>
-                                <tr><td>price_crossover</td><td>短期 EMA vs 长期 EMA（经典趋势跟踪交叉信号）</td></tr>
+
+                        <div class="cv-section"><div class="cv-section-title">Run4 Best — 22 因子（900/1400 发现）</div>
+                            <p>ICIR 未归一化但趋势与归一化版本一致。适应度 = 0.4×R² + 0.3×IC + 0.3×ICIR/5（预测质量复合分数）。</p>
+                            <pre class="md-code"># === LLM 自动发现的 22 因子 ===
+def default_calcset(ohlcv):
+    # 多尺度动量 (4因子)
+    ema_ret_1  = returns.ewm(span=1).mean()
+    ema_ret_5  = returns.ewm(span=5).mean()
+    ema_ret_10 = returns.ewm(span=10).mean()
+    ema_ret_20 = returns.ewm(span=20).mean()
+
+    # 波动率 (3因子) — 波动率聚集
+    vol_10     = returns.rolling(10).std()
+    vol_short  = returns.rolling(3).std()
+    vol_of_vol = vol_10.rolling(20).std()
+
+    # 均值回归/趋势 (2因子)
+    close_mom_10 = close / close.ewm(10).mean() - 1
+    vol_ema_ratio = vol_10 / vol_10.ewm(20).mean() - 1
+
+    # 成交量 (2因子)
+    volume_rel_10 = volume / volume.ewm(10).mean() - 1
+    vwr = (returns * volume).ewm(10).mean() / volume.ewm(10).mean()
+
+    # 价格形态 (4因子)
+    hl_range = (high - low) / close
+    hl_smooth = hl_range.rolling(10).mean()
+    close_open = (close - open_) / open_
+    price_crossover = close.ewm(3).mean() / close.ewm(10).mean() - 1
+
+    # 滞后收益 (4因子) — 自相关/反转
+    ret_lag1/3/5/10 = returns.shift(1/3/5/10)
+
+    # 衍生特征 (3因子)
+    ret_accel = returns.ewm(3).mean() - ema_ret_5  # 动量加速度
+    atr = true_range.ewm(14).mean() / close         # 真实波幅
+    ret_zscore = returns.rolling(5).mean() / vol_short  # Z分数
+
+    return pd.DataFrame({22个因子}).fillna(0)</pre>
+                            <table class="md-table" style="margin-top:12px;">
+                                <tr><th>因子</th><th>类别</th><th>含义</th></tr>
+                                <tr><td>ema_ret_1/5/10/20</td><td>动量</td><td>多尺度 EMA 收益率</td></tr>
+                                <tr><td>volatility_10</td><td>波动率</td><td>10 周期滚动标准差</td></tr>
+                                <tr><td>vol_short</td><td>波动率</td><td>3 周期短期波动率</td></tr>
+                                <tr><td>vol_of_vol</td><td>波动率</td><td>波动率的波动率（风险变化）</td></tr>
+                                <tr><td>close_mom_10</td><td>均值回归</td><td>价格偏离 EMA 的程度</td></tr>
+                                <tr><td>volume_rel_10</td><td>成交量</td><td>成交量异常检测</td></tr>
+                                <tr><td>hl_range / hl_smooth</td><td>价格形态</td><td>日内振幅</td></tr>
+                                <tr><td>ret_lag1/3/5/10</td><td>自相关</td><td>滞后收益（反转/延续）</td></tr>
+                                <tr><td>vol_ema_ratio</td><td>波动率</td><td>高/低波动率状态切换</td></tr>
+                                <tr><td>close_open</td><td>价格形态</td><td>日内趋势（开盘→收盘）</td></tr>
+                                <tr><td>ret_accel</td><td>动量</td><td>动量加速度（快EMA-中EMA）</td></tr>
+                                <tr><td>vwr</td><td>成交量</td><td>成交量加权收益（聪明钱）</td></tr>
+                                <tr><td>atr</td><td>波动率</td><td>归一化平均真实波幅</td></tr>
+                                <tr><td>ret_zscore</td><td>统计</td><td>收益 Z 分数（极值信号）</td></tr>
+                                <tr><td>price_crossover</td><td>趋势</td><td>EMA 交叉信号</td></tr>
                             </table>
-                            <p style="margin-top:10px;color:#999;font-size:0.82rem;">ICIR 未归一化但趋势与归一化版本一致。Run4 核心考察生成因子的能力——用固定 α=0.5 Ridge 测试预测质量复合分数 = 0.4×R² + 0.3×IC + 0.3×ICIR/5。</p>
                         </div>
                     </div>
                 </div>

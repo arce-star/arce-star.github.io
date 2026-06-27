@@ -429,6 +429,22 @@
         }
         .lc-sync-btn.show { display: inline-block; }
 
+        /* ===== 番茄钟 ===== */
+        #pomodoro {
+            position: fixed; bottom: 24px; left: 24px; z-index: 1500;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(8px);
+            border: 1px solid rgba(0,0,0,0.08); border-radius: 10px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08); overflow: hidden;
+            min-width: 130px; transition: all 0.3s;
+        }
+        #pomodoro.mini { min-width: auto; }
+        #pomodoro.mini #pomodoro-bar,
+        #pomodoro.mini button:not(#pomodoro-mini),
+        #pomodoro.mini #pomodoro-time { display: none; }
+        #pomodoro.mini #pomodoro-mini { font-size: 0.85rem; }
+        #pomodoro.alert { border-color: #e74c3c; animation: pomo-pulse 0.5s alternate infinite; }
+        @keyframes pomo-pulse { from { box-shadow: 0 2px 12px rgba(231,76,60,0.2); } to { box-shadow: 0 4px 24px rgba(231,76,60,0.5); } }
+
         /* ===== AI 助手 ===== */
         #ai-chat-btn {
             position: fixed; bottom: 24px; right: 24px; z-index: 1500;
@@ -1285,6 +1301,18 @@ def default_calcset(ohlcv):
     </script>
 
     <!-- AI 助手按钮与面板 -->
+    <!-- 番茄钟 -->
+    <div id="pomodoro">
+        <div id="pomodoro-bar" style="height:3px;background:var(--blue);width:0%;border-radius:3px;transition:width 1s linear;"></div>
+        <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;">
+            <span id="pomodoro-time" style="font-size:0.85rem;font-weight:600;color:#444;min-width:40px;">30:00</span>
+            <button id="pomodoro-start" style="font-size:0.7rem;padding:2px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">▶</button>
+            <button id="pomodoro-reset" style="font-size:0.7rem;padding:2px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">↺</button>
+            <button id="pomodoro-mini" style="font-size:0.7rem;padding:2px 6px;border:none;background:none;cursor:pointer;color:#aaa;">−</button>
+        </div>
+        <audio id="pomodoro-alarm" preload="auto" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACAf39/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4AA="></audio>
+    </div>
+
     <!-- AI 助手按钮 -->
     <button id="ai-chat-btn" title="AI 代码助手" onclick="document.getElementById('ai-panel').classList.toggle('show')">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1347,6 +1375,76 @@ def default_calcset(ohlcv):
             });
             item.addEventListener('mouseleave', () => { popup.style.display = 'none'; });
         });
+
+        // ===== 番茄钟 =====
+        (function() {
+            const TOTAL = 30 * 60; // 30分钟
+            let remaining = TOTAL;
+            let timer = null;
+            let running = false;
+            const timeEl = document.getElementById('pomodoro-time');
+            const barEl = document.getElementById('pomodoro-bar');
+            const startBtn = document.getElementById('pomodoro-start');
+            const resetBtn = document.getElementById('pomodoro-reset');
+            const miniBtn = document.getElementById('pomodoro-mini');
+            const widget = document.getElementById('pomodoro');
+            const alarm = document.getElementById('pomodoro-alarm');
+
+            function updateDisplay() {
+                const m = Math.floor(remaining / 60);
+                const s = remaining % 60;
+                timeEl.textContent = m + ':' + String(s).padStart(2, '0');
+                barEl.style.width = ((TOTAL - remaining) / TOTAL * 100) + '%';
+                if (remaining < 300) timeEl.style.color = '#e74c3c';
+                else timeEl.style.color = '#444';
+            }
+
+            function tick() {
+                if (remaining <= 0) {
+                    clearInterval(timer);
+                    running = false;
+                    startBtn.textContent = '▶';
+                    widget.classList.add('alert');
+                    alarm.play().catch(() => {});
+                    if (Notification.permission === 'granted') {
+                        new Notification('🍅 番茄钟', { body: '30分钟到了，起来休息一下吧！' });
+                    }
+                    return;
+                }
+                remaining--;
+                updateDisplay();
+            }
+
+            startBtn.addEventListener('click', () => {
+                if (running) {
+                    clearInterval(timer); running = false;
+                    startBtn.textContent = '▶';
+                } else {
+                    if (remaining <= 0) { remaining = TOTAL; widget.classList.remove('alert'); }
+                    timer = setInterval(tick, 1000);
+                    running = true;
+                    startBtn.textContent = '⏸';
+                    if (Notification.permission === 'default') {
+                        Notification.requestPermission();
+                    }
+                }
+            });
+
+            resetBtn.addEventListener('click', () => {
+                clearInterval(timer); running = false;
+                remaining = TOTAL;
+                startBtn.textContent = '▶';
+                widget.classList.remove('alert');
+                updateDisplay();
+            });
+
+            miniBtn.addEventListener('click', () => {
+                widget.classList.toggle('mini');
+                miniBtn.textContent = widget.classList.contains('mini') ? '+' : '−';
+            });
+
+            updateDisplay();
+        })();
 
         document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.querySelector('[data-panel="projects"]').addEventListener('click', () => {

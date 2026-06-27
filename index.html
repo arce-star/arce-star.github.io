@@ -429,6 +429,20 @@
         }
         .lc-sync-btn.show { display: inline-block; }
 
+        /* ===== AI 酒馆 ===== */
+        .tchar-card {
+            padding: 14px 16px; border-radius: 12px; border: 1px solid #eee;
+            background: #fafafa; cursor: pointer; text-align: center; min-width: 90px;
+            transition: all 0.2s;
+        }
+        .tchar-card:hover { border-color: var(--blue); }
+        .tchar-card.active { background: #e8f0fa; border-color: var(--blue); }
+        .tchar-avatar { font-size: 1.8rem; margin-bottom: 4px; }
+        .tchar-name { font-size: 0.75rem; color: #666; }
+        .tmsg { max-width: 80%; padding: 10px 14px; border-radius: 12px; font-size: 0.85rem; line-height: 1.5; }
+        .tmsg-user { align-self: flex-end; background: var(--blue); color: #fff; }
+        .tmsg-bot { align-self: flex-start; background: #f0f4f8; color: #333; }
+
         /* ===== 番茄钟 ===== */
         #pomodoro {
             position: fixed; bottom: 24px; left: 24px; z-index: 1500;
@@ -541,6 +555,7 @@
                 <a data-panel="projects"><i class="fas fa-code-branch"></i> MATLAB 项目</a>
                 <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
                 <a data-panel="leetcode"><i class="fas fa-code"></i> 力扣题解</a>
+                <a data-panel="tavern"><i class="fas fa-beer"></i> AI 酒馆</a>
             </div>
             <div class="sidebar-footer">© 2025 arce-star</div>
         </nav>
@@ -1068,6 +1083,26 @@ def default_calcset(ohlcv):
                 </div>
             </div>
 
+            <!-- AI 酒馆 -->
+            <div class="content-panel" id="panel-tavern">
+                <div class="cv-header" style="margin-bottom:12px;">
+                    <div class="cv-name">AI 酒馆</div>
+                    <div class="cv-contact">选一位角色，开始对话</div>
+                </div>
+                <div id="tavern-chars" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"></div>
+                <div style="display:none;" id="tavern-chat-area">
+                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">
+                        <span id="tavern-char-name" style="font-weight:600;color:var(--blue);"></span>
+                        <button onclick="document.getElementById('tavern-chars').style.display='';document.getElementById('tavern-chat-area').style.display='none';" style="font-size:0.75rem;padding:2px 8px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;">← 换角色</button>
+                    </div>
+                    <div id="tavern-chat-body" style="max-height:400px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;"></div>
+                    <div style="display:flex;gap:8px;">
+                        <input id="tavern-input" placeholder="输入消息..." style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;outline:none;">
+                        <button onclick="Tavern.sendMsg()" style="padding:10px 16px;background:var(--blue);color:#fff;border:none;border-radius:8px;cursor:pointer;">发送</button>
+                    </div>
+                </div>
+            </div>
+
             <!-- 力扣题解 -->
             <div class="content-panel" id="panel-leetcode">
                 <div class="cv-header" style="margin-bottom:12px;">
@@ -1359,6 +1394,7 @@ def default_calcset(ohlcv):
     <script src="js/madevolve-browser.js?v=9"></script>
     <script src="js/ai-assistant.js?v=6"></script>
     <script src="js/leetcode-ui.js"></script>
+    <script src="js/tavern.js"></script>
     <script>
         // 奖项证书悬浮预览
         document.querySelectorAll('.award-item.has-cert').forEach(item => {
@@ -1460,6 +1496,9 @@ def default_calcset(ohlcv):
         });
         document.querySelector('[data-panel="leetcode"]').addEventListener('click', () => {
             LeetCodeUI.init();
+        });
+        document.querySelector('[data-panel="tavern"]').addEventListener('click', () => {
+            Tavern.init();
         });
 
         // 课程笔记: 点击标签加载 markdown

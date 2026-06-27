@@ -1330,6 +1330,7 @@ def default_calcset(ohlcv):
             lockBtn.innerHTML = '🔒'; lockBtn.title = '私人区';
             if (privateFrame.src.startsWith('blob:')) URL.revokeObjectURL(privateFrame.src);
             privateFrame.src = '';
+            Auth.clearSession();
             updateEditButton();
         });
     </script>

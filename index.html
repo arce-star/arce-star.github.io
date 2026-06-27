@@ -1308,6 +1308,7 @@ def default_calcset(ohlcv):
             <span id="pomodoro-time" style="font-size:0.85rem;font-weight:600;color:#444;min-width:40px;">30:00</span>
             <button id="pomodoro-start" style="font-size:0.7rem;padding:2px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">▶</button>
             <button id="pomodoro-reset" style="font-size:0.7rem;padding:2px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">↺</button>
+            <button id="pomodoro-popout" style="font-size:0.7rem;padding:2px 6px;border:none;background:none;cursor:pointer;color:#aaa;" title="弹出独立窗口">⬈</button>
             <button id="pomodoro-mini" style="font-size:0.7rem;padding:2px 6px;border:none;background:none;cursor:pointer;color:#aaa;">−</button>
         </div>
         <audio id="pomodoro-alarm" preload="auto" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACAf39/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4AA="></audio>
@@ -1436,6 +1437,10 @@ def default_calcset(ohlcv):
                 startBtn.textContent = '▶';
                 widget.classList.remove('alert');
                 updateDisplay();
+            });
+
+            document.getElementById('pomodoro-popout').addEventListener('click', () => {
+                window.open('pomodoro.html', 'pomodoro', 'width=320,height=420,left='+(screen.width-340)+',top=80');
             });
 
             miniBtn.addEventListener('click', () => {

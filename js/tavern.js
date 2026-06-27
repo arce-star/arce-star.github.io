@@ -108,7 +108,7 @@ const Tavern = (() => {
       const resp = await fetch(API, {
         method:'POST',
         headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+API_KEY },
-        body: JSON.stringify({ model:MODEL, messages:msgs, temperature:0.9, max_tokens:512 })
+        body: JSON.stringify({ model:MODEL, messages:msgs, temperature:0.9, max_tokens:1024 })
       });
       const data = await resp.json();
       const reply = data.choices?.[0]?.message?.content || '';

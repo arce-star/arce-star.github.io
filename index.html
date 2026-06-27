@@ -1498,10 +1498,6 @@ def default_calcset(ohlcv):
         document.querySelector('[data-panel="leetcode"]').addEventListener('click', () => {
             LeetCodeUI.init();
         });
-        document.querySelector('[data-panel="tavern"]').addEventListener('click', () => {
-            Tavern.init();
-        });
-
         // 课程笔记: 点击标签加载 markdown
         document.querySelectorAll('.note-tag').forEach(tag => {
             tag.addEventListener('click', async function() {

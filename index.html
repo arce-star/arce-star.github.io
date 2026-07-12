@@ -554,6 +554,7 @@
                 <a data-panel="papers"><i class="fas fa-file-alt"></i> 论文</a>
                 <a data-panel="projects"><i class="fas fa-code-branch"></i> MATLAB 项目</a>
                 <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
+                <a data-panel="docs"><i class="fas fa-file-alt"></i> 证明材料</a>
                 <a data-panel="leetcode"><i class="fas fa-code"></i> 力扣题解</a>
             </div>
             <div class="sidebar-footer">© 2025 arce-star</div>
@@ -789,6 +790,19 @@
                         <li>基于 Qwen2.5-7B-instruct，设计两阶段 LoRA 微调架构（领域粗调 + Task精调）</li>
                         <li>独立完成数据收集与清洗：23,000 条粗调数据 + 1,800 条精调数据</li>
                         <li>覆盖字词释义、典故识别、情感推理、意境分析、修辞鉴赏、文化背景六大任务</li>
+                    </ul>
+                </div>
+
+                <div class="cv-section">
+                    <div class="cv-section-title">MadEvolve 复现 — LLM 驱动量化交易进化优化</div>
+                    <div class="cv-entry-sub">2026.06 至今 · 独立复现顶会架构 · arXiv:2605.23007</div>
+                    <ul class="cv-list">
+                        <li><strong>回测引擎</strong>: 从零实现 BTCUSDT 逐分钟回测引擎，严格按论文实现被动限价单填充、PnL 分解与 6 参数平方根市场冲击模型</li>
+                        <li><strong>性能优化</strong>: numpy 向量化 + 预计算查表 + 滑动窗口，单次回测 42→7 分钟；连续数组替代逐条 dict，内存 200MB→4MB</li>
+                        <li><strong>进化算法</strong>: DeepSeek v4 驱动代码变异，MAP-Elites + 岛屿模型管理策略种群，LLM 代码自动检测修复</li>
+                        <li><strong>实验进展</strong>: 快速 demo 将基线从 −$44K 优化至 +$5.3K，全量实验进行中</li>
+                        <li><strong>因子工程</strong>: LLM 自动发现 22 个有效因子（动量/波动率/成交量/价格形态），Ridge 回归评估预测质量</li>
+                        <li>详见「MadEvolve 复现」面板（实验报告 + 思考笔记 + 代码浏览）</li>
                     </ul>
                 </div>
 
@@ -1113,6 +1127,22 @@ def default_calcset(ohlcv):
                 <div id="lc-content"></div>
             </div>
 
+            <!-- 证明材料 -->
+            <div class="content-panel" id="panel-docs">
+                <div class="cv-header">
+                    <div class="cv-name">证明材料</div>
+                    <div class="cv-contact">在读证明 · 成绩单 · 排名证明</div>
+                </div>
+                <div class="cv-section">
+                    <div class="cv-section-title">学籍材料</div>
+                    <ul class="cv-list">
+                        <li><i class="fas fa-file-pdf" style="color:#c0392b;margin-right:6px;"></i> <a href="files/在读证明中文_国内用_严亦乐(PB22071448).pdf" target="_blank">在读证明</a> — 中国科学技术大学学籍在读证明</li>
+                        <li><i class="fas fa-file-pdf" style="color:#c0392b;margin-right:6px;"></i> <a href="files/普通成绩单中文_国内用_严亦乐(PB22071448).pdf" target="_blank">成绩单</a> — 本科阶段普通成绩单</li>
+                        <li><i class="fas fa-file-pdf" style="color:#c0392b;margin-right:6px;"></i> <a href="files/绩点排名证明_国内用_严亦乐(PB22071448).pdf" target="_blank">绩点排名证明</a> — GPA 排名证明</li>
+                    </ul>
+                </div>
+            </div>
+
             <!-- Footer -->
             <div style="text-align:center;margin-top:48px;color:#ccc;font-size:0.8rem;">
                 <p>© 2025 严亦乐 &nbsp;·&nbsp; arce-star.github.io</p>
@@ -1144,8 +1174,8 @@ def default_calcset(ohlcv):
 
     <button id="exit-private-btn">← 返回公开页</button>
 
-    <script src="js/auth.js?v=2"></script>
-    <script src="js/encrypted-content.js?v=2"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/encrypted-content.js"></script>
     <script>
         // ===== 侧栏导航 =====
         document.querySelectorAll('.sidebar-nav a').forEach(link => {

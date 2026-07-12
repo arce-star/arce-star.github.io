@@ -556,7 +556,7 @@
                 <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
                 <a data-panel="leetcode"><i class="fas fa-code"></i> 力扣题解</a>
             </div>
-            <div class="sidebar-footer">© 2025 arce-star</div>
+            <div class="sidebar-footer">© 2026 arce-star</div>
         </nav>
 
         <!-- 右侧内容区 -->
@@ -578,7 +578,7 @@
                         <strong>中国科学技术大学</strong> · 物理学院
                         <span style="float:right;color:var(--text-light);font-size:0.82rem;">2022.09 至今</span><br>
                         大一进入赵九章地球和空间科学英才班，大二转至物理学院<br>
-                        <strong>GPA</strong>: 3.22/4.3 (Top 50%)<br>
+                        <strong>GPA</strong>: 3.22/4.3 (86/151)<br>
                         <strong>核心课程</strong>: 计算机程序设计A (95, 4.3)、电磁学A (95, 4.3)、理论力学A (92, 4.0)、数学分析B2 (90, 4.0)、线性代数B1 (85, 3.3)、量化金融工程 (3.3)、概率论与数理统计 (75, 2.7)
                     </p>
                 </div>
@@ -587,8 +587,8 @@
                     <div class="cv-section-title">科研与项目经历</div>
 
                     <div class="cv-entry">
-                        <div class="cv-entry-title">天池AI大模型系列赛 CCL2026-Eval：古诗词赏析 <span class="date">2026.06 至今</span></div>
-                        <div class="cv-entry-sub">296 支队伍中 <strong>Top 10%</strong>（暂列第 27 名）</div>
+                        <div class="cv-entry-title">天池AI大模型系列赛 CCL2026-Eval：古诗词赏析 <span class="date">2026.06</span></div>
+                        <div class="cv-entry-sub">364 支队伍中 <strong>Top 10%</strong>（第 33 名）</div>
                         <ul class="cv-list">
                             <li>采用 <strong>Qwen2.5-7B-instruct</strong>，设计<strong>两阶段 LoRA 微调架构</strong>（领域粗调 + Task精调），完成字词释义、情感推理等六大核心任务</li>
                             <li>独立完成微调数据的收集与清洗，共构建并精标 23,000 条粗调数据及 1,800 条精调数据</li>
@@ -597,13 +597,13 @@
                     </div>
 
                     <div class="cv-entry">
-                        <div class="cv-entry-title">LLM 驱动的量化交易系统进化优化（独立复现顶会架构） <span class="date">2026.06 至今</span></div>
-                        <div class="cv-entry-sub">独立复现 MadEvolve (arXiv:2605.23007) 进化优化框架</div>
+                        <div class="cv-entry-title">LLM 驱动的量化交易系统进化优化（独立复现顶会架构） <span class="date">2026.06</span></div>
+                        <div class="cv-entry-sub">复现 MadEvolve (arXiv:2605.23007) 进化优化框架</div>
                         <ul class="cv-list">
                             <li><strong>回测引擎</strong>: 从零实现逐分钟级 BTCUSDT 回测引擎，严格按论文实现被动限价单填充逻辑、PnL 分解公式与 6 参数平方根市场冲击模型</li>
-                            <li><strong>性能优化</strong>: 针对冲击模型 O(n²) 用 numpy 向量化替代循环、预计算衰减查表、滑动窗口裁剪，单次全年回测从 42 分钟压缩至 7 分钟；逐条 dict 存储转为连续数组，内存占用降低约 98%（200MB→4MB）</li>
-                            <li><strong>进化算法与 LLM 集成</strong>: 接入 DeepSeek v4 驱动代码探索变异，采用 MAP-Elites 与岛屿模型管理策略种群；开发鲁棒的自动检测与修正重排机制处理 LLM 代码容错</li>
-                            <li><strong>实验结果</strong>: 快速 demo 将基线策略从 −$44K 优化至 +$5.3K，全量实验进行中</li>
+                            <li><strong>性能优化</strong>: 针对冲击模型 O(n²) 用 numpy 向量化替代循环、预计算衰减查表、滑动窗口裁剪，单次全年回测从 42 分钟压缩至 7 分钟；逐条 dict 存储转为连续数组，内存占用降低 98%（200MB→4MB）</li>
+                            <li><strong>进化算法与 LLM 集成</strong>: 接入 DeepSeek v4 API 驱动代码探索变异，采用 MAP-Elites 与岛屿模型管理策略种群；开发鲁棒的自动检测与修正重排机制处理 LLM 代码容错</li>
+                            <li><strong>实验结果</strong>: 快速 demo 将基线策略从 −$44K 优化至 +$5.3K</li>
                         </ul>
                     </div>
 
@@ -677,22 +677,22 @@
                     </ul>
                 </div>
 
-                <div class="cv-section">
+                <!-- <div class="cv-section">
                     <div class="cv-section-title">交易经验</div>
                     <ul class="cv-list">
                         <li>做过加密货币和股票的主观交易（虽然亏了些钱，但对交易流程和基本概念比较熟悉），期权尚未操作过</li>
                         <li>量化方面最近独立复现了 MadEvolve：BTCUSD 2022-2025 年 OHLCV 回测（冲击调整 PnL），因子挖掘和决策脚本编写</li>
                     </ul>
-                </div>
+                </div> -->
 
-                <div class="cv-section">
+                <!-- <div class="cv-section">
                     <div class="cv-section-title">阅读</div>
                     <ul class="cv-list">
                         <li>纳兰《打开量化投资的黑箱》</li>
                         <li>德曼《宽客人生》——同为物理科班转量化，很有共鸣</li>
                         <li>费雪《反常识投资》——学习实际交易经验和投资思想</li>
                     </ul>
-                </div>
+                </div> -->
             </div>
 
             <!-- 课程笔记 -->

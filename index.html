@@ -1407,178 +1407,369 @@ def default_calcset(ohlcv):
     <script>
     // ===== MadEvolve 进化流程可视化 =====
     (function() {
-        const canvas = document.getElementById('madevolve-canvas');
+        var canvas = document.getElementById('madevolve-canvas');
         if (!canvas) return;
-        const ctx = canvas.getContext('2d');
+        var ctx = canvas.getContext('2d');
 
-        const N = 5;
-        const nodeDefs = [
-            { label: '种群', sub: 'N 个策略个体', icon: '🧬' },
-            { label: 'LLM 变异', sub: '补丁/重写/合成', icon: '🤖' },
-            { label: '回测评估', sub: 'PnL(adj) 适应度', icon: '⚡' },
-            { label: 'MAP-Elites', sub: '多样性网格存档', icon: '🗺️' },
-            { label: '岛屿迁移', sub: '每5代精英交换', icon: '🏝' }
+        // === Constants ===
+        var NI = 5; // number of islands
+        var GS = 4; // grid size (4x4 MAP-Elites)
+        var COLORS = ['#6366f1','#8b5cf6','#ec4899','#f59e0b','#10b981'];
+        var NAMES  = ['仓位逻辑','下单执行','因子工程','α建模','风险控制'];
+        var MUTS = [
+            'sizing:10K→20K','+INVENTORY_DECAY','EMA smooth=0.85',
+            '+deadzone 0.03%','lag_decay=0.1','depth→dynamic',
+            '+vol_of_vol','ema_ret_20','Ridge α 0.5→1.2',
+            '+risk_reduction','pos.limit=200K','ctx_correction',
+            '+price_cross','+ret_accel','window 10→adapt',
+            'short_target','+volume_rel','+atr factor'
         ];
-        const colors = ['#6366f1', '#8b5cf6', '#ec4899', '#f59e0b', '#10b981'];
 
-        let particles = [], generation = 0, speed = 1, paused = false;
-        let highlight = -1, nodeR = 38, orbitR = 170, cx = 300, cy = 230, W = 600, H = 480;
+        // === State ===
+        var W=700,H=380, gen=0, speed=1, paused=false, timer=0, genDur=4.5;
+        var grids = [];       // grids[i][r][c] = {pnl} | null
+        var particles = [];   // active strategy particles
+        var floats = [];      // {x,y,text,color,alpha,life}
+        var bubbles = [];     // mutation code bubbles
+        var poolSizes = [];   // stable pool sizes per island
 
-        function resize() {
-            const w = Math.min(600, window.innerWidth - 40);
-            canvas.width = w; canvas.height = w * 0.8;
-            W = canvas.width; H = canvas.height;
-            cx = W / 2; cy = H / 2 + 10;
-            orbitR = Math.min(cx, cy) * 0.62;
-            nodeR = Math.min(cx, cy) * 0.14;
+        // === Layout (computed in resize) ===
+        var L = {};
+        function cx(i) { return L.x0 + i*(L.iw+L.gap) + L.iw/2; }
+
+        // === Init ===
+        function init() {
+            grids = []; poolSizes = [];
+            for (var i=0;i<NI;i++) {
+                grids[i] = [];
+                for (var r=0;r<GS;r++) { grids[i][r]=[]; for(var c=0;c<GS;c++) grids[i][r][c]=null; }
+                poolSizes[i] = 2 + Math.floor(Math.random()*3);
+            }
+            particles=[]; floats=[]; bubbles=[]; gen=0; timer=0;
         }
 
-        function nodeAngle(i) { return -Math.PI / 2 + i * 2 * Math.PI / N; }
+        function resize() {
+            W = Math.min(720, Math.max(500, canvas.parentElement.clientWidth-10));
+            H = Math.min(430, W*0.62);
+            canvas.width = W; canvas.height = H;
+            var gap = 6, iw = (W-24 - gap*(NI-1)) / NI;
+            L = {iw:iw, gap:gap, x0:12, y0:36, headH:18, poolH:20, mutH:44, evalH:16,
+                 gridTop:0, gridH: Math.min(108, iw-6), cs: Math.min(25, (iw-10)/GS)};
+            L.gridTop = L.y0 + L.headH + L.poolH + L.mutH + L.evalH + 20;
+        }
 
-        class Particle {
-            constructor(from, progress) {
-                this.from = from;
-                this.progress = progress !== undefined ? progress : Math.random();
-                this.size = 2.5 + Math.random() * 2;
+        // === Helpers ===
+        function rrect(x,y,w,h,r) {
+            ctx.beginPath(); ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y);
+            ctx.arcTo(x+w,y,x+w,y+r,r); ctx.lineTo(x+w,y+h-r);
+            ctx.arcTo(x+w,y+h,x+w-r,y+h,r); ctx.lineTo(x+r,y+h);
+            ctx.arcTo(x,y+h,x,y+h-r,r); ctx.lineTo(x,y+r);
+            ctx.arcTo(x,y,x+r,y,r); ctx.closePath();
+        }
+
+        function addFloat(x,y,text,color) {
+            floats.push({x:x,y:y,text:text,color:color,alpha:1,life:0});
+        }
+
+        // === Particle ===
+        function makeParticle(island) {
+            var p = {
+                island: island,
+                phase: 'mut', // mut | eval | grid | settled | dead
+                prog: 0, pnl: 0, row: 0, col: 0,
+                color: COLORS[island], size: 3.5, alpha: 1,
+                mutText: MUTS[Math.floor(Math.random()*MUTS.length)],
+                reject: false
+            };
+            return p;
+        }
+
+        function partX(p) {
+            var c = cx(p.island);
+            if (p.phase==='mut') return c + Math.sin(p.prog*Math.PI*3)*12;
+            return c;
+        }
+        function partY(p) {
+            var t = L.y0 + L.headH;
+            var mutTop = t + L.poolH + 4;
+            var evalY =  t + L.poolH + L.mutH + 12;
+            var gridCY = L.gridTop + (p.row+0.5)*L.cs;
+            if (p.phase==='mut')       return mutTop + p.prog*L.mutH;
+            else if (p.phase==='eval')  return evalY;
+            else if (p.phase==='grid')  return evalY + p.prog*(gridCY-evalY);
+            else return gridCY;
+        }
+
+        function updateParticle(p, dt) {
+            if (p.phase==='settled') { p.alpha -= dt*0.6; return p.alpha<=0; }
+            if (p.reject) { p.alpha -= dt*2; return p.alpha<=0; }
+            var dur = p.phase==='mut' ? 0.8 : p.phase==='eval' ? 0.6 : 0.5;
+            p.prog += dt/dur;
+            if (p.prog>=1) {
+                p.prog = 0;
+                if (p.phase==='mut') {
+                    p.phase='eval';
+                    var skill = Math.min(0.4, gen*0.005);
+                    p.pnl = (Math.random()-0.38+skill)*18000;
+                    addFloat(partX(p), partY(p)-12,
+                        (p.pnl>=0?'+':'')+(p.pnl/1000).toFixed(1)+'K',
+                        p.pnl>=0?'#10b981':'#ef4444');
+                } else if (p.phase==='eval') {
+                    p.phase='grid';
+                    p.row = Math.floor(Math.random()*GS);
+                    p.col = Math.floor(Math.random()*GS);
+                } else if (p.phase==='grid') {
+                    var cell = grids[p.island][p.row][p.col];
+                    if (!cell) {
+                        grids[p.island][p.row][p.col] = {pnl:p.pnl};
+                        p.phase='settled';
+                        addFloat(partX(p), partY(p), '⭐','#f59e0b');
+                    } else if (p.pnl > cell.pnl) {
+                        cell.pnl = p.pnl;
+                        p.phase='settled';
+                        addFloat(partX(p), partY(p), '↑','#10b981');
+                    } else {
+                        p.reject=true;
+                        addFloat(partX(p), partY(p), '✗','#ef4444');
+                    }
+                }
             }
-            get to() { return (this.from + 1) % N; }
-            pos() {
-                const a0 = nodeAngle(this.from), a1 = nodeAngle(this.to);
-                const a = a0 + (a1 - a0) * this.progress;
-                return { x: cx + orbitR * Math.cos(a), y: cy + orbitR * Math.sin(a) };
+            return false;
+        }
+
+        // === Draw functions ===
+        function drawIslandBg(i) {
+            var x = L.x0 + i*(L.iw+L.gap), y = L.y0;
+            var bh = L.gridTop + L.gridH - y + 6;
+            ctx.fillStyle = COLORS[i]+'08';
+            ctx.strokeStyle = COLORS[i]+'22';
+            ctx.lineWidth=1;
+            rrect(x,y,L.iw,bh,6);
+            ctx.fill(); ctx.stroke();
+        }
+
+        function drawHeader(i) {
+            var x = L.x0 + i*(L.iw+L.gap);
+            ctx.fillStyle = COLORS[i];
+            ctx.font='bold 10px "Noto Serif SC",serif';
+            ctx.textAlign='center';
+            ctx.fillText('岛'+(i+1)+': '+NAMES[i], x+L.iw/2, L.y0+13);
+        }
+
+        function drawPool(i) {
+            var x = L.x0 + i*(L.iw+L.gap), y = L.y0+L.headH;
+            ctx.fillStyle='#999';
+            ctx.font='8px "Noto Serif SC",serif';
+            ctx.textAlign='center';
+            ctx.fillText('种群池', x+L.iw/2, y+9);
+            var n = poolSizes[i];
+            for (var j=0;j<n;j++) {
+                var dx = x+12 + j*((L.iw-24)/Math.max(n-1,1));
+                ctx.beginPath(); ctx.arc(dx, y+L.poolH-4, 3, 0, Math.PI*2);
+                ctx.fillStyle = COLORS[i]+'AA'; ctx.fill();
             }
-            update(dt) {
-                this.progress += dt * 0.14 * speed;
-                if (this.progress >= 1) {
-                    this.progress -= 1;
-                    this.from = this.to;
-                    if (this.from === 0) generation++;
+        }
+
+        function drawMutZone(i) {
+            var x = L.x0 + i*(L.iw+L.gap), y = L.y0+L.headH+L.poolH+2;
+            ctx.strokeStyle=COLORS[i]+'33'; ctx.lineWidth=1;
+            ctx.setLineDash([2,3]);
+            ctx.strokeRect(x+6, y, L.iw-12, L.mutH);
+            ctx.setLineDash([]);
+            ctx.fillStyle='#999';
+            ctx.font='8px "Noto Serif SC",serif';
+            ctx.textAlign='center';
+            ctx.fillText('🤖 LLM变异', x+L.iw/2, y+10);
+            // code bubbles
+            bubbles.forEach(function(b) {
+                if (b.island!==i||b.alpha<=0) return;
+                var tw = ctx.measureText(b.text).width+8, th=14;
+                ctx.globalAlpha=b.alpha;
+                ctx.fillStyle='#1a1a1a';
+                rrect(b.x-tw/2, b.y-th/2, tw, th, 4);
+                ctx.fill();
+                ctx.fillStyle='#fff';
+                ctx.font='7px monospace';
+                ctx.textAlign='center';
+                ctx.fillText(b.text, b.x, b.y+3);
+                ctx.globalAlpha=1;
+            });
+        }
+
+        function drawEvalZone(i) {
+            var x = L.x0 + i*(L.iw+L.gap), y = L.y0+L.headH+L.poolH+L.mutH+6;
+            ctx.fillStyle='#999';
+            ctx.font='8px "Noto Serif SC",serif';
+            ctx.textAlign='center';
+            ctx.fillText('⚡ 回测', x+L.iw/2, y+9);
+        }
+
+        function drawGrid(i) {
+            var x = L.x0 + i*(L.iw+L.gap);
+            var gx = x + (L.iw - GS*L.cs)/2, gy = L.gridTop;
+            // label
+            ctx.fillStyle='#999';
+            ctx.font='8px "Noto Serif SC",serif';
+            ctx.textAlign='center';
+            ctx.fillText('MAP网格', x+L.iw/2, gy-8);
+            // cells
+            for (var r=0;r<GS;r++) {
+                for (var c=0;c<GS;c++) {
+                    var cx=gx+c*L.cs+1, cy=gy+r*L.cs+1, s=L.cs-2;
+                    var cell = grids[i][r][c];
+                    ctx.fillStyle = cell ? COLORS[i]+'88' : '#eaeaea';
+                    ctx.fillRect(cx, cy, s, s);
+                    if (cell) {
+                        ctx.fillStyle='#fff';
+                        ctx.font='bold 6px monospace';
+                        ctx.textAlign='center';
+                        ctx.textBaseline='middle';
+                        var v = (cell.pnl/1000).toFixed(0);
+                        ctx.fillText((cell.pnl>=0?'+':'')+v+'K', cx+s/2, cy+s/2);
+                    }
                 }
             }
         }
 
-        function initParticles() {
-            particles = [];
-            for (let i = 0; i < N; i++)
-                for (let j = 0; j < 4; j++)
-                    particles.push(new Particle(i, j / 4));
-        }
-
-        function drawEdge(i) {
-            const a0 = nodeAngle(i), a1 = nodeAngle(i + 1);
-            ctx.beginPath(); ctx.arc(cx, cy, orbitR, a0, a1);
-            ctx.strokeStyle = 'rgba(0,0,0,0.07)'; ctx.lineWidth = 2;
-            ctx.setLineDash([5, 4]); ctx.stroke(); ctx.setLineDash([]);
-            // arrow
-            const ma = (a0 + a1) / 2;
-            const mx = cx + orbitR * Math.cos(ma), my = cy + orbitR * Math.sin(ma);
-            const dir = ma + Math.PI / 2;
-            ctx.beginPath();
-            ctx.moveTo(mx, my);
-            ctx.lineTo(mx + 6 * Math.cos(dir - 0.6), my + 6 * Math.sin(dir - 0.6));
-            ctx.lineTo(mx + 6 * Math.cos(dir + 0.6), my + 6 * Math.sin(dir + 0.6));
-            ctx.closePath(); ctx.fillStyle = 'rgba(0,0,0,0.12)'; ctx.fill();
-        }
-
-        function drawNode(i) {
-            const a = nodeAngle(i);
-            const nx = cx + orbitR * Math.cos(a), ny = cy + orbitR * Math.sin(a);
-            const r = nodeR;
-            // glow
-            if (highlight === i) {
-                ctx.beginPath(); ctx.arc(nx, ny, r + 10, 0, 2 * Math.PI);
-                ctx.fillStyle = colors[i] + '28'; ctx.fill();
+        function drawMigration() {
+            // show migration label every 5 gens
+            if (gen>0 && gen%5===0) {
+                ctx.fillStyle='#bbb';
+                ctx.font='italic 9px "Noto Serif SC",serif';
+                ctx.textAlign='center';
+                var mx = L.x0 + (NI*(L.iw+L.gap))/2;
+                ctx.fillText('← 精英迁移 →', mx, L.y0-12);
             }
-            // circle
-            ctx.beginPath(); ctx.arc(nx, ny, r, 0, 2 * Math.PI);
-            ctx.fillStyle = '#fff'; ctx.fill();
-            ctx.strokeStyle = colors[i]; ctx.lineWidth = 2.2; ctx.stroke();
-            // icon
-            ctx.font = `${r * 0.62}px serif`;
-            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-            ctx.fillText(nodeDefs[i].icon, nx, ny);
-            // labels outside
-            const lx = nx + (r + 16) * Math.cos(a), ly = ny + (r + 16) * Math.sin(a);
-            ctx.font = `bold ${Math.round(r * 0.34)}px "Noto Serif SC", serif`;
-            ctx.fillStyle = '#333';
-            ctx.textAlign = a > Math.PI / 2 && a < 3 * Math.PI / 2 ? 'right' : 'left';
-            ctx.fillText(nodeDefs[i].label, lx, ly - 4);
-            ctx.font = `${Math.round(r * 0.25)}px "Noto Serif SC", serif`;
-            ctx.fillStyle = '#999';
-            ctx.fillText(nodeDefs[i].sub, lx, ly + 10);
+            // arrows between islands
+            for (var i=0;i<NI-1;i++) {
+                var ax1 = L.x0 + i*(L.iw+L.gap) + L.iw + 2;
+                var ax2 = L.x0 + (i+1)*(L.iw+L.gap) - 2;
+                var ay = L.y0 + L.headH/2;
+                ctx.strokeStyle='#ddd'; ctx.lineWidth=0.8;
+                ctx.beginPath(); ctx.moveTo(ax1, ay); ctx.lineTo(ax2, ay); ctx.stroke();
+                // tiny arrowheads
+                var mx2=(ax1+ax2)/2;
+                ctx.beginPath(); ctx.moveTo(mx2+3,ay); ctx.lineTo(mx2-1,ay-3); ctx.lineTo(mx2-1,ay+3); ctx.closePath();
+                ctx.fillStyle='#ddd'; ctx.fill();
+            }
         }
 
-        function render(ts) {
-            if (!render._last) render._last = ts;
-            let dt = (ts - render._last) / 1000;
-            if (dt > 0.1) dt = 0.1;
-            render._last = ts;
+        function drawTopBar() {
+            ctx.fillStyle='#333';
+            ctx.font='bold 13px "Noto Serif SC",serif';
+            ctx.textAlign='left';
+            ctx.fillText('MadEvolve 进化框架 · 第 '+gen+' 代', 10, 20);
+            // best overall
+            var best=-Infinity;
+            for (var i=0;i<NI;i++)
+                for (var r=0;r<GS;r++)
+                    for (var c=0;c<GS;c++)
+                        if (grids[i][r][c]&&grids[i][r][c].pnl>best) best=grids[i][r][c].pnl;
+            if (best>-Infinity) {
+                ctx.fillStyle='#10b981';
+                ctx.font='11px "Noto Serif SC",serif';
+                ctx.textAlign='right';
+                ctx.fillText('🏆 全局精英: '+(best>=0?'+':'')+(best/1000).toFixed(1)+'K', W-10, 20);
+            }
+        }
 
-            if (!paused) particles.forEach(p => p.update(dt));
+        // === Main loop ===
+        var genTimer = 0;
+        function update(dt) {
+            timer+=dt; genTimer+=dt;
+            if (genTimer >= genDur) { genTimer-=genDur; gen++; }
 
-            ctx.clearRect(0, 0, W, H);
+            // spawn
+            for (var i=0;i<NI;i++) {
+                if (Math.random() < dt*2.5) {
+                    var active = particles.filter(function(p){return p.island===i&&p.phase!=='settled'&&!p.reject;}).length;
+                    if (active<3) particles.push(makeParticle(i));
+                }
+                if (Math.random() < dt*1.8) {
+                    bubbles.push({island:i, x:cx(i), y:L.y0+L.headH+L.poolH+20,
+                        text:MUTS[Math.floor(Math.random()*MUTS.length)], alpha:1, life:0});
+                }
+            }
 
-            for (let i = 0; i < N; i++) drawEdge(i);
+            // update particles
+            particles = particles.filter(function(p){return !updateParticle(p,dt);});
 
-            particles.forEach(p => {
-                const pos = p.pos();
-                ctx.beginPath(); ctx.arc(pos.x, pos.y, p.size, 0, 2 * Math.PI);
-                ctx.fillStyle = colors[p.from]; ctx.fill();
-                ctx.beginPath(); ctx.arc(pos.x, pos.y, p.size + 4, 0, 2 * Math.PI);
-                ctx.fillStyle = colors[p.from] + '33'; ctx.fill();
+            // update bubbles
+            bubbles.forEach(function(b){b.life+=dt;b.alpha=Math.max(0,1-b.life/2);});
+            bubbles = bubbles.filter(function(b){return b.alpha>0;});
+
+            // update floats
+            floats.forEach(function(f){f.life+=dt;f.alpha=Math.max(0,1-f.life/1.5);f.y-=dt*22;});
+            floats = floats.filter(function(f){return f.alpha>0;});
+        }
+
+        function render() {
+            ctx.clearRect(0,0,W,H);
+            drawTopBar();
+            for (var i=0;i<NI;i++) { drawIslandBg(i); drawHeader(i); drawPool(i); drawMutZone(i); drawEvalZone(i); drawGrid(i); }
+            drawMigration();
+
+            // particles
+            particles.forEach(function(p) {
+                if (p.alpha<=0) return;
+                ctx.globalAlpha=p.alpha;
+                ctx.beginPath();
+                ctx.arc(partX(p), partY(p), p.phase==='settled'?2:p.size, 0, Math.PI*2);
+                ctx.fillStyle = p.reject?'#ef4444':p.color;
+                ctx.fill();
+                if (!p.reject && p.phase!=='settled') {
+                    ctx.beginPath();
+                    ctx.arc(partX(p), partY(p), p.size+3, 0, Math.PI*2);
+                    ctx.fillStyle = p.color+'33'; ctx.fill();
+                }
+                ctx.globalAlpha=1;
             });
 
-            for (let i = 0; i < N; i++) drawNode(i);
-
-            // gen counter
-            ctx.font = 'bold 15px "Noto Serif SC", serif';
-            ctx.fillStyle = '#333'; ctx.textAlign = 'left';
-            ctx.fillText('第 ' + generation + ' 代', 12, 24);
-
-            requestAnimationFrame(render);
+            // floats
+            floats.forEach(function(f) {
+                ctx.globalAlpha=f.alpha;
+                ctx.fillStyle=f.color;
+                ctx.font='bold 9px monospace';
+                ctx.textAlign='center';
+                ctx.fillText(f.text, f.x, f.y);
+                ctx.globalAlpha=1;
+            });
         }
 
-        canvas.addEventListener('click', function(e) {
-            const r = canvas.getBoundingClientRect();
-            const mx = (e.clientX - r.left) * (W / r.width);
-            const my = (e.clientY - r.top) * (H / r.height);
-            let hit = -1;
-            for (let i = 0; i < N; i++) {
-                const a = nodeAngle(i);
-                const nx = cx + orbitR * Math.cos(a), ny = cy + orbitR * Math.sin(a);
-                if (Math.hypot(mx - nx, my - ny) < nodeR) { hit = i; break; }
-            }
-            highlight = highlight === hit ? -1 : hit;
-        });
+        function loop(ts) {
+            if (!loop._t) loop._t=ts;
+            var dt=Math.min((ts-loop._t)/1000,0.1); loop._t=ts;
+            if (!paused) update(dt*speed);
+            render();
+            requestAnimationFrame(loop);
+        }
 
-        document.getElementById('viz-play-btn').addEventListener('click', function() {
-            paused = !paused; this.textContent = paused ? '▶' : '⏸';
+        // === Controls ===
+        document.getElementById('viz-play-btn').addEventListener('click', function(){
+            paused=!paused; this.textContent=paused?'▶':'⏸';
         });
-        document.querySelectorAll('.viz-speed-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.viz-speed-btn').forEach(function(b) {
+        document.querySelectorAll('.viz-speed-btn').forEach(function(btn){
+            btn.addEventListener('click', function(){
+                document.querySelectorAll('.viz-speed-btn').forEach(function(b){
                     b.classList.remove('active');
-                    b.style.borderColor = '#ddd'; b.style.background = '#fafafa';
-                    b.style.color = ''; b.style.fontWeight = '';
+                    b.style.borderColor='#ddd'; b.style.background='#fafafa';
+                    b.style.color=''; b.style.fontWeight='';
                 });
                 this.classList.add('active');
-                this.style.borderColor = 'var(--blue)';
-                this.style.background = '#e8f0fa';
-                this.style.color = 'var(--blue)';
-                this.style.fontWeight = '600';
-                speed = parseFloat(this.dataset.speed);
+                this.style.borderColor='var(--blue)';
+                this.style.background='#e8f0fa';
+                this.style.color='var(--blue)';
+                this.style.fontWeight='600';
+                speed=parseFloat(this.dataset.speed);
             });
         });
-
-        var vizTab = document.querySelector('[data-tab="madevolve-viz"]');
-        if (vizTab) vizTab.addEventListener('click', function() {
-            setTimeout(function() { resize(); }, 60);
-        });
-
+        var vizTab=document.querySelector('[data-tab="madevolve-viz"]');
+        if (vizTab) vizTab.addEventListener('click',function(){setTimeout(resize,60);});
         window.addEventListener('resize', resize);
-        resize(); initParticles();
-        render._last = performance.now();
-        requestAnimationFrame(render);
+
+        resize(); init();
+        loop._t = performance.now();
+        requestAnimationFrame(loop);
     })();
     </script>
 

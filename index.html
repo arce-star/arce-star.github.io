@@ -549,13 +549,13 @@
             </div>
             <div class="sidebar-nav">
                 <a class="active" data-panel="about"><i class="fas fa-user"></i> 关于我</a>
-                <a data-panel="courses"><i class="fas fa-graduation-cap"></i> 课程笔记</a>
+                <!-- TODO: 暂不公开 <a data-panel="courses"><i class="fas fa-graduation-cap"></i> 课程笔记</a> -->
                 <a data-panel="proj-notes"><i class="fas fa-project-diagram"></i> 项目笔记</a>
                 <a data-panel="papers"><i class="fas fa-file-alt"></i> 论文</a>
                 <a data-panel="projects"><i class="fas fa-code-branch"></i> MATLAB 项目</a>
                 <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
                 <a data-panel="docs"><i class="fas fa-file-alt"></i> 证明材料</a>
-                <a data-panel="leetcode"><i class="fas fa-code"></i> 力扣题解</a>
+                <!-- TODO: 暂不公开 <a data-panel="leetcode"><i class="fas fa-code"></i> 力扣题解</a> -->
             </div>
             <div class="sidebar-footer">© 2026 arce-star</div>
         </nav>
@@ -696,7 +696,7 @@
                 </div> -->
             </div>
 
-            <!-- 课程笔记 -->
+            <!-- TODO: 暂不公开 课程笔记
             <div class="content-panel" id="panel-courses">
                 <div class="cv-header" style="margin-bottom:16px;">
                     <div class="cv-name">课程笔记</div>
@@ -762,6 +762,7 @@
                     <button id="save-courses-btn">保存</button>
                 </div>
             </div>
+            -->
 
             <!-- 项目笔记 -->
             <div class="content-panel" id="panel-proj-notes">
@@ -889,7 +890,7 @@
                     <button class="tab-btn active" data-tab="madevolve-report">📊 实验报告</button>
                     <button class="tab-btn" data-tab="madevolve-code">💻 代码浏览</button>
                     <button class="tab-btn" data-tab="madevolve-notes">📝 思考笔记</button>
-                    <button class="tab-btn" data-tab="madevolve-viz">🎬 可视化</button>
+                    <!-- TODO: 暂不公开 <button class="tab-btn" data-tab="madevolve-viz">🎬 可视化</button> -->
                 </div>
                 <div id="madevolve-report" class="tab-panel active">
                     <div class="notes-content">
@@ -1094,6 +1095,7 @@ def default_calcset(ohlcv):
                         </div>
                     </div>
                 </div>
+                <!-- TODO: 暂不公开
                 <div id="madevolve-viz" class="tab-panel">
                     <div style="text-align:center;position:relative;">
                         <canvas id="madevolve-canvas" style="max-width:100%;border-radius:8px;background:transparent;"></canvas>
@@ -1105,6 +1107,7 @@ def default_calcset(ohlcv):
                         </div>
                     </div>
                 </div>
+                -->
             </div>
 
             <!-- AI 酒馆 -->
@@ -1127,7 +1130,7 @@ def default_calcset(ohlcv):
                 </div>
             </div>
 
-            <!-- 力扣题解 -->
+            <!-- TODO: 暂不公开
             <div class="content-panel" id="panel-leetcode">
                 <div class="cv-header" style="margin-bottom:12px;">
                     <div class="cv-name">力扣题解</div>
@@ -1137,6 +1140,7 @@ def default_calcset(ohlcv):
                 </div>
                 <div id="lc-content"></div>
             </div>
+            -->
 
             <!-- 证明材料 -->
             <div class="content-panel" id="panel-docs">
@@ -1763,8 +1767,8 @@ def default_calcset(ohlcv):
                 speed=parseFloat(this.dataset.speed);
             });
         });
-        var vizTab=document.querySelector('[data-tab="madevolve-viz"]');
-        if (vizTab) vizTab.addEventListener('click',function(){setTimeout(resize,60);});
+        // TODO: 暂不公开 var vizTab=document.querySelector('[data-tab="madevolve-viz"]');
+        // if (vizTab) vizTab.addEventListener('click',function(){setTimeout(resize,60);});
         window.addEventListener('resize', resize);
 
         resize(); init();

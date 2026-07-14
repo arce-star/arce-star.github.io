@@ -619,12 +619,22 @@
                         </ul>
                     </div>
 
-                    <div class="cv-entry">
+                    <!-- <div class="cv-entry">
                         <div class="cv-entry-title">傅里叶变换光谱 · 验证维恩位移定律 <span class="date">2023.07 — 2023.12</span></div>
                         <ul class="cv-list">
                             <li>负责光路搭建、数据处理、算法创新及代码实现</li>
                             <li>获第九届全国大学生物理实验竞赛(创新)命题类<span class="cv-highlight"> 国家级三等奖</span></li>
                             <li>成果发表于《物理实验》期刊第44卷第8期（第二作者）</li>
+                        </ul>
+                    </div> -->
+                    <div class="cv-entry">
+                        <div class="cv-entry-title">傅里叶变换光谱 · 验证维恩位移定律 <span class="date">2023.07 — 2023.12</span></div>
+                        <div class="cv-entry-sub">第二作者 · 第九届全国大学生物理实验竞赛(创新)命题类 <span class="cv-highlight">国家级三等奖</span> · 成果发表于《物理实验》期刊第44卷第8期</div>
+                        <ul class="cv-list">
+                            <li><strong>红外干涉光路设计</strong>: 自主搭建基于迈克耳孙干涉仪的红外光谱仪，选用镀保护 Ag 膜平面反射镜、$CaF_2$ 分束镜与热释电探测器（响应范围 $1\sim 20\,\mu\text{m}$）；共路引入 $632.8\,\text{nm}$ He-Ne 激光速度校准系统，利用 $ZnS$ 分束镜和 Si 探测器实现动镜实际平移速度的实时定量校准（$v = 0.5\lambda f$）</li>
+                            <li><strong>微弱信号锁相解调</strong>: 针对黑体辐射出射能量微弱且环境噪声干扰明显的问题，引入斩波器对红外热辐射进行高频调制；采用锁相放大器（基于 LabOne）实现相乘相干解调，有效降低随机噪声并稳定完成时域干涉信号的非接触采集</li>
+                            <li><strong>算法设计与频响标定</strong>: 负责数据处理与算法代码实现，编写 MATLAB 脚本滤除干涉信号基线漂移，精确提取最大光强对应的零光程差（ZPD）位置并执行离散傅里叶变换（DFT）获取粗光谱；以 $1100\,{^\circ}\text{C}$ 黑体理论普朗克谱为标准，定量标定并修正了系统的频率响应曲线</li>
+                            <li><strong>非线性拟合与定律验证</strong>: 测量 $700\sim 1050\,{^\circ}\text{C}$ 范围内的热辐射光谱，利用 Origin 进行普朗克非线性曲线拟合与快速寻峰，测得维恩位移常数 $C' = (2.812 \pm 0.030) \times 10^{-3}\,\text{m}\cdot\text{K}$，与理论标准值的相对偏差仅为 $3.0\%$</li>
                         </ul>
                     </div>
 
@@ -637,11 +647,21 @@
                         </ul>
                     </div>
 
-                    <div class="cv-entry">
+                    <!-- <div class="cv-entry">
                         <div class="cv-entry-title">法拉第波研究 <span class="date">2022.12 — 2023.04</span></div>
                         <ul class="cv-list">
                             <li>独立完成题目分解、实验设计、装置搭建、数据处理、理论分析全过程</li>
                             <li>获第五届安徽省大学生物理学术竞赛(CUPT) <strong>省级一等奖（第四名）</strong></li>
+                        </ul>
+                    </div> -->
+                    <div class="cv-entry">
+                        <div class="cv-entry-title">漂浮液滴在垂直振荡下的法拉第驻波与不稳定性研究 <span class="date">2022.12 — 2023.04</span></div>
+                        <div class="cv-entry-sub">独立负责人 · 第五届安徽省大学生物理学术竞赛(CUPT) <strong>省级一等奖（第四名）</strong></div>
+                        <ul class="cv-list">
+                            <li><strong>流体建模与机理分析</strong>：引入润滑近似（Lubrication Approximation）将三维自由边界简化为二维无旋流，推导法拉第波的平均辐射压强；通过辐射压力与边缘表面张力的竞争平衡分析，导出决定液滴状态突变的核心无量纲控制参数 $\alpha = \frac{\rho R \omega^2 A^2}{\sigma}$</li>
+                            <li><strong>理论推导与解析求解</strong>：解析求解边界压力平衡方程，推导出液滴水平中面几何边界轮廓 $y(x)$ 的精确解，并在此基础上建立液滴长宽比随激励强度演化的理论精细定量曲线</li>
+                            <li><strong>声-振耦合实验创新</strong>：自主搭建高精度简谐激励实验系统，实验排除粘度过高/过低介质，选定“光敏树脂-水”多相流动组合；创新利用空气声阻抗机制，通过非接触式声压测量巧妙解决了微米级高频振速（$v = \omega A$）难以无扰测量的实验痛点</li>
+                            <li><strong>定量拟合与修正验证</strong>：改变液滴体积与驱动频率，实验表明临界响度与滴数呈高度对数线性相关（相关系数 $r \approx -0.9958$）；引入边缘非零曲率修正后，理论拟合斜率（$a = -9.704$）与实验高度吻合，定量证实了所提演化模型的精确度</li>
                         </ul>
                     </div>
                 </div>
@@ -805,20 +825,39 @@
                     </ul>
                 </div>
 
-                <div class="cv-section">
+                <!-- <div class="cv-section">
                     <div class="cv-section-title">傅里叶变换光谱 · 维恩位移定律</div>
                     <div class="cv-entry-sub">2023.07 — 2023.12 · 全国大学生物理实验竞赛 国三</div>
                     <ul class="cv-list">
                         <li>负责光路搭建、数据处理、算法创新及代码实现</li>
                         <li>成果发表于《物理实验》期刊第44卷第8期（第二作者）</li>
                     </ul>
+                </div> -->
+                <div class="cv-section">
+                    <div class="cv-section-title">傅里叶变换光谱 · 维恩位移定律</div>
+                    <div class="cv-entry-sub">2023.07 — 2023.12 · 全国大学生物理实验竞赛 国三 · 第二作者（已发表）</div>
+                    <ul class="cv-list">
+                        <li><strong>红外干涉光路设计</strong>: 自主搭建基于迈克耳孙干涉仪的红外光谱仪，选用镀保护 Ag 膜平面反射镜、$CaF_2$ 分束镜与热释电探测器，覆盖 $1\sim 20\,\mu\text{m}$ 红外波段；共路引入 $632.8\,\text{nm}$ He-Ne 激光速度校准系统，利用 $ZnS$ 分束镜和 Si 探测器实现动镜实际平移速度的实时定量校准（$v = 0.5\lambda f$）</li>
+                        <li><strong>微弱信号锁相解调</strong>: 针对黑体辐射出射能量微弱且环境噪声干扰明显的问题，引入斩波器对红外热辐射进行高频调制；采用锁相放大器（基于 LabOne）实现相干解调与相乘滤波，有效降低随机噪声并稳定完成时域干涉信号的非接触采集</li>
+                        <li><strong>算法实现与频响标定</strong>: 负责算法及代码实现，编写 MATLAB 脚本滤除干涉信号强度上漂，精确提取最大光强对应的零光程差（ZPD）位置并执行离散傅里叶变换（DFT）获取粗光谱；以 $1100\,{^\circ}\text{C}$ 黑体理论普朗克谱为标准，定量标定并修正了系统的频率响应曲线</li>
+                        <li><strong>非线性拟合与成果发表</strong>: 测量 $700\sim 1050\,{^\circ}\text{C}$ 范围内的热辐射光谱，利用 Origin 进行非线性曲线拟合与快速寻峰，测得维恩位移常数 $C' = (2.812 \pm 0.030) \times 10^{-3}\,\text{m}\cdot\text{K}$（与标准值偏差为 $3.0\%$）；学术成果发表于《物理实验》期刊（第44卷第8期，第二作者）</li>
+                    </ul>
                 </div>
 
-                <div class="cv-section">
+                <!-- <div class="cv-section">
                     <div class="cv-section-title">法拉第波研究</div>
                     <div class="cv-entry-sub">2022.12 — 2023.04 · CUPT 省级一等奖</div>
                     <ul class="cv-list">
                         <li>独立完成题目分解、实验设计、装置搭建、数据处理、理论分析全过程</li>
+                    </ul>
+                </div> -->
+                <div class="cv-section">
+                    <div class="cv-section-title">漂浮液滴在垂直振荡下的法拉第驻波与不稳定性研究</div>
+                    <div class="cv-entry-sub">2022.12 — 2023.04 · CUPT 省级一等奖（第四名） · 独立负责人</div>
+                    <ul class="cv-list">
+                        <li><strong>流体建模与解析求解</strong>: 运用润滑近似将三维自由边界流体问题简化为二维无旋流，通过驻波平均辐射压力与表面张力的竞争分析，导出决定状态突变的核心控制参数 $\alpha = \frac{\rho R \omega^2 A^2}{\sigma}$ ；解析边界压力平衡方程，推导出液滴边缘剖面函数 $y(x)$ 的精确解及长宽比定量演化曲线</li>
+                        <li><strong>声-振耦合实验创新</strong>: 自主设计实验装置，实验筛选出最佳的“光敏树脂-水”多相粘度匹配组合；创新利用空气声阻抗原理，通过非接触声压测量实现了高频振动速度（$v = \omega A$）的无扰定量表征，解决了微弱物理量采集难题</li>
+                        <li><strong>数据拟合与理论修正</strong>: 测定不同体积与频率下的临界突变点，实验表明突变临界响度与滴数呈高度对数线性相关（相关系数 $r \approx -0.9958$） ；引入边缘非零曲率修正后，理论拟合斜率（$a = -9.704$）与实验观测一致，定量证实了不稳定性转变的物理机制</li>
                     </ul>
                 </div>
 

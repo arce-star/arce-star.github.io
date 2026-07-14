@@ -580,7 +580,7 @@
                         <span style="float:right;color:var(--text-light);font-size:0.82rem;">2022.09 至今</span><br>
                         大一进入赵九章地球和空间科学英才班，大二转至物理学院<br>
                         <strong>GPA</strong>: 3.22/4.3 (86/151)<br>
-                        <strong>核心课程</strong>: 计算机程序设计A (95, 4.3)、电磁学A (95, 4.3)、理论力学A (92, 4.0)、数学分析B2 (90, 4.0)、线性代数B1 (85, 3.3)、量化金融工程 (3.3)、概率论与数理统计 (75, 2.7)
+                        <strong>核心课程</strong>: 计算机程序设计A (95, 4.3)、电磁学A (95, 4.3)、理论力学A (92, 4.0)、数学分析B2 (90, 4.0)
                     </p>
                 </div>
 
@@ -601,10 +601,10 @@
                         <div class="cv-entry-title">LLM 驱动的量化交易系统进化优化（独立复现顶会架构） <span class="date">2026.06</span></div>
                         <div class="cv-entry-sub">复现 MadEvolve (arXiv:2605.23007) 进化优化框架</div>
                         <ul class="cv-list">
-                            <li><strong>回测引擎</strong>: 从零实现逐分钟级 BTCUSDT 回测引擎，严格按论文实现被动限价单填充逻辑、PnL 分解公式与 6 参数平方根市场冲击模型</li>
-                            <li><strong>性能优化</strong>: 针对冲击模型 O(n²) 用 numpy 向量化替代循环、预计算衰减查表、滑动窗口裁剪，单次全年回测从 42 分钟压缩至 7 分钟；逐条 dict 存储转为连续数组，内存占用降低 98%（200MB→4MB）</li>
+                            <li><strong>回测引擎</strong>: 从零实现逐分钟级 BTCUSDT 回测引擎，严格按论文实现被动限价单填充逻辑、PnL 分解公式与平方根市场冲击模型</li>
+                            <li><strong>性能优化</strong>: 针对冲击模型 $O(n^2)$ 用 numpy 向量化替代循环、预计算衰减查表、滑动窗口裁剪，单次全年回测从 42 分钟压缩至 7 分钟；逐条 dict 存储转为连续数组，内存占用从 200MB 降低到 4MB </li>
                             <li><strong>进化算法与 LLM 集成</strong>: 接入 DeepSeek v4 API 驱动代码探索变异，采用 MAP-Elites 与岛屿模型管理策略种群；开发鲁棒的自动检测与修正重排机制处理 LLM 代码容错</li>
-                            <li><strong>实验结果</strong>: 快速 demo 将基线策略从 −$44K 优化至 +$5.3K</li>
+                            <li><strong>实验结果</strong>: 将基线策略从 $ −{$}44K $ 优化至 $ +{$}5.3K $</li>
                         </ul>
                     </div>
 
@@ -638,12 +638,21 @@
                         </ul>
                     </div>
 
-                    <div class="cv-entry">
+                    <!-- <div class="cv-entry">
                         <div class="cv-entry-title">量子信息实验室 · 光纤传输模拟 <span class="date">2023.09 — 2024.03</span></div>
                         <div class="cv-entry-sub">王双老师课题组</div>
                         <ul class="cv-list">
                             <li>独立完成光纤中光传播受色散和非线性效应影响的 MATLAB 模拟</li>
                             <li>成果总结为光学小论文《基于MATLAB对光脉冲在光纤中的传输特性研究》</li>
+                        </ul>
+                    </div> -->
+                    <div class="cv-entry">
+                        <div class="cv-entry-title">量子信息实验室 · 光纤传输模拟 <span class="date">2023.09 — 2024.03</span></div>
+                        <div class="cv-entry-sub">独立负责人 · 量子信息课题组 · 成果总结为小论文</div>
+                        <ul class="cv-list">
+                            <li><strong>物理推导与 NLSE 建模</strong>：基于麦克斯韦方程组、克尔效应与慢变包络近似，推导不含增益的非线性薛定谔方程（NLSE），确立色散与自相位调制的理论分析框架</li>
+                            <li><strong>分步傅里叶算法实现</strong>：使用 MATLAB 自主开发分步傅里叶方法（SSFM）计算引擎，交替在时域与频域解耦计算，高效求解皮秒级超短脉冲在单模光纤中的非线性传输演化</li>
+                            <li><strong>传输动力学与干涉演化</strong>：定量模拟啁啾高斯脉冲的动态色散补偿演化以及双孤子的相干干涉现象，撰写论文《基于MATLAB对光脉冲在光纤中的传输特性研究》</li>
                         </ul>
                     </div>
 
@@ -658,7 +667,7 @@
                         <div class="cv-entry-title">漂浮液滴在垂直振荡下的法拉第驻波与不稳定性研究 <span class="date">2022.12 — 2023.04</span></div>
                         <div class="cv-entry-sub">独立负责人 · 第五届安徽省大学生物理学术竞赛(CUPT) <strong>省级一等奖（第四名）</strong></div>
                         <ul class="cv-list">
-                            <li><strong>流体建模与机理分析</strong>：引入润滑近似（Lubrication Approximation）将三维自由边界简化为二维无旋流，推导法拉第波的平均辐射压强；通过辐射压力与边缘表面张力的竞争平衡分析，导出决定液滴状态突变的核心无量纲控制参数 $\alpha = \frac{\rho R \omega^2 A^2}{\sigma}$</li>
+                            <li><strong>流体建模与机理分析</strong>：引入润滑近似将三维自由边界简化为二维无旋流，推导法拉第波的平均辐射压强；通过辐射压力与边缘表面张力的竞争平衡分析，导出决定液滴状态突变的核心无量纲控制参数 $\alpha = \frac{\rho R \omega^2 A^2}{\sigma}$</li>
                             <li><strong>理论推导与解析求解</strong>：解析求解边界压力平衡方程，推导出液滴水平中面几何边界轮廓 $y(x)$ 的精确解，并在此基础上建立液滴长宽比随激励强度演化的理论精细定量曲线</li>
                             <li><strong>声-振耦合实验创新</strong>：自主搭建高精度简谐激励实验系统，实验排除粘度过高/过低介质，选定“光敏树脂-水”多相流动组合；创新利用空气声阻抗机制，通过非接触式声压测量巧妙解决了微米级高频振速（$v = \omega A$）难以无扰测量的实验痛点</li>
                             <li><strong>定量拟合与修正验证</strong>：改变液滴体积与驱动频率，实验表明临界响度与滴数呈高度对数线性相关（相关系数 $r \approx -0.9958$）；引入边缘非零曲率修正后，理论拟合斜率（$a = -9.704$）与实验高度吻合，定量证实了所提演化模型的精确度</li>
@@ -689,12 +698,12 @@
                         <span class="cv-tag">Python</span><span class="cv-tag">MATLAB</span><span class="cv-tag">C</span><span class="cv-tag">Linux</span><span class="cv-tag">LaTeX</span>
                     </div>
                     <ul class="cv-list" style="margin-top:10px;">
-                        <li><strong>Python</strong>: AI 辅助编程为主（我提思路和审批，AI 写代码）。AI 伦理项目用 Python 调 API + 数据处理 + 绘图；天池比赛在服务器上做大模型微调训练和推理脚本；量化方面独立复现了 MadEvolve 论文的回测框架</li>
+                        <li><strong>Python</strong>: AI 辅助编程为主。AI 伦理项目用 Python 调 API + 数据处理 + 绘图；天池比赛在服务器上做大模型微调训练和推理脚本；量化方面独立复现了 MadEvolve 论文的回测框架</li>
                         <li><strong>MATLAB</strong>: 做过近百个外包项目（本科设计级别），物理模拟和算法仿真的主力工具</li>
                         <li><strong>C</strong>: 手写过贪吃蛇等大作业项目，对底层有基本认知</li>
                         <li><strong>Linux</strong>: 脚本和命令行很熟练。实验室所有 LAMMPS 计算任务通过 SLURM 脚本提交到计算节点，环境搭建和运维都 OK</li>
-                        <li><strong>算法</strong>: LeetCode 刷过一些题但不熟练，正在持续练习</li>
-                        <li><strong>数理统计</strong>: 基本概念了解，能上手用但理论推导不扎实。正在读杰恩斯的《概率论沉思录》系统性重建概率论认知——"知其然，正在知其所以然"</li>
+                        <!-- <li><strong>算法</strong>: LeetCode 刷过一些题但不熟练，正在持续练习</li> -->
+                        <!-- <li><strong>数理统计</strong>: 基本概念了解，能上手用但理论推导不扎实。正在读杰恩斯的《概率论沉思录》系统性重建概率论认知——"知其然，正在知其所以然"</li> -->
                     </ul>
                 </div>
 
@@ -861,12 +870,27 @@
                     </ul>
                 </div>
 
-                <div class="cv-section">
+                <!-- <div class="cv-section">
                     <div class="cv-section-title">量子信息实验室 · 光纤传输模拟</div>
                     <div class="cv-entry-sub">2023.09 — 2024.03 · 王双老师课题组</div>
                     <ul class="cv-list">
                         <li>独立完成光纤中光传播受色散和非线性效应影响的 MATLAB 模拟工作</li>
                         <li>成果总结为光学小论文</li>
+                    </ul>
+                </div> -->
+                <div class="cv-section">
+                    <div class="cv-section-title">量子信息实验室 · 光纤传输模拟</div>
+                    <div class="cv-entry-sub">2023.09 — 2024.03 · 量子信息课题组 · 独立负责人</div>
+                    <ul class="cv-list">
+                        <li><strong>物理推导与 NLSE 理论建模</strong>: 从麦克斯韦方程组出发，引入介质三阶非线性极化（克尔效应）并采用慢变包络近似（SVEA）简化电磁场波动方程；通过时延参考坐标系（以群速度移动的坐标系 $T = t - z/v_g$），严格推导不含增益的非线性薛定谔方程（NLSE）：
+                        <span class="math-block">$$i \frac{\partial A}{\partial z} - \frac{\beta_2}{2}\frac{\partial^2 A}{\partial T^2} + \gamma |A|^2 A = 0$$</span>
+                        奠定了描述群速度色散（GVD，$\beta_2$）和自相位调制（SPM，$\gamma$）协同作用的经典理论框架。</li>
+                        
+                        <li><strong>分步傅里叶方法（SSFM）计算引擎</strong>: 基于 MATLAB 独立编写分步傅里叶仿真算法。将 NLSE 的线性色散项（在频域通过 FFT 求解）与非线性项（在时域直接相乘计算）进行解耦与交互迭代运算，采用 $2^{10}$ 点加速离散傅里叶变换，实现超短光脉冲在色散光纤中高速、高稳定性的数值求解。</li>
+                        
+                        <li><strong>啁啾高斯脉冲演化动力学模拟</strong>: 定量探究不同二阶色散系数（$\beta_2$）与初始啁啾（$C$）组合下高斯光脉冲的演化轨迹。定量复现了在反常色散与正啁啾组合下，脉冲因色散补偿在时域先缩窄至傅里叶变换极限（啁啾降为 0，时域波形达到最窄，频域展宽极大），随后反向展宽的脉冲压缩动力学物理图景。</li>
+                        
+                        <li><strong>双光孤子相干干涉与参数控制分析</strong>: 模拟双孤子（Double Soliton）的共轴传输与相遇过程。深入分析了等幅同相传输下的周期性相干干涉条纹特征；并定量探究了极小相对相位（如 $\theta = \pi/20$）与非对称相对大小（如 $r=2$）扰动对时-频域干涉条纹移动、以及脉冲包络对称性破缺（吸引/排斥力）的调控机制。</li>
                     </ul>
                 </div>
             </div>

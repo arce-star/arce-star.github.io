@@ -604,7 +604,7 @@
                             <li><strong>回测引擎</strong>: 从零实现逐分钟级 BTCUSDT 回测引擎，严格按论文实现被动限价单填充逻辑、PnL 分解公式与平方根市场冲击模型</li>
                             <li><strong>性能优化</strong>: 针对冲击模型 $O(n^2)$ 用 numpy 向量化替代循环、预计算衰减查表、滑动窗口裁剪，单次全年回测从 42 分钟压缩至 7 分钟；逐条 dict 存储转为连续数组，内存占用从 200MB 降低到 4MB </li>
                             <li><strong>进化算法与 LLM 集成</strong>: 接入 DeepSeek v4 API 驱动代码探索变异，采用 MAP-Elites 与岛屿模型管理策略种群；开发鲁棒的自动检测与修正重排机制处理 LLM 代码容错</li>
-                            <li><strong>实验结果</strong>: 将基线策略从 $ −{$}44K $ 优化至 $ +{$}5.3K $</li>
+                            <li><strong>实验结果</strong>: 将基线策略从 $ −\$44K $ 优化至 $ +\$5.3K $</li>
                         </ul>
                     </div>
 
@@ -828,7 +828,7 @@
                         <li><strong>回测引擎</strong>: 从零实现 BTCUSDT 逐分钟回测引擎，严格按论文实现被动限价单填充、PnL 分解与 6 参数平方根市场冲击模型</li>
                         <li><strong>性能优化</strong>: numpy 向量化 + 预计算查表 + 滑动窗口，单次回测 42→7 分钟；连续数组替代逐条 dict，内存 200MB→4MB</li>
                         <li><strong>进化算法</strong>: DeepSeek v4 驱动代码变异，MAP-Elites + 岛屿模型管理策略种群，LLM 代码自动检测修复</li>
-                        <li><strong>实验进展</strong>: 快速 demo 将基线从 −$44K 优化至 +$5.3K，全量实验进行中</li>
+                        <li><strong>实验进展</strong>: 快速 demo 将基线从 $−\$44K$ 优化至 $ +\$5.3K $</li>
                         <li><strong>因子工程</strong>: LLM 自动发现 22 个有效因子（动量/波动率/成交量/价格形态），Ridge 回归评估预测质量</li>
                         <li>详见「MadEvolve 复现」面板（实验报告 + 思考笔记 + 代码浏览）</li>
                     </ul>

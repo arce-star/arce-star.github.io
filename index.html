@@ -1966,7 +1966,25 @@ def default_calcset(ohlcv):
             updateDisplay();
         })();
 
-        document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
+        // document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
+        document.addEventListener('DOMContentLoaded', () => {
+            AiAssistant.init();
+            
+            // 页面加载完成后，自动渲染全页的静态 LaTeX 数学公式
+            if (typeof renderMathInElement !== 'undefined') {
+                try {
+                    renderMathInElement(document.body, {
+                        delimiters: [
+                            {left: '$$', right: '$$', display: true},
+                            {left: '$', right: '$', display: false}
+                        ],
+                        throwOnError: false
+                    });
+                } catch (e) {
+                    console.warn("KaTeX 自动渲染失败:", e);
+                }
+            }
+        });
         document.querySelector('[data-panel="projects"]').addEventListener('click', () => {
             setTimeout(() => ProjectBrowser.loadRoot(), 100);
         });

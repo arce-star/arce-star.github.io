@@ -1,45 +1,258 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaZero 五子棋 · 严亦乐</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚫</text></svg>">
+    <style>
+        :root {
+            --blue: #0F4B91;
+            --blue-light: #1a6bc4;
+            --text: #2c2c2c;
+            --text-dim: #666;
+            --bg: #fafafa;
+            --board-wood: #dcb46c;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-<link
-  rel="stylesheet"
-  href="/assets/css/gomoku.css"
->
+        body {
+            font-family: "Noto Serif SC", "Source Han Serif SC", "Songti SC", Georgia, serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 24px 16px 60px;
+            -webkit-font-smoothing: antialiased;
+        }
 
-<div class="gomoku-app">
-  <header class="game-header">
-    <div>
-      <h1>AlphaZero 五子棋</h1>
-      <p>9×9 棋盘 · 五子连线获胜 · 第 10 轮模型</p>
-    </div>
+        /* ===== Header ===== */
+        .game-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .game-header h1 {
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--blue);
+            letter-spacing: 0.04em;
+            margin-bottom: 4px;
+        }
+        .game-header p {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        .home-link {
+            display: inline-block;
+            margin-top: 8px;
+            font-size: 0.82rem;
+            color: var(--blue);
+            text-decoration: none;
+            border: 1px solid var(--blue);
+            border-radius: 14px;
+            padding: 4px 16px;
+            transition: all 0.2s;
+        }
+        .home-link:hover { background: var(--blue); color: #fff; }
 
-    <a class="home-link" href="/">返回首页</a>
-  </header>
+        /* ===== Controls ===== */
+        .game-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .game-controls label {
+            font-size: 0.85rem;
+            color: var(--text-dim);
+        }
+        .game-controls select,
+        .game-controls button {
+            min-height: 36px;
+            padding: 6px 14px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            background: #fff;
+            font-size: 0.85rem;
+            font-family: inherit;
+            color: var(--text);
+            cursor: pointer;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .game-controls select:focus,
+        .game-controls button:focus {
+            outline: none;
+            border-color: var(--blue);
+            box-shadow: 0 0 0 3px rgba(15,75,145,0.1);
+        }
+        .game-controls button#new-game {
+            background: var(--blue);
+            color: #fff;
+            border-color: var(--blue);
+            font-weight: 600;
+            padding: 6px 18px;
+        }
+        .game-controls button#new-game:hover {
+            background: var(--blue-light);
+        }
+        .game-controls button:disabled,
+        .game-controls select:disabled {
+            cursor: not-allowed;
+            opacity: 0.5;
+        }
 
-  <div class="game-controls">
+        /* ===== Status ===== */
+        .game-status {
+            text-align: center;
+            font-size: 1rem;
+            font-weight: 600;
+            min-height: 28px;
+            margin: 6px 0 12px;
+            color: var(--text);
+            transition: color 0.3s;
+        }
+        .game-status.win { color: #10b981; }
+        .game-status.lose { color: #ef4444; }
+        .game-status.draw { color: #f59e0b; }
+        .game-status.thinking { color: var(--blue); }
+
+        /* ===== Board ===== */
+        .board-wrap {
+            width: min(88vw, 520px);
+            margin: 0 auto;
+            padding: 14px;
+            background: linear-gradient(145deg, #d4a853, #c49640);
+            border-radius: 12px;
+            box-shadow:
+                0 4px 16px rgba(0,0,0,0.12),
+                0 1px 3px rgba(0,0,0,0.08),
+                inset 0 1px 0 rgba(255,255,255,0.15);
+        }
+        .gomoku-board {
+            display: grid;
+            grid-template-columns: repeat(9, 1fr);
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid #5a3e1b;
+            border-radius: 4px;
+            background-color: #e2b96f;
+            background-image:
+                linear-gradient(to right, transparent calc(50% - 0.5px), rgba(80,50,20,0.55) calc(50% - 0.5px), rgba(80,50,20,0.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+                linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(80,50,20,0.55) calc(50% - 0.5px), rgba(80,50,20,0.55) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+            background-size: calc(100% / 9) calc(100% / 9);
+        }
+
+        /* ===== Cells ===== */
+        .gomoku-cell {
+            position: relative;
+            display: grid;
+            place-items: center;
+            aspect-ratio: 1;
+            border: 0;
+            padding: 0;
+            background: transparent;
+            cursor: pointer;
+        }
+        .gomoku-cell:not(:disabled):hover::after {
+            content: "";
+            position: absolute;
+            width: 64%;
+            height: 64%;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.12);
+            pointer-events: none;
+        }
+        .gomoku-cell:disabled { cursor: default; }
+        .gomoku-cell:focus-visible {
+            outline: 3px solid #1769c2;
+            outline-offset: -3px;
+        }
+
+        /* ===== Stones ===== */
+        .stone {
+            position: relative;
+            width: 80%;
+            height: 80%;
+            border-radius: 50%;
+            animation: stoneIn 0.2s ease-out;
+        }
+        @keyframes stoneIn {
+            from { transform: scale(0); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        .stone.black {
+            background: radial-gradient(circle at 40% 35%, #4a4a4a, #111 70%);
+            box-shadow:
+                2px 3px 6px rgba(0,0,0,0.35),
+                inset 0 1px 0 rgba(255,255,255,0.1);
+        }
+        .stone.white {
+            background: radial-gradient(circle at 40% 35%, #fff, #e2dcd0 70%);
+            border: 1px solid #c5bfb0;
+            box-shadow:
+                2px 3px 6px rgba(0,0,0,0.18),
+                inset 0 1px 0 rgba(255,255,255,0.6);
+        }
+        .stone.last::after {
+            content: "";
+            position: absolute;
+            width: 22%;
+            height: 22%;
+            top: 39%;
+            left: 39%;
+            border-radius: 50%;
+            background: #e53935;
+            box-shadow: 0 0 4px rgba(229,57,53,0.6);
+        }
+
+        /* ===== Footer note ===== */
+        .game-note {
+            text-align: center;
+            font-size: 0.78rem;
+            color: #aaa;
+            margin-top: 16px;
+        }
+
+        /* ===== Responsive ===== */
+        @media (max-width: 520px) {
+            .game-header h1 { font-size: 1.3rem; }
+            .game-controls { flex-direction: column; align-items: stretch; }
+            .game-controls select,
+            .game-controls button { width: 100%; text-align: center; }
+            .board-wrap { padding: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="game-header">
+    <h1>AlphaZero 五子棋</h1>
+    <p>9×9 棋盘 · 五子连线获胜 · 模型本地运行</p>
+    <a class="home-link" href="/">← 返回首页</a>
+</header>
+
+<div class="game-controls">
     <label for="human-side">执子</label>
-
     <select id="human-side">
-      <option value="1">黑棋，先手</option>
-      <option value="-1">白棋，后手</option>
+        <option value="1">黑棋 · 先手</option>
+        <option value="-1">白棋 · 后手</option>
     </select>
-
     <button id="new-game" type="button">重新开始</button>
-  </div>
-
-  <p id="status" class="game-status">正在加载模型...</p>
-
-  <div class="board-wrap">
-    <div
-      id="board"
-      class="gomoku-board"
-      role="grid"
-      aria-label="五子棋棋盘"
-    ></div>
-  </div>
-
-  <p class="game-note">
-    黑棋先手。红点表示最后一手。模型在浏览器本地运行。
-  </p>
 </div>
+
+<p id="status" class="game-status">正在加载 AI 模型...</p>
+
+<div class="board-wrap">
+    <div id="board" class="gomoku-board" role="grid" aria-label="五子棋棋盘"></div>
+</div>
+
+<p class="game-note">黑棋先手 · 红点表示最后一手 · AI 模型在浏览器本地运行</p>
 
 <script src="/assets/vendor/ort.min.js"></script>
 <script src="/assets/js/gomoku.js"></script>
+</body>
+</html>

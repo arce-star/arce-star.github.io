@@ -555,6 +555,7 @@
                 <a data-panel="projects"><i class="fas fa-code-branch"></i> MATLAB 项目</a>
                 <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
                 <a data-panel="docs"><i class="fas fa-file-alt"></i> 证明材料</a>
+                <a href="gomoku.html"><i class="fas fa-chess-board"></i> 五子棋</a>
                 <!-- TODO: 暂不公开 <a data-panel="leetcode"><i class="fas fa-code"></i> 力扣题解</a> -->
             </div>
             <div class="sidebar-footer">© 2026 arce-star</div>
@@ -1271,6 +1272,7 @@ def default_calcset(ohlcv):
         // ===== 侧栏导航 =====
         document.querySelectorAll('.sidebar-nav a').forEach(link => {
             link.addEventListener('click', function(e) {
+                if (!this.dataset.panel) return; // 直接跳转链接（如五子棋），不拦截
                 e.preventDefault();
                 document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
                 this.classList.add('active');

@@ -1,0 +1,45 @@
+
+<link
+  rel="stylesheet"
+  href="/assets/css/gomoku.css"
+>
+
+<div class="gomoku-app">
+  <header class="game-header">
+    <div>
+      <h1>AlphaZero 五子棋</h1>
+      <p>9×9 棋盘 · 五子连线获胜 · 第 10 轮模型</p>
+    </div>
+
+    <a class="home-link" href="/">返回首页</a>
+  </header>
+
+  <div class="game-controls">
+    <label for="human-side">执子</label>
+
+    <select id="human-side">
+      <option value="1">黑棋，先手</option>
+      <option value="-1">白棋，后手</option>
+    </select>
+
+    <button id="new-game" type="button">重新开始</button>
+  </div>
+
+  <p id="status" class="game-status">正在加载模型...</p>
+
+  <div class="board-wrap">
+    <div
+      id="board"
+      class="gomoku-board"
+      role="grid"
+      aria-label="五子棋棋盘"
+    ></div>
+  </div>
+
+  <p class="game-note">
+    黑棋先手。红点表示最后一手。模型在浏览器本地运行。
+  </p>
+</div>
+
+<script src="/assets/vendor/ort.min.js"></script>
+<script src="/assets/js/gomoku.js"></script>

@@ -3,7 +3,7 @@
 
   const BOARD_SIZE = 9;
   const ACTION_SIZE = 81;
-  const MODEL_URL = "/assets/models/gomoku-9x9-iter10.onnx";
+  const MODEL_URL = "/assets/models/gomoku-9x9-iter21.onnx";
   const WASM_PATH = "/assets/vendor/";
 
   const boardElement = document.getElementById("board");

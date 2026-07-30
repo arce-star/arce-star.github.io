@@ -15,8 +15,13 @@
   </header>
 
   <div class="game-controls">
-    <label for="human-side">执子</label>
+    <label for="ai-mode">AI 模式</label>
+    <select id="ai-mode">
+      <option value="heuristic">极速 AI（启发式）</option>
+      <option value="onnx">模型 AI（ONNX）</option>
+    </select>
 
+    <label for="human-side">执子</label>
     <select id="human-side">
       <option value="1">黑棋，先手</option>
       <option value="-1">白棋，后手</option>
@@ -42,4 +47,5 @@
 </div>
 
 <script src="/assets/vendor/ort.min.js"></script>
+<script src="/assets/js/heuristic-ai.js"></script>
 <script src="/assets/js/gomoku.js"></script>

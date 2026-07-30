@@ -9,18 +9,27 @@
   const boardElement = document.getElementById("board");
   const statusElement = document.getElementById("status");
   const sideElement = document.getElementById("human-side");
+  const modeElement = document.getElementById("ai-mode");
   const newGameButton = document.getElementById("new-game");
 
   let session = null;
   let board = new Int8Array(ACTION_SIZE);
   let currentPlayer = 1;
   let humanPlayer = 1;
+  let aiMode = "heuristic";            // "heuristic" | "onnx"
   let lastAction = -1;
   let gameOver = false;
   let aiThinking = false;
+  let heuristicAi = null;
+  let onnxLoadStarted = false;          // prevent parallel loads
+  let onnxLoading = false;
 
   ort.env.wasm.wasmPaths = WASM_PATH;
   ort.env.wasm.numThreads = 1;
+
+  // -------------------------------------------------------------------
+  // Board helpers
+  // -------------------------------------------------------------------
 
   function rowOf(action) {
     return Math.floor(action / BOARD_SIZE);
@@ -32,14 +41,18 @@
 
   function coordinate(action) {
     return (
-      String.fromCharCode(65 + colOf(action))
-      + String(rowOf(action) + 1)
+      String.fromCharCode(65 + colOf(action)) +
+      String(rowOf(action) + 1)
     );
   }
 
   function playerName(player) {
     return player === 1 ? "黑棋" : "白棋";
   }
+
+  // -------------------------------------------------------------------
+  // DOM helpers
+  // -------------------------------------------------------------------
 
   function createBoard() {
     boardElement.textContent = "";
@@ -67,20 +80,29 @@
       if (player !== 0) {
         const stone = document.createElement("span");
         stone.className =
-          "stone "
-          + (player === 1 ? "black" : "white")
-          + (action === lastAction ? " last" : "");
+          "stone " +
+          (player === 1 ? "black" : "white") +
+          (action === lastAction ? " last" : "");
         cell.appendChild(stone);
       }
 
-      cell.disabled =
-        !session
-        || gameOver
-        || aiThinking
-        || currentPlayer !== humanPlayer
-        || player !== 0;
+      // Disable cells when game is over, AI is thinking, or not human's turn.
+      // In heuristic mode we do NOT require `session` to be loaded.
+      let disabled = gameOver || aiThinking || currentPlayer !== humanPlayer;
+      if (!disabled) {
+        disabled = player !== 0;
+      }
+      // ONNX mode without session: keep board disabled until model loads
+      if (aiMode === "onnx" && !session) {
+        disabled = true;
+      }
+      cell.disabled = disabled;
     }
   }
+
+  // -------------------------------------------------------------------
+  // Win detection (mirrors GomokuGame.winner)
+  // -------------------------------------------------------------------
 
   function findWinner(action, player) {
     const row = rowOf(action);
@@ -100,11 +122,11 @@
         let checkCol = col + sign * deltaCol;
 
         while (
-          checkRow >= 0
-          && checkRow < BOARD_SIZE
-          && checkCol >= 0
-          && checkCol < BOARD_SIZE
-          && board[checkRow * BOARD_SIZE + checkCol] === player
+          checkRow >= 0 &&
+          checkRow < BOARD_SIZE &&
+          checkCol >= 0 &&
+          checkCol < BOARD_SIZE &&
+          board[checkRow * BOARD_SIZE + checkCol] === player
         ) {
           count += 1;
           checkRow += sign * deltaRow;
@@ -120,6 +142,10 @@
     return 0;
   }
 
+  // -------------------------------------------------------------------
+  // Game state
+  // -------------------------------------------------------------------
+
   function placeStone(action, player) {
     board[action] = player;
     lastAction = action;
@@ -128,8 +154,7 @@
 
     if (winner !== 0) {
       gameOver = true;
-      statusElement.textContent =
-        playerName(winner) + "获胜";
+      statusElement.textContent = playerName(winner) + "获胜";
     } else if (board.every((value) => value !== 0)) {
       gameOver = true;
       statusElement.textContent = "和棋";
@@ -139,6 +164,10 @@
 
     render();
   }
+
+  // -------------------------------------------------------------------
+  // State encoding (ONNX mode only)
+  // -------------------------------------------------------------------
 
   function encodeState() {
     const values = new Float32Array(3 * ACTION_SIZE);
@@ -155,14 +184,19 @@
       }
     }
 
-    return new ort.Tensor(
-      "float32",
-      values,
-      [1, 3, BOARD_SIZE, BOARD_SIZE]
-    );
+    return new ort.Tensor("float32", values, [
+      1,
+      3,
+      BOARD_SIZE,
+      BOARD_SIZE,
+    ]);
   }
 
-  async function chooseAiAction() {
+  // -------------------------------------------------------------------
+  // ONNX AI
+  // -------------------------------------------------------------------
+
+  async function chooseOnnxAction() {
     const outputs = await session.run({
       states: encodeState(),
     });
@@ -171,10 +205,7 @@
     let bestLogit = -Infinity;
 
     for (let action = 0; action < ACTION_SIZE; action += 1) {
-      if (
-        board[action] === 0
-        && logits[action] > bestLogit
-      ) {
+      if (board[action] === 0 && logits[action] > bestLogit) {
         bestLogit = logits[action];
         bestAction = action;
       }
@@ -187,18 +218,47 @@
     return bestAction;
   }
 
+  // -------------------------------------------------------------------
+  // Heuristic AI
+  // -------------------------------------------------------------------
+
+  function ensureHeuristicAi() {
+    if (!heuristicAi) {
+      if (typeof HeuristicAi === "undefined") {
+        throw new Error("HeuristicAi 模块未加载");
+      }
+      heuristicAi = new HeuristicAi(HeuristicConfig);
+    }
+    return heuristicAi;
+  }
+
+  // -------------------------------------------------------------------
+  // AI dispatcher
+  // -------------------------------------------------------------------
+
+  async function chooseAiAction() {
+    if (aiMode === "heuristic") {
+      const ai = ensureHeuristicAi();
+      return ai.chooseAction(board, currentPlayer);
+    }
+    // ONNX mode
+    if (!session) {
+      throw new Error("ONNX 模型尚未加载");
+    }
+    return await chooseOnnxAction();
+  }
+
   async function runAiTurn() {
-    if (
-      !session
-      || gameOver
-      || currentPlayer === humanPlayer
-    ) {
+    if (gameOver || currentPlayer === humanPlayer) {
       return;
     }
 
     aiThinking = true;
     statusElement.textContent = "AI 正在思考...";
     render();
+
+    // Let the DOM paint so the user sees "AI 正在思考..."
+    await new Promise((resolve) => requestAnimationFrame(resolve));
 
     try {
       const player = currentPlayer;
@@ -207,14 +267,11 @@
 
       if (!gameOver) {
         statusElement.textContent =
-          "AI 落子 "
-          + coordinate(action)
-          + "，轮到你";
+          "AI 落子 " + coordinate(action) + "，轮到你";
       }
     } catch (error) {
       gameOver = true;
-      statusElement.textContent =
-        "AI 推理失败：" + error.message;
+      statusElement.textContent = "AI 推理失败：" + error.message;
       console.error(error);
     } finally {
       aiThinking = false;
@@ -222,13 +279,12 @@
     }
   }
 
+  // -------------------------------------------------------------------
+  // Human input
+  // -------------------------------------------------------------------
+
   function handleHumanMove(event) {
-    if (
-      !session
-      || gameOver
-      || aiThinking
-      || currentPlayer !== humanPlayer
-    ) {
+    if (gameOver || aiThinking || currentPlayer !== humanPlayer) {
       return;
     }
 
@@ -245,53 +301,142 @@
     }
   }
 
+  // -------------------------------------------------------------------
+  // Game lifecycle
+  // -------------------------------------------------------------------
+
   function startGame() {
     board = new Int8Array(ACTION_SIZE);
     currentPlayer = 1;
     humanPlayer = Number(sideElement.value);
+    aiMode = modeElement ? modeElement.value : "heuristic";
     lastAction = -1;
     gameOver = false;
     aiThinking = false;
 
-    statusElement.textContent =
-      humanPlayer === 1
-        ? "你执黑棋，请落子"
-        : "你执白棋，AI 先手";
+    // In heuristic mode we are always "ready".
+    // In ONNX mode we show the loading / ready status.
+    if (aiMode === "heuristic") {
+      statusElement.textContent =
+        humanPlayer === 1
+          ? "启发式 AI 已就绪，你执黑棋，请落子"
+          : "启发式 AI 已就绪，你执白棋，AI 先手";
+    } else {
+      if (session) {
+        statusElement.textContent =
+          humanPlayer === 1
+            ? "ONNX 模型已加载，你执黑棋，请落子"
+            : "ONNX 模型已加载，你执白棋，AI 先手";
+      } else {
+        statusElement.textContent = "ONNX 模型正在加载...";
+      }
+    }
 
     render();
 
+    // AI first move if human chose white
     if (humanPlayer === -1) {
-      void runAiTurn();
+      if (aiMode === "heuristic" || session) {
+        void runAiTurn();
+      }
+      // If ONNX mode and session not loaded yet, the loadModel completion
+      // will trigger the first AI move.
     }
   }
 
-  async function loadModel() {
-    sideElement.disabled = true;
-    newGameButton.disabled = true;
+  // -------------------------------------------------------------------
+  // ONNX model loading (lazy — only when ONNX mode is selected)
+  // -------------------------------------------------------------------
+
+  async function loadOnnxModel() {
+    if (onnxLoading || session) return;
+    onnxLoading = true;
+    onnxLoadStarted = true;
+
+    statusElement.textContent = "ONNX 模型正在加载...";
 
     try {
-      session = await ort.InferenceSession.create(
-        MODEL_URL,
-        {
-          executionProviders: ["wasm"],
-          graphOptimizationLevel: "all",
-        }
-      );
+      session = await ort.InferenceSession.create(MODEL_URL, {
+        executionProviders: ["wasm"],
+        graphOptimizationLevel: "all",
+      });
 
-      sideElement.disabled = false;
-      newGameButton.disabled = false;
-      startGame();
+      // Only activate if ONNX mode is still selected
+      if (aiMode === "onnx") {
+        statusElement.textContent =
+          humanPlayer === 1
+            ? "ONNX 模型已加载，你执黑棋，请落子"
+            : "ONNX 模型已加载，你执白棋，AI 先手";
+        render();
+        // AI first move if appropriate
+        if (humanPlayer === -1 && !gameOver) {
+          void runAiTurn();
+        }
+      }
     } catch (error) {
-      statusElement.textContent =
-        "模型加载失败：" + error.message;
+      statusElement.textContent = "模型加载失败：" + error.message;
       console.error(error);
+    } finally {
+      onnxLoading = false;
     }
   }
+
+  /** Initialize ONNX model load in the background (for pre-warming). */
+  function prewarmOnnx() {
+    if (!onnxLoadStarted && !session) {
+      void loadOnnxModel();
+    }
+  }
+
+  // -------------------------------------------------------------------
+  // Mode switch handler
+  // -------------------------------------------------------------------
+
+  function onModeChange() {
+    const newMode = modeElement.value;
+    if (newMode === aiMode) return;
+    aiMode = newMode;
+
+    // Reset the game on mode switch
+    gameOver = true;  // prevent pending AI moves from corrupting the new game
+    if (aiMode === "heuristic") {
+      // Immediately playable — no model needed
+      startGame();
+    } else {
+      // ONNX mode — need to load model if not already loaded
+      startGame();
+      if (!session) {
+        void loadOnnxModel();
+      }
+    }
+  }
+
+  // -------------------------------------------------------------------
+  // Event wiring
+  // -------------------------------------------------------------------
 
   newGameButton.addEventListener("click", startGame);
   sideElement.addEventListener("change", startGame);
+  if (modeElement) {
+    modeElement.addEventListener("change", onModeChange);
+  }
+
+  // -------------------------------------------------------------------
+  // Init
+  // -------------------------------------------------------------------
 
   createBoard();
+
+  // Default: heuristic mode — playable immediately, no model download.
+  if (modeElement) {
+    modeElement.value = "heuristic";
+    aiMode = "heuristic";
+  }
+
+  heuristicAi = new HeuristicAi(HeuristicConfig);
+  statusElement.textContent = "启发式 AI 已就绪，你执黑棋，请落子";
   render();
-  void loadModel();
+
+  // Pre-warm ONNX model in the background so switching is fast.
+  prewarmOnnx();
 })();

@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="一句话生成 AI 多镜头视频：自动拆分分镜，生成带原生音频的视频。">
+  <title>One-Prompt AI Video · arce-star</title>
+  <style>
+    :root{--ink:#0a0a0a;--muted:#6d6d69;--paper:#f5f5f1;--panel:rgba(255,255,255,.88);--line:#d8d8d2;--blue:#0f4b91;--soft:#ecece7}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%}body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:var(--ink);background:linear-gradient(rgba(0,0,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,.025) 1px,transparent 1px),var(--paper);background-size:28px 28px}
+    button,textarea,input,select{font:inherit}.shell{width:min(1420px,calc(100% - 28px));margin:0 auto;padding:24px 0 52px}.top{display:flex;justify-content:space-between;gap:24px;align-items:flex-start;border-bottom:1px solid var(--line);padding-bottom:20px;margin-bottom:18px}.back{font-size:13px;color:var(--muted);text-decoration:none}.back:hover{color:var(--ink)}h1{font-size:clamp(34px,5vw,64px);line-height:.95;letter-spacing:-.055em;margin:10px 0 0}.sub{color:var(--muted);max-width:780px;line-height:1.65;font-size:14px;margin-top:14px}.badge{border:1px solid var(--ink);padding:7px 11px;border-radius:999px;font:700 10px ui-monospace,monospace;letter-spacing:.12em;white-space:nowrap}.layout{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(320px,.55fr);gap:16px}.panel{background:var(--panel);border:1px solid var(--line);backdrop-filter:blur(12px)}.main{padding:15px}.label{font:700 11px ui-monospace,monospace;letter-spacing:.13em;color:var(--muted);text-transform:uppercase}.hero{aspect-ratio:16/9;background:#050505;border:1px solid #161616;display:grid;place-items:center;overflow:hidden;position:relative;margin-top:12px}.hero video{width:100%;height:100%;object-fit:contain;background:#000}.placeholder{text-align:center;color:#ddd;padding:30px}.placeholder strong{display:block;font-size:clamp(25px,4vw,50px);letter-spacing:-.04em}.placeholder span{font:11px ui-monospace,monospace;color:#777}.prompt{width:100%;min-height:118px;margin-top:12px;border:1px solid var(--line);padding:14px;background:#fff;resize:vertical;outline:none;line-height:1.55}.prompt:focus,input:focus,select:focus{border-color:#777}.toolbar{display:grid;grid-template-columns:auto auto 1fr;gap:8px;margin-top:9px}.btn{border:1px solid var(--ink);background:#fff;padding:10px 16px;cursor:pointer}.btn.primary{background:var(--ink);color:#fff}.btn:disabled{opacity:.45;cursor:not-allowed}.progress{height:3px;background:var(--soft);margin-top:12px;overflow:hidden}.progress>div{height:100%;width:0;background:var(--ink);transition:width .25s}.status{font:12px ui-monospace,monospace;color:var(--muted);margin-top:8px;min-height:20px;white-space:pre-wrap}.download{display:none;margin-top:10px;background:var(--blue);color:#fff;text-decoration:none;padding:10px 14px;text-align:center;font-size:12px}.download.show{display:block}.side{display:grid;gap:12px}.side .panel{padding:15px}.head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:9px}.field{display:grid;gap:5px;font-size:12px;color:var(--muted)}select,input[type=text],input[type=password]{width:100%;padding:9px 10px;border:1px solid var(--line);background:#fff;outline:none}.toggle{display:flex;align-items:center;gap:8px;font-size:12px;color:var(--muted);margin-top:10px}.story{display:grid;gap:8px}.shot{border-top:1px solid var(--line);padding-top:9px;display:grid;grid-template-columns:38px 1fr auto;gap:8px}.shot:first-child{border-top:0}.shot .n{font:700 11px ui-monospace,monospace;color:var(--muted)}.shot strong{font-size:13px}.shot small{color:var(--muted)}.note{font-size:12px;color:var(--muted);line-height:1.7}.warn{border-left:3px solid #b35d00;padding-left:10px}.ok{color:#176b3a}.err{color:#9b2525}.hidden{display:none!important}@media(max-width:900px){.layout{grid-template-columns:1fr}.badge{display:none}.toolbar{grid-template-columns:1fr 1fr}.toolbar .spacer{display:none}}@media(max-width:560px){.grid{grid-template-columns:1fr}.toolbar{grid-template-columns:1fr}.shell{width:min(100% - 16px,1420px)}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div><a class="back" href="index.html">← 返回个人主页</a><h1>One-Prompt AI Video</h1><div class="sub">输入一句话，AI 自动拆分成多镜头并直接生成完整短片。默认使用 Runway Multi‑Shot 工作流；密钥只放在后端环境变量里，不进入公开 GitHub Pages。</div></div>
+    <div class="badge">AI MULTI-SHOT</div>
+  </header>
+  <section class="layout">
+    <section class="panel main">
+      <div class="head"><span class="label">Result</span><span class="label" id="modeBadge">AI MODE</span></div>
+      <div class="hero" id="hero"><div class="placeholder" id="placeholder"><strong>一句话 → 完整视频</strong><span>STORY · SHOTS · VIDEO · AUDIO</span></div><video id="video" controls playsinline class="hidden"></video></div>
+      <textarea id="prompt" class="prompt">一只黄色圆润的可爱小龙严格纯侧视向右大步行走，镜头保持平行跟拍。它依次经过樱花世界、月球、南极、雨夜真实街道、ASCII 数据空间和梵高星空麦田。角色体型、步频和侧视角度始终一致，每个世界自然切换，电影感，动感音乐。</textarea>
+      <div class="toolbar"><button class="btn" id="preview">预览分镜</button><button class="btn primary" id="generate">AI 生成视频</button><div class="spacer"></div></div>
+      <div class="progress"><div id="bar"></div></div><div class="status" id="status">等待输入。</div><a id="download" class="download" target="_blank" rel="noopener">打开 / 下载生成视频</a>
+    </section>
+    <aside class="side">
+      <section class="panel">
+        <div class="head"><span class="label">Director</span><span class="label">Runway Recipe</span></div>
+        <div class="grid">
+          <label class="field">时长<select id="duration"><option value="5">5 秒</option><option value="10" selected>10 秒</option><option value="15">15 秒</option></select></label>
+          <label class="field">画幅<select id="ratio"><option value="1280:720" selected>16:9 · 720p</option><option value="720:1280">9:16 · 720p</option><option value="960:960">1:1 · 720p</option><option value="1920:1080">16:9 · 1080p</option><option value="1080:1920">9:16 · 1080p</option><option value="1440:1440">1:1 · 1080p</option></select></label>
+        </div>
+        <label class="toggle"><input type="checkbox" id="audio" checked> 生成原生音频</label>
+      </section>
+      <section class="panel">
+        <div class="head"><span class="label">Access</span><span class="label" id="accessState">LOCKED</span></div>
+        <label class="field">后端地址<input id="apiUrl" type="text" placeholder="https://your-project.vercel.app/api/video"></label>
+        <label class="field" style="margin-top:9px">生成口令<input id="token" type="password" placeholder="仅保存在当前浏览器会话"></label>
+        <button class="btn" id="saveAccess" style="margin-top:9px;width:100%">保存本次会话</button>
+        <p class="note">Runway API Key 不在这里输入；它只存在 Vercel 后端环境变量中。这个口令只是防止别人从公开主页消耗你的额度。</p>
+      </section>
+      <section class="panel"><div class="head"><span class="label">Storyboard Preview</span><span class="label" id="count">0 SHOTS</span></div><div id="story" class="story"></div></section>
+      <section class="panel"><div class="head"><span class="label">Architecture</span></div><div class="note warn">主页只发送 prompt。真正的 Runway Secret 由后端保管。AI 任务完成后，页面会直接播放返回的 MP4。Runway 结果链接是临时链接，适合立即播放/下载；以后可以再接对象存储做永久保存。</div></section>
+    </aside>
+  </section>
+</main>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id),prompt=$('prompt'),duration=$('duration'),ratio=$('ratio'),audio=$('audio'),story=$('story'),count=$('count'),status=$('status'),bar=$('bar'),generate=$('generate'),preview=$('preview'),video=$('video'),placeholder=$('placeholder'),download=$('download'),apiUrl=$('apiUrl'),token=$('token'),accessState=$('accessState');
+const scenes=[['樱花','SAKURA WORLD'],['月球','MOON'],['南极','ANTARCTICA'],['雨夜','RAINY CITY'],['ASCII','ASCII SPACE'],['数据','DATA SPACE'],['梵高','VAN GOGH'],['星空','STARRY NIGHT'],['森林','FOREST'],['城市','CITY'],['海','OCEAN'],['沙漠','DESERT'],['实验室','LAB'],['赛博','CYBER CITY'],['宇宙','SPACE']];
+function buildPreview(){const text=prompt.value.trim();let hits=scenes.filter(x=>text.toLowerCase().includes(x[0].toLowerCase()));if(!hits.length)hits=[['开场','ESTABLISHING'],['主体','MAIN ACTION'],['变化','TRANSITION'],['结尾','FINAL SHOT']];hits=hits.slice(0,6);story.innerHTML='';const total=Number(duration.value),base=total/hits.length;hits.forEach((x,i)=>{const d=document.createElement('div');d.className='shot';d.innerHTML=`<div class="n">${String(i+1).padStart(2,'0')}</div><div><strong>${x[1]}</strong><br><small>${x[0]}</small></div><small>${base.toFixed(1)}s</small>`;story.appendChild(d)});count.textContent=hits.length+' SHOTS';status.textContent='已生成本地分镜预览；实际镜头由 Runway Multi‑Shot 自动导演。'}
+function saveAccess(){const url=apiUrl.value.trim().replace(/\/$/,'');const t=token.value.trim();sessionStorage.setItem('_video_api_url',url);sessionStorage.setItem('_video_access_token',t);accessState.textContent=url&&t?'READY':'LOCKED';accessState.className='label '+(url&&t?'ok':'');status.textContent=url&&t?'后端配置已保存到当前浏览器会话。':'请填写后端地址和生成口令。'}
+function loadAccess(){apiUrl.value=sessionStorage.getItem('_video_api_url')||localStorage.getItem('_video_api_url')||'';token.value=sessionStorage.getItem('_video_access_token')||'';accessState.textContent=apiUrl.value&&token.value?'READY':'LOCKED';if(apiUrl.value&&token.value)accessState.className='label ok'}
+async function call(body){const url=apiUrl.value.trim().replace(/\/$/,'');const t=token.value.trim();if(!url||!t)throw new Error('请先在右侧 Access 中填写后端地址和生成口令');const r=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json','X-Video-Token':t},body:JSON.stringify(body)});const data=await r.json().catch(()=>({}));if(!r.ok)throw new Error(data.error||`HTTP ${r.status}`);return data}
+function sleep(ms){return new Promise(r=>setTimeout(r,ms))}
+async function run(){const text=prompt.value.trim();if(text.length<3)return;saveAccess();buildPreview();generate.disabled=true;preview.disabled=true;download.classList.remove('show');video.classList.add('hidden');placeholder.classList.remove('hidden');bar.style.width='4%';status.textContent='正在创建 AI 视频任务…';try{const task=await call({action:'generate',prompt:text,duration:Number(duration.value),ratio:ratio.value,audio:audio.checked});let id=task.id;if(!id)throw new Error('后端没有返回 task id');let attempt=0;while(true){await sleep(5200+Math.random()*1200);attempt++;const t=await call({action:'status',id});const pct=Math.min(92,10+attempt*5);bar.style.width=pct+'%';status.textContent=`任务 ${id}\n状态：${t.status} · 第 ${attempt} 次检查`;if(t.status==='SUCCEEDED'){if(!t.outputUrl)throw new Error('任务成功但没有视频地址');bar.style.width='100%';video.src=t.outputUrl;video.classList.remove('hidden');placeholder.classList.add('hidden');download.href=t.outputUrl;download.classList.add('show');download.textContent='打开 / 下载生成的 MP4';status.textContent='生成完成。Runway 返回的是临时结果链接，请及时下载保存。';break}if(t.status==='FAILED'||t.status==='CANCELED')throw new Error(t.failure||`任务 ${t.status}`);if(attempt>120)throw new Error('等待时间过长，请稍后用相同 task id 查询')}}catch(e){bar.style.width='0';status.textContent='生成失败：'+e.message;status.className='status err'}finally{generate.disabled=false;preview.disabled=false}}
+$('saveAccess').addEventListener('click',saveAccess);preview.addEventListener('click',buildPreview);generate.addEventListener('click',run);duration.addEventListener('change',buildPreview);prompt.addEventListener('input',()=>{clearTimeout(window.__pv);window.__pv=setTimeout(buildPreview,350)});loadAccess();buildPreview();
+})();
+</script>
+</body></html>

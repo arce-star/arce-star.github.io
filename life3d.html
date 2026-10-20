@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="交互式 3D 生命游戏：26 邻域、自定义 B/S 规则、随机体素、切片编辑、旋转缩放和播放控制。">
+  <title>3D 生命游戏 · arce-star</title>
+  <link rel="stylesheet" href="assets/css/life.css">
+  <link rel="stylesheet" href="assets/css/life3d.css">
+</head>
+<body>
+  <main class="life-shell">
+    <header class="life-topbar">
+      <div>
+        <a class="life-back" href="index.html">← 返回个人主页</a>
+        <h1 class="life-title">3D Game of Life</h1>
+        <div class="life-subtitle">
+          三维外生命（3D Cellular Life）。每个体素拥有最多 26 个邻居；黑色立方体代表活细胞。拖动空间旋转视角、滚轮缩放，并可在指定 Z 切片上直接点击编辑。
+        </div>
+      </div>
+      <div class="life-dimension-switch" aria-label="dimension switch">
+        <span class="future"><a href="life.html">2D</a></span>
+        <span class="active">3D</span>
+      </div>
+    </header>
+
+    <section class="life-layout life-layout-3d">
+      <div class="life-stage life3d-stage">
+        <div class="life-stage-head">
+          <div class="life-primary-controls">
+            <button class="life-btn primary" id="play-btn" type="button">播放</button>
+            <button class="life-btn" id="step-btn" type="button">单步</button>
+            <button class="life-btn" id="clear-btn" type="button">清空</button>
+            <button class="life-btn" id="random-btn" type="button">随机填充</button>
+          </div>
+          <div class="life-stats" aria-label="simulation stats">
+            <span class="life-stat">代数 <strong id="generation-value">0</strong></span>
+            <span class="life-stat">活细胞 <strong id="population-value">0</strong></span>
+            <span class="life-stat">模式 <strong id="mode-value">切片编辑</strong></span>
+          </div>
+        </div>
+
+        <div class="life3d-view-wrap">
+          <div id="life3d-view" aria-label="3D Game of Life viewport"></div>
+          <div class="life3d-overlay">
+            <span id="slice-label">编辑层 Z = 10</span>
+            <span>26-neighbor Moore neighborhood</span>
+          </div>
+        </div>
+
+        <div class="life3d-camera-bar">
+          <div>
+            <strong>视角</strong>
+            <button class="life-mini-btn" data-view="iso" type="button">等距</button>
+            <button class="life-mini-btn" data-view="front" type="button">正视</button>
+            <button class="life-mini-btn" data-view="top" type="button">俯视</button>
+          </div>
+          <div class="life3d-gesture-hint">拖动旋转 · 滚轮缩放 · 短按切片修改体素</div>
+        </div>
+
+        <div class="life-board-note">
+          <span><strong>Space</strong> 播放/暂停 · <strong>→</strong> 单步 · <strong>R</strong> 随机 · <strong>C</strong> 清空</span>
+          <span>3D 不存在唯一标准康威规则；这里采用可编辑的 26 邻域 B/S 外生命规则。</span>
+        </div>
+      </div>
+
+      <aside class="life-sidebar">
+        <section class="life-panel">
+          <h2 class="life-panel-title">运行控制 <small>Simulation</small></h2>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>播放速度</span>
+              <span class="life-value" id="speed-value">8 代/秒</span>
+            </div>
+            <input class="life-range" id="speed-range" type="range" min="1" max="30" step="1" value="8">
+          </div>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>随机密度</span>
+              <span class="life-value" id="density-value">10%</span>
+            </div>
+            <input class="life-range" id="density-range" type="range" min="1" max="35" step="1" value="10">
+          </div>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>体素不透明度</span>
+              <span class="life-value" id="opacity-value">92%</span>
+            </div>
+            <input class="life-range" id="opacity-range" type="range" min="25" max="100" step="1" value="92">
+          </div>
+
+          <div class="life-inline life-row">
+            <label>
+              <div class="life-label-line"><span>空间尺寸</span></div>
+              <select class="life-select" id="grid-size">
+                <option value="16">16³</option>
+                <option value="20" selected>20³</option>
+                <option value="24">24³</option>
+                <option value="28">28³</option>
+              </select>
+            </label>
+            <label>
+              <div class="life-label-line"><span>边界</span></div>
+              <select class="life-select" id="boundary-mode">
+                <option value="wrap" selected>三维环面</option>
+                <option value="finite">有限空间</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="life-toggle-row">
+            <label class="life-switch-label">
+              <input id="edit-slice-toggle" type="checkbox" checked>
+              <span>切片编辑</span>
+            </label>
+            <label class="life-switch-label">
+              <input id="auto-rotate-toggle" type="checkbox">
+              <span>自动旋转</span>
+            </label>
+          </div>
+
+          <div class="life-status" id="life-status"></div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">切片编辑 <small>Z Slice</small></h2>
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>Z 层</span>
+              <span class="life-value" id="layer-value">10</span>
+            </div>
+            <input class="life-range" id="layer-range" type="range" min="0" max="19" step="1" value="10">
+          </div>
+          <div class="life3d-help-box">
+            开启“切片编辑”后，空间中会显示灰色网格平面。<strong>短按</strong>网格切换该体素生死；<strong>拖动</strong>仍然旋转整个立方体。
+          </div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">3D 种子 <small>Seeds</small></h2>
+          <div class="pattern-grid">
+            <button class="pattern-btn" data-seed="cross" type="button"><strong>3D Cross</strong><span>中心六向十字</span></button>
+            <button class="pattern-btn" data-seed="cube" type="button"><strong>2×2×2 Cube</strong><span>八体素立方块</span></button>
+            <button class="pattern-btn" data-seed="shell" type="button"><strong>Cube Shell</strong><span>5³ 空心立方壳</span></button>
+            <button class="pattern-btn" data-seed="sphere" type="button"><strong>Sphere Shell</strong><span>球状离散种子</span></button>
+            <button class="pattern-btn" data-seed="glider-slice" type="button"><strong>2D Glider Slice</strong><span>嵌入中央切片</span></button>
+            <button class="pattern-btn" data-seed="lattice" type="button"><strong>3D Lattice</strong><span>5³ 交错点阵</span></button>
+          </div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">3D 规则编辑器 <small>26 neighbors</small></h2>
+          <div class="rule-readout" id="rule-readout">B{6}/S{5,6,7}</div>
+
+          <div class="rule-group">
+            <div class="rule-group-label">B · Birth：死体素在这些邻居数下出生</div>
+            <div class="rule-numbers rule-numbers-3d" id="birth-rule-numbers"></div>
+          </div>
+
+          <div class="rule-group">
+            <div class="rule-group-label">S · Survival：活体素在这些邻居数下存活</div>
+            <div class="rule-numbers rule-numbers-3d" id="survive-rule-numbers"></div>
+          </div>
+
+          <div class="preset-grid" aria-label="3D rule presets">
+            <button class="rule-preset rule-preset-3d" data-birth="6" data-survive="5,6,7" type="button">B6/S567</button>
+            <button class="rule-preset rule-preset-3d" data-birth="5" data-survive="4,5" type="button">B5/S45</button>
+            <button class="rule-preset rule-preset-3d" data-birth="5,6" data-survive="4,5,6" type="button">B56/S456</button>
+            <button class="rule-preset rule-preset-3d" data-birth="6" data-survive="5,6" type="button">B6/S56</button>
+            <button class="rule-preset rule-preset-3d" data-birth="4,5" data-survive="4,5,6,7" type="button">B45/S4567</button>
+          </div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">说明 <small>About 3D Life</small></h2>
+          <ul class="life-help">
+            <li>二维康威生命游戏每格最多 8 个邻居；三维 Moore 邻域则最多有 <strong>26</strong> 个邻居。</li>
+            <li>因此二维 <span class="life-kbd">B3/S23</span> 不能直接视为三维唯一标准规则。</li>
+            <li>默认使用 <span class="life-kbd">B6/S567</span>，你可以点击 0–26 任意邻居数重写规则。</li>
+            <li>空间较大、密度较高和速度较快时计算量会显著增加。</li>
+          </ul>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script type="module" src="assets/js/life3d.js"></script>
+</body>
+</html>

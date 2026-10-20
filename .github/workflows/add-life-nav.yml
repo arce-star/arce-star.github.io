@@ -1,0 +1,46 @@
+name: Add Life navigation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/add-life-nav.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch-homepage:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Add Life link to homepage sidebar
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          path = Path('index.html')
+          text = path.read_text(encoding='utf-8')
+          anchor = '                <a href="gomoku.html"><i class="fas fa-chess-board"></i> 五子棋</a>'
+          life = '                <a href="life.html"><i class="fas fa-th"></i> 生命游戏</a>'
+
+          if 'href="life.html"' not in text:
+              if anchor not in text:
+                  raise SystemExit('Expected 五子棋 navigation anchor was not found.')
+              text = text.replace(anchor, life + '\n' + anchor, 1)
+              path.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Commit homepage navigation
+        shell: bash
+        run: |
+          if git diff --quiet -- index.html; then
+            echo "Navigation already present."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git commit -m "feat(life): add homepage navigation entry"
+          git push

@@ -68,3 +68,15 @@ const Auth = (() => {
 
   return { decryptContent, setSession, clearSession, isLoggedIn };
 })();
+
+// 公开主页工具入口：保持 index.html 主体不受独立实验页频繁改动影响。
+(() => {
+  const nav = document.querySelector('.sidebar-nav');
+  if (!nav || nav.querySelector('a[href="video.html"]')) return;
+  const link = document.createElement('a');
+  link.href = 'video.html';
+  link.innerHTML = '<i class="fas fa-video"></i> 一句话视频';
+  const lifeLink = nav.querySelector('a[href="life.html"]');
+  if (lifeLink) nav.insertBefore(link, lifeLink);
+  else nav.appendChild(link);
+})();

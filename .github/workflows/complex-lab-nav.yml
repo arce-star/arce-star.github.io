@@ -1,0 +1,49 @@
+name: Wire Complex Lab navigation
+
+on:
+  push:
+    paths:
+      - '.github/workflows/complex-lab-nav.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Patch navigation
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+
+          p = Path('index.html')
+          s = p.read_text(encoding='utf-8')
+          old = '<a href="life.html"><i class="fas fa-th"></i> 生命游戏</a>'
+          new = '<a href="complex-lab.html"><i class="fas fa-project-diagram"></i> Complex Lab</a>'
+          if old not in s and new not in s:
+              raise SystemExit('homepage life nav not found')
+          s = s.replace(old, new, 1)
+          p.write_text(s, encoding='utf-8')
+
+          old_back = '<a class="life-back" href="index.html">← 返回个人主页</a>'
+          new_back = '<a class="life-back" href="complex-lab.html">← Complex Lab</a>'
+          for name in ['life.html', 'life3d.html', 'neural-life.html']:
+              p = Path(name)
+              s = p.read_text(encoding='utf-8')
+              if old_back in s:
+                  s = s.replace(old_back, new_back, 1)
+                  p.write_text(s, encoding='utf-8')
+          PY
+      - name: Commit
+        run: |
+          if git diff --quiet -- index.html life.html life3d.html neural-life.html; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add index.html life.html life3d.html neural-life.html
+          git commit -m 'feat: route interactive systems through Complex Lab'
+          git push

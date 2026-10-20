@@ -72,9 +72,9 @@ const Auth = (() => {
 // 公开主页工具入口：保持 index.html 主体不受独立实验页频繁改动影响。
 (() => {
   const nav = document.querySelector('.sidebar-nav');
-  if (!nav || nav.querySelector('a[href="video.html"]')) return;
+  if (!nav || nav.querySelector('a[href="video-ai.html"]')) return;
   const link = document.createElement('a');
-  link.href = 'video.html';
+  link.href = 'video-ai.html';
   link.innerHTML = '<i class="fas fa-video"></i> 一句话视频';
   const lifeLink = nav.querySelector('a[href="life.html"]');
   if (lifeLink) nav.insertBefore(link, lifeLink);

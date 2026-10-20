@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>2D Ising Model · Complex Systems Lab</title><link rel="stylesheet" href="assets/css/complex-lab.css"></head>
+<body><main class="sim-shell">
+<header class="sim-head"><div><a class="lab-back" href="complex-lab.html">← Complex Systems Lab</a><h1>2D Ising Model</h1><p>二维方格晶格上的 ±1 自旋。用 Metropolis Monte Carlo 改变温度与外场，观察磁畴形成、临界涨落和自发磁化。J = kB = 1，因此 Tc ≈ 2.269。</p></div><div class="sim-links"><a href="reaction-diffusion.html">GRAY–SCOTT</a><a href="lenia.html">LENIA</a><a href="life.html">GAME OF LIFE</a></div></header>
+<section class="sim-layout"><div class="sim-stage">
+<div class="sim-toolbar"><div class="sim-btns"><button class="sim-btn primary" id="play">暂停</button><button class="sim-btn" id="random">随机态</button><button class="sim-btn" id="ordered">全有序</button><button class="sim-btn" id="quench">Quench</button><button class="sim-btn" id="critical">设为 Tc</button></div><div class="sim-stats"><span>SWEEP <strong id="sweeps">0</strong></span><span>M <strong id="m">0.000</strong></span><span>E/N <strong id="e">0.000</strong></span></div></div>
+<div class="sim-canvas-wrap"><canvas id="canvas"></canvas></div><div class="sim-note"><span>左键：设为 ↑ · Shift/右键：设为 ↓</span><span>黑 = +1 · 白 = −1</span></div></div>
+<aside class="sim-side"><section class="sim-panel"><h2>Thermodynamics</h2>
+<div class="sim-row"><div class="sim-label"><span>Temperature T</span><strong id="t-v">3.50</strong></div><input class="sim-range" id="temp" type="range" min="0.30" max="5.00" step="0.01" value="3.50"></div>
+<div class="sim-row"><div class="sim-label"><span>Field h</span><strong id="h-v">0.00</strong></div><input class="sim-range" id="field" type="range" min="-1.00" max="1.00" step="0.01" value="0"></div>
+<div class="sim-row"><div class="sim-label"><span>MC sweeps / frame</span><strong id="spf-v">2</strong></div><input class="sim-range" id="spf" type="range" min="1" max="8" step="1" value="2"></div>
+<div class="sim-preset-grid"><button class="sim-preset" data-t="1.5">T = 1.5</button><button class="sim-preset" data-t="2.269">T ≈ Tc</button><button class="sim-preset" data-t="3.5">T = 3.5</button><button class="sim-preset" data-t="5">T = 5.0</button></div></section>
+<section class="sim-panel"><h2>Order parameter</h2><canvas class="sim-chart" id="chart" width="300" height="130"></canvas><p class="sim-explain">曲线显示最近的磁化强度 M。低温时 |M| 倾向接近 1；高温时趋近 0；临界区会出现大尺度涨落。</p></section>
+<section class="sim-panel"><h2>Hamiltonian</h2><div class="sim-equation">H = −J Σ⟨i,j⟩ sᵢsⱼ − h Σᵢ sᵢ<br><br>P(accept)=min[1, exp(−ΔE/T)]</div><p class="sim-explain">Quench 会把系统从当前状态瞬间降到 T=1.5。观察小磁畴如何竞争、合并并逐渐粗化。</p></section></aside></section>
+</main><script src="assets/js/ising.js"></script></body></html>

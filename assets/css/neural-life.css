@@ -1,0 +1,149 @@
+.life-dimension-switch a { color: inherit; text-decoration: none; }
+.life-dimension-switch .future + .future { border-left: 1px solid var(--ink); }
+
+.neural-layout { grid-template-columns: minmax(0, 1fr) 360px; }
+.neural-stage { overflow: hidden; }
+
+.nca-canvas-wrap {
+  position: relative;
+  min-height: 560px;
+  display: grid;
+  place-items: center;
+  background:
+    linear-gradient(45deg, #f2f2f2 25%, transparent 25%) 0 0/18px 18px,
+    linear-gradient(-45deg, #f2f2f2 25%, transparent 25%) 0 0/18px 18px,
+    linear-gradient(45deg, transparent 75%, #f2f2f2 75%) 0 0/18px 18px,
+    linear-gradient(-45deg, transparent 75%, #f2f2f2 75%) 0 0/18px 18px,
+    #fff;
+}
+
+#nca-canvas {
+  display: block;
+  width: min(100%, 760px);
+  height: auto;
+  aspect-ratio: 1;
+  background: #fff;
+  image-rendering: pixelated;
+  cursor: crosshair;
+  touch-action: none;
+}
+
+.nca-loading {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(255,255,255,.88);
+  color: #222;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .02em;
+  transition: opacity .2s ease;
+  z-index: 2;
+}
+.nca-loading.is-hidden { opacity: 0; pointer-events: none; }
+.nca-loading.is-error { color: #a40000; opacity: 1; }
+
+.nca-channel-strip {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(70px, 95px)) minmax(190px, 1fr);
+  border-top: 1px solid var(--ink);
+  min-height: 70px;
+}
+.nca-channel {
+  padding: 10px 12px;
+  border-right: 1px solid var(--ink);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+.nca-channel strong { font: 900 18px/1 ui-monospace, monospace; }
+.nca-channel span { font-size: 9px; font-weight: 700; opacity: .72; }
+.nca-channel.r { background: #ff4040; color: #130000; }
+.nca-channel.g { background: #42f56f; color: #001707; }
+.nca-channel.b { background: #3988ff; color: #00132e; }
+.nca-channel.a { background: #111; color: #fff; }
+.nca-hidden-group {
+  position: relative;
+  overflow: hidden;
+  padding: 10px 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  color: #fff;
+  background: linear-gradient(110deg, #7d2cff, #e91e63 35%, #ff8a00 65%, #19c7b2);
+}
+.nca-hidden-group::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(90deg, transparent 0 17px, rgba(255,255,255,.2) 17px 18px);
+  pointer-events: none;
+}
+.nca-hidden-group strong, .nca-hidden-group span { position: relative; z-index: 1; }
+.nca-hidden-group strong { font: 900 16px/1 ui-monospace, monospace; }
+.nca-hidden-group span { font-size: 9px; font-weight: 800; }
+
+.nca-model-note {
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #bbb;
+  background: #f7f7f7;
+  color: #4c4c4c;
+  font-size: 10px;
+  line-height: 1.6;
+}
+
+.nca-flow {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr auto 1fr auto 1fr;
+  align-items: stretch;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.nca-flow > div {
+  min-width: 0;
+  border: 1px solid var(--ink);
+  padding: 7px 5px;
+  text-align: center;
+  background: #fff;
+}
+.nca-flow strong {
+  display: block;
+  margin-bottom: 5px;
+  font: 900 10px/1 ui-monospace, monospace;
+}
+.nca-flow span { display: block; font-size: 8px; line-height: 1.35; color: #555; }
+.nca-flow i { align-self: center; font-style: normal; font-weight: 900; font-size: 10px; }
+.nca-help { margin-top: 4px; }
+
+.nca-credit {
+  margin: 0;
+  color: #555;
+  font-size: 10px;
+  line-height: 1.65;
+}
+.nca-links { display: flex; gap: 7px; flex-wrap: wrap; margin-top: 10px; }
+.nca-links a {
+  border: 1px solid var(--ink);
+  padding: 6px 8px;
+  color: var(--ink);
+  text-decoration: none;
+  font-size: 9px;
+  font-weight: 800;
+}
+.nca-links a:hover { background: var(--ink); color: #fff; }
+
+@media (max-width: 1050px) {
+  .neural-layout { grid-template-columns: 1fr; }
+  .nca-canvas-wrap { min-height: 0; }
+  .life-sidebar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (max-width: 700px) {
+  .life-sidebar { display: flex; }
+  .nca-channel-strip { grid-template-columns: repeat(4, 1fr); }
+  .nca-hidden-group { grid-column: 1 / -1; min-height: 62px; }
+  .nca-flow { grid-template-columns: 1fr 1fr; }
+  .nca-flow i { display: none; }
+}

@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Gray–Scott · Complex Systems Lab</title><link rel="stylesheet" href="assets/css/complex-lab.css"></head>
+<body><main class="sim-shell">
+<header class="sim-head"><div><a class="lab-back" href="complex-lab.html">← Complex Systems Lab</a><h1>Gray–Scott Reaction–Diffusion</h1><p>两个连续浓度场通过扩散与非线性反应耦合。只改 feed rate F 和 kill rate k，就能在同一组 PDE 中产生斑点、条纹、分裂与混沌图案。</p></div><div class="sim-links"><a href="lenia.html">LENIA</a><a href="ising.html">ISING</a><a href="neural-life.html">NEURAL CA</a></div></header>
+<section class="sim-layout"><div class="sim-stage">
+<div class="sim-toolbar"><div class="sim-btns"><button class="sim-btn primary" id="play">暂停</button><button class="sim-btn" id="step">单步</button><button class="sim-btn" id="reset">重置</button><button class="sim-btn" id="noise">随机扰动</button></div><div class="sim-stats"><span>STEP <strong id="steps">0</strong></span><span>⟨V⟩ <strong id="mean-v">0.000</strong></span></div></div>
+<div class="sim-canvas-wrap"><canvas id="canvas"></canvas></div><div class="sim-note"><span>左键拖动：注入 V · Shift/右键：抹去 V</span><span>周期边界 · 9-point Laplacian</span></div></div>
+<aside class="sim-side"><section class="sim-panel"><h2>Parameters</h2>
+<div class="sim-row"><div class="sim-label"><span>Feed F</span><strong id="f-v">0.0367</strong></div><input class="sim-range" id="f" type="range" min="0.0100" max="0.0800" step="0.0001" value="0.0367"></div>
+<div class="sim-row"><div class="sim-label"><span>Kill k</span><strong id="k-v">0.0649</strong></div><input class="sim-range" id="k" type="range" min="0.0300" max="0.0750" step="0.0001" value="0.0649"></div>
+<div class="sim-grid2"><div class="sim-row"><div class="sim-label"><span>Dᵤ</span><strong>0.16</strong></div></div><div class="sim-row"><div class="sim-label"><span>Dᵥ</span><strong>0.08</strong></div></div></div>
+<div class="sim-row"><div class="sim-label"><span>Steps / frame</span><strong id="spf-v">8</strong></div><input class="sim-range" id="spf" type="range" min="1" max="24" step="1" value="8"></div></section>
+<section class="sim-panel"><h2>Pattern presets</h2><div class="sim-preset-grid"><button class="sim-preset active" data-p="mitosis">Mitosis</button><button class="sim-preset" data-p="coral">Coral</button><button class="sim-preset" data-p="worms">Worms</button><button class="sim-preset" data-p="spots">Spots</button><button class="sim-preset" data-p="chaos">Chaos</button><button class="sim-preset" data-p="waves">Waves</button></div></section>
+<section class="sim-panel"><h2>Equation</h2><div class="sim-equation">∂u/∂t = Dᵤ∇²u − uv² + F(1−u)<br>∂v/∂t = Dᵥ∇²v + uv² − (F+k)v</div><p class="sim-explain">局部反应倾向于放大某些浓度差异，扩散又试图抹平它们。二者竞争后，可以自发打破空间均匀性，形成稳定或持续变化的图案。</p></section></aside></section>
+</main><script src="assets/js/reaction-diffusion.js"></script></body></html>

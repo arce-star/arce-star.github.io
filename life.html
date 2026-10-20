@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="交互式康威生命游戏：支持自定义规则、经典图案、随机填充、播放速度和手工编辑。">
+  <title>康威生命游戏 · arce-star</title>
+  <link rel="stylesheet" href="assets/css/life.css">
+</head>
+<body>
+  <main class="life-shell">
+    <header class="life-topbar">
+      <div>
+        <a class="life-back" href="index.html">← 返回个人主页</a>
+        <h1 class="life-title">Conway's Game of Life</h1>
+        <div class="life-subtitle">
+          康威生命游戏 · 2D Cellular Automaton。黑色为活细胞，白色为死细胞。你可以直接绘制、随机生成、放置经典图案，并修改出生 / 存活规则。
+        </div>
+      </div>
+      <div class="life-dimension-switch" aria-label="dimension switch">
+        <span class="active">2D</span>
+        <span class="future">3D · 下一步</span>
+      </div>
+    </header>
+
+    <section class="life-layout">
+      <div class="life-stage">
+        <div class="life-stage-head">
+          <div class="life-primary-controls">
+            <button class="life-btn primary" id="play-btn" type="button">播放</button>
+            <button class="life-btn" id="step-btn" type="button">单步</button>
+            <button class="life-btn" id="clear-btn" type="button">清空</button>
+            <button class="life-btn" id="random-btn" type="button">随机填充</button>
+            <button class="life-btn" id="center-pattern-btn" type="button" disabled>图案居中</button>
+          </div>
+          <div class="life-stats" aria-label="simulation stats">
+            <span class="life-stat">代数 <strong id="generation-value">0</strong></span>
+            <span class="life-stat">活细胞 <strong id="population-value">0</strong></span>
+            <span class="life-stat">模式 <strong id="mode-value">绘制</strong></span>
+          </div>
+        </div>
+
+        <div class="life-canvas-wrap">
+          <canvas id="life-canvas" aria-label="Game of Life grid"></canvas>
+        </div>
+
+        <div class="life-board-note">
+          <span><strong>左键</strong> 点击 / 拖动改变格子；<strong>Shift + 左键</strong> 或 <strong>右键</strong> 擦除。</span>
+          <span><strong>Space</strong> 播放/暂停 · <strong>→</strong> 单步 · <strong>R</strong> 随机 · <strong>C</strong> 清空</span>
+        </div>
+      </div>
+
+      <aside class="life-sidebar">
+        <section class="life-panel">
+          <h2 class="life-panel-title">运行控制 <small>Simulation</small></h2>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>播放速度</span>
+              <span class="life-value" id="speed-value">10 代/秒</span>
+            </div>
+            <input class="life-range" id="speed-range" type="range" min="1" max="60" step="1" value="10">
+          </div>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>随机密度</span>
+              <span class="life-value" id="density-value">24%</span>
+            </div>
+            <input class="life-range" id="density-range" type="range" min="2" max="75" step="1" value="24">
+          </div>
+
+          <div class="life-inline life-row">
+            <label>
+              <div class="life-label-line"><span>棋盘大小</span></div>
+              <select class="life-select" id="grid-size">
+                <option value="80x50">80 × 50</option>
+                <option value="120x75" selected>120 × 75</option>
+                <option value="160x100">160 × 100</option>
+                <option value="200x125">200 × 125</option>
+              </select>
+            </label>
+            <label>
+              <div class="life-label-line"><span>边界</span></div>
+              <select class="life-select" id="boundary-mode">
+                <option value="wrap" selected>环面</option>
+                <option value="finite">有限</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="life-status" id="life-status"></div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">经典图案 <small>Patterns</small></h2>
+          <div class="pattern-grid">
+            <button class="pattern-btn" data-pattern="glider" type="button"><strong>Glider</strong><span>滑翔机 · 5 cells</span></button>
+            <button class="pattern-btn" data-pattern="blinker" type="button"><strong>Blinker</strong><span>周期 2 振荡器</span></button>
+            <button class="pattern-btn" data-pattern="lwss" type="button"><strong>LWSS</strong><span>轻型宇宙飞船</span></button>
+            <button class="pattern-btn" data-pattern="rpentomino" type="button"><strong>R-pentomino</strong><span>经典混沌种子</span></button>
+            <button class="pattern-btn" data-pattern="acorn" type="button"><strong>Acorn</strong><span>长期演化种子</span></button>
+            <button class="pattern-btn" data-pattern="diehard" type="button"><strong>Diehard</strong><span>130 代后消失</span></button>
+            <button class="pattern-btn" data-pattern="pulsar" type="button"><strong>Pulsar</strong><span>周期 3 振荡器</span></button>
+            <button class="pattern-btn" data-pattern="gun" type="button"><strong>Gosper Gun</strong><span>滑翔机枪</span></button>
+          </div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">规则编辑器 <small>Rule editor</small></h2>
+          <div class="rule-readout" id="rule-readout">B3/S23</div>
+
+          <div class="rule-group">
+            <div class="rule-group-label">B · Birth：死细胞在这些邻居数下出生</div>
+            <div class="rule-numbers">
+              <button class="rule-number" data-kind="birth" data-n="0" type="button">0</button>
+              <button class="rule-number" data-kind="birth" data-n="1" type="button">1</button>
+              <button class="rule-number" data-kind="birth" data-n="2" type="button">2</button>
+              <button class="rule-number" data-kind="birth" data-n="3" type="button">3</button>
+              <button class="rule-number" data-kind="birth" data-n="4" type="button">4</button>
+              <button class="rule-number" data-kind="birth" data-n="5" type="button">5</button>
+              <button class="rule-number" data-kind="birth" data-n="6" type="button">6</button>
+              <button class="rule-number" data-kind="birth" data-n="7" type="button">7</button>
+              <button class="rule-number" data-kind="birth" data-n="8" type="button">8</button>
+            </div>
+          </div>
+
+          <div class="rule-group">
+            <div class="rule-group-label">S · Survival：活细胞在这些邻居数下存活</div>
+            <div class="rule-numbers">
+              <button class="rule-number" data-kind="survive" data-n="0" type="button">0</button>
+              <button class="rule-number" data-kind="survive" data-n="1" type="button">1</button>
+              <button class="rule-number" data-kind="survive" data-n="2" type="button">2</button>
+              <button class="rule-number" data-kind="survive" data-n="3" type="button">3</button>
+              <button class="rule-number" data-kind="survive" data-n="4" type="button">4</button>
+              <button class="rule-number" data-kind="survive" data-n="5" type="button">5</button>
+              <button class="rule-number" data-kind="survive" data-n="6" type="button">6</button>
+              <button class="rule-number" data-kind="survive" data-n="7" type="button">7</button>
+              <button class="rule-number" data-kind="survive" data-n="8" type="button">8</button>
+            </div>
+          </div>
+
+          <div class="preset-grid" aria-label="rule presets">
+            <button class="rule-preset" data-rule="B3/S23" type="button">Conway</button>
+            <button class="rule-preset" data-rule="B36/S23" type="button">HighLife</button>
+            <button class="rule-preset" data-rule="B2/S" type="button">Seeds</button>
+            <button class="rule-preset" data-rule="B3678/S34678" type="button">Day & Night</button>
+            <button class="rule-preset" data-rule="B3/S012345678" type="button">Life without Death</button>
+          </div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">操作 <small>Interaction</small></h2>
+          <ul class="life-help">
+            <li>默认是标准康威规则 <span class="life-kbd">B3/S23</span>。</li>
+            <li>点击经典图案后进入“图案模式”，再点击棋盘决定放置位置。</li>
+            <li>按 <span class="life-kbd">Esc</span> 退出图案模式，回到逐格绘制。</li>
+            <li>“环面”边界会让上下、左右边缘首尾相接。</li>
+            <li>后续 3D 版会复用规则、播放与图案系统。</li>
+          </ul>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="assets/js/life.js"></script>
+</body>
+</html>

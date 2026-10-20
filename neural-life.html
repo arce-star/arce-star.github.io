@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="交互式 Neural Cellular Automata：16 通道细胞状态、预训练生长模型、损伤与再生、隐藏状态可视化。">
+  <title>Neural Cellular Automata · arce-star</title>
+  <link rel="stylesheet" href="assets/css/life.css">
+  <link rel="stylesheet" href="assets/css/neural-life.css">
+</head>
+<body>
+  <main class="life-shell">
+    <header class="life-topbar">
+      <div>
+        <a class="life-back" href="index.html">← 返回个人主页</a>
+        <h1 class="life-title">Neural Cellular Automata</h1>
+        <div class="life-subtitle">
+          基于 Distill《Growing Neural Cellular Automata》的交互式演示。每个细胞拥有 16 维连续状态：RGBA + 12 个隐藏通道；所有细胞共享同一个小型神经网络更新规则，从单个 seed 自组织生长，并可在受损后恢复。
+        </div>
+      </div>
+      <div class="life-dimension-switch" aria-label="life mode switch">
+        <span class="future"><a href="life.html">2D</a></span>
+        <span class="future"><a href="life3d.html">3D</a></span>
+        <span class="active">Neural CA</span>
+      </div>
+    </header>
+
+    <section class="life-layout neural-layout">
+      <div class="life-stage neural-stage">
+        <div class="life-stage-head">
+          <div class="life-primary-controls">
+            <button class="life-btn primary" id="nca-play-btn" type="button">暂停</button>
+            <button class="life-btn" id="nca-step-btn" type="button">单步</button>
+            <button class="life-btn" id="nca-reset-btn" type="button">重置 Seed</button>
+            <button class="life-btn" id="nca-damage-btn" type="button">随机损伤</button>
+          </div>
+          <div class="life-stats">
+            <span class="life-stat">步数 <strong id="nca-step-value">0</strong></span>
+            <span class="life-stat">更新率 <strong id="nca-fps-value">—</strong></span>
+            <span class="life-stat">模型 <strong id="nca-model-value">再生 · 🦎</strong></span>
+          </div>
+        </div>
+
+        <div class="nca-canvas-wrap">
+          <canvas id="nca-canvas" width="576" height="576" aria-label="Neural Cellular Automata canvas"></canvas>
+          <div id="nca-loading" class="nca-loading">正在载入 Neural CA 模型…</div>
+        </div>
+
+        <div class="nca-channel-strip" aria-label="16 dimensional cell state">
+          <div class="nca-channel rgba r"><strong>R</strong><span>Red</span></div>
+          <div class="nca-channel rgba g"><strong>G</strong><span>Green</span></div>
+          <div class="nca-channel rgba b"><strong>B</strong><span>Blue</span></div>
+          <div class="nca-channel rgba a"><strong>α</strong><span>Alive</span></div>
+          <div class="nca-hidden-group">
+            <strong>h₁ … h₁₂</strong>
+            <span>12 hidden channels · 内部信号 / 记忆</span>
+          </div>
+        </div>
+
+        <div class="life-board-note">
+          <span><strong>拖动</strong>画布可挖掉细胞；<strong>Shift + 点击</strong>可植入新 seed。</span>
+          <span>损伤后继续播放，选择“再生”模型观察局部组织重新长回。</span>
+        </div>
+      </div>
+
+      <aside class="life-sidebar">
+        <section class="life-panel">
+          <h2 class="life-panel-title">模型 <small>Pretrained NCA</small></h2>
+
+          <div class="life-row">
+            <div class="life-label-line"><span>目标图案</span></div>
+            <select class="life-select" id="nca-target">
+              <option value="🦎" selected>🦎 Lizard</option>
+              <option value="🦋">🦋 Butterfly</option>
+              <option value="🐠">🐠 Fish</option>
+              <option value="🐞">🐞 Ladybug</option>
+              <option value="😀">😀 Smile</option>
+              <option value="🎄">🎄 Tree</option>
+              <option value="🥨">🥨 Pretzel</option>
+              <option value="🕸">🕸 Web</option>
+              <option value="👁">👁 Eye</option>
+              <option value="💥">💥 Explosion</option>
+            </select>
+          </div>
+
+          <div class="life-row">
+            <div class="life-label-line"><span>训练模式</span></div>
+            <select class="life-select" id="nca-experiment">
+              <option value="ex1">生长 Growth</option>
+              <option value="ex2">稳定 Persistence</option>
+              <option value="ex3" selected>再生 Regeneration</option>
+            </select>
+          </div>
+
+          <div class="nca-model-note" id="nca-model-note">
+            再生模型在训练时反复接受随机损伤，因此学到的目标更接近稳定吸引子；挖掉一部分后通常能够重新组织。
+          </div>
+          <div class="life-status" id="nca-status"></div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">运行控制 <small>Dynamics</small></h2>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>速度</span>
+              <span class="life-value" id="nca-speed-value">1×</span>
+            </div>
+            <input class="life-range" id="nca-speed" type="range" min="0" max="5" step="1" value="3">
+          </div>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>损伤半径</span>
+              <span class="life-value" id="nca-brush-value">8 cells</span>
+            </div>
+            <input class="life-range" id="nca-brush" type="range" min="2" max="20" step="1" value="8">
+          </div>
+
+          <div class="life-row">
+            <div class="life-label-line">
+              <span>感知方向</span>
+              <span class="life-value" id="nca-angle-value">0°</span>
+            </div>
+            <input class="life-range" id="nca-angle" type="range" min="-180" max="180" step="1" value="0">
+          </div>
+
+          <div class="life-row">
+            <div class="life-label-line"><span>可视化层</span></div>
+            <select class="life-select" id="nca-vis-mode">
+              <option value="color" selected>Color · RGBA</option>
+              <option value="state">State · 16 通道打包</option>
+              <option value="perception">Perception · Sobel 感知</option>
+              <option value="hidden">Hidden · 128 隐层激活</option>
+              <option value="update">Update · 状态增量</option>
+              <option value="maskedUpdate">Masked update · 随机更新后</option>
+            </select>
+          </div>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">一步发生什么 <small>Update rule</small></h2>
+          <div class="nca-flow">
+            <div><strong>01</strong><span>3×3 Sobel<br>局部感知</span></div>
+            <i>→</i>
+            <div><strong>02</strong><span>48 → 128<br>ReLU</span></div>
+            <i>→</i>
+            <div><strong>03</strong><span>128 → 16<br>Residual Δstate</span></div>
+            <i>→</i>
+            <div><strong>04</strong><span>50% 随机<br>异步更新</span></div>
+          </div>
+          <ul class="life-help nca-help">
+            <li>RGB 是可见颜色；α 通道决定细胞是否“活着”。</li>
+            <li>其余 12 个 hidden channels 没有预设语义，由网络自行学习。</li>
+            <li>每个位置运行完全相同的神经更新规则，复杂形态来自局部交互。</li>
+          </ul>
+        </section>
+
+        <section class="life-panel">
+          <h2 class="life-panel-title">来源 <small>Reference</small></h2>
+          <p class="nca-credit">
+            模型结构与预训练权重来自 Mordvintsev et al., <em>Growing Neural Cellular Automata</em>, Distill (2020)。本页使用其公开 WebGL 演示核心，并重新设计交互界面。
+          </p>
+          <div class="nca-links">
+            <a href="https://distill.pub/2020/growing-ca/" target="_blank" rel="noopener">阅读原文 ↗</a>
+            <a href="https://github.com/distillpub/post--growing-ca" target="_blank" rel="noopener">官方代码 ↗</a>
+          </div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/gh/distillpub/post--growing-ca@a12c7efa541b5770043a8d5470bffeacfd7b0435/public/twgl.min.js"></script>
+  <script type="module" src="assets/js/neural-life.js"></script>
+</body>
+</html>

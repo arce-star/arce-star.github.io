@@ -1,0 +1,25 @@
+name: Prune Complex Lab v3
+on:
+  push:
+    paths:
+      - '.github/workflows/prune-complex-lab-v3.yml'
+permissions:
+  contents: write
+jobs:
+  prune:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prune third-stage experiments
+        run: python .github/scripts/prune_complex_lab_v3.py
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          if git diff --cached --quiet; then
+            echo 'No changes needed.'
+            exit 0
+          fi
+          git commit -m 'refactor: prune Complex Lab to 20 experiments'
+          git push

@@ -11,7 +11,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Apply enhancer
-        run: python .github/scripts/apply_complex_enhance.py
+        run: |
+          python .github/scripts/apply_complex_enhance.py
+          python .github/scripts/fix_complex_enhance_cases.py
       - name: Commit changes
         run: |
           git config user.name 'github-actions[bot]'
@@ -21,5 +23,5 @@ jobs:
             echo 'No changes needed.'
             exit 0
           fi
-          git commit -m 'feat: add guides presets and unified keyboard controls to Complex Lab'
+          git commit -m 'fix: make Complex Lab classic presets actionable'
           git push

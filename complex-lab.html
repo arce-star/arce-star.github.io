@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <meta name="description" content="Complex Systems Lab：36 个元胞自动机、统计物理、网络、自组织、分形与非线性动力学交互实验。">
+  <meta name="description" content="Complex Systems Lab：48 个元胞自动机、统计物理、PDE、网络、自组织、信息动力学、分形与非线性动力学交互实验。">
   <title>Complex Systems Lab · arce-star</title>
   <link rel="stylesheet" href="assets/css/complex-lab.css">
 </head>
@@ -14,13 +14,13 @@
       <a class="lab-back" href="index.html">← 返回个人主页</a>
       <div class="lab-kicker">interactive playground / ai × physics</div>
       <h1 class="lab-title">Complex<br>Systems Lab</h1>
-      <p class="lab-intro">从局部规则到全局涌现：直接改变控制参数，观察动力学、相变、临界性、同步、网络、分形与混沌如何出现。这里不是动画合集，而是一组可以亲手扰动的复杂系统实验。</p>
+      <p class="lab-intro">从局部规则到全局涌现：直接改变控制参数，观察动力学、相变、临界性、同步、网络、流体、分形、记忆与混沌如何出现。这里不是动画合集，而是一组可以亲手扰动的复杂系统实验。</p>
     </div>
-    <div class="lab-top-side"><strong>36</strong>LIVE EXPERIMENTS<br>LOCAL RULES<br>EMERGENT ORDER</div>
+    <div class="lab-top-side"><strong>48</strong>LIVE EXPERIMENTS<br>LOCAL RULES<br>EMERGENT ORDER</div>
   </header>
 
   <section class="lab-section">
-    <div class="lab-section-head"><h2>Cellular Automata</h2><span>discrete → continuous → learned → rule space</span></div>
+    <div class="lab-section-head"><h2>Cellular Automata & Rule Systems</h2><span>discrete → continuous → learned → rule space</span></div>
     <div class="lab-grid">
       <a class="lab-card" href="life.html"><div class="lab-card-top"><span class="lab-index">01</span><span class="lab-badge live">live</span></div><h3>Conway · 2D</h3><p>经典 B/S 规则、Glider、Gosper Gun 与自定义邻域动力学。</p><div class="lab-glyph">□</div><div class="lab-tags"><span class="lab-tag">B3/S23</span><span class="lab-tag">DISCRETE</span></div></a>
       <a class="lab-card" href="life3d.html"><div class="lab-card-top"><span class="lab-index">02</span><span class="lab-badge live">live</span></div><h3>Cellular Life · 3D</h3><p>26 邻域体素生命，旋转、切片编辑与三维 B/S 规则。</p><div class="lab-glyph">▦</div><div class="lab-tags"><span class="lab-tag">26-NBR</span><span class="lab-tag">VOXEL</span></div></a>
@@ -29,26 +29,41 @@
       <a class="lab-card" href="elementary-ca.html"><div class="lab-card-top"><span class="lab-index">16</span><span class="lab-badge live">live</span></div><h3>Elementary CA</h3><p>Rule 30 / 90 / 110 / 184：分形、伪随机与通用计算。</p><div class="lab-glyph">▥</div><div class="lab-tags"><span class="lab-tag">RULE 110</span><span class="lab-tag">COMPUTATION</span></div></a>
       <a class="lab-card" href="langtons-ant.html"><div class="lab-card-top"><span class="lab-index">23</span><span class="lab-badge live">live</span></div><h3>Langton’s Ant</h3><p>两条局部规则经历复杂瞬态并最终形成 highway。</p><div class="lab-glyph">↻</div><div class="lab-tags"><span class="lab-tag">MINIMAL RULE</span><span class="lab-tag">EMERGENCE</span></div></a>
       <a class="lab-card" href="life-rule-explorer.html"><div class="lab-card-top"><span class="lab-index">36</span><span class="lab-badge live">live</span></div><h3>Life Rule Explorer</h3><p>直接探索 18-bit B/S rule space，一位规则变化即可重写宏观动力学。</p><div class="lab-glyph">B/S</div><div class="lab-tags"><span class="lab-tag">RULE SPACE</span><span class="lab-tag">OUTER-TOTALISTIC</span></div></a>
+      <a class="lab-card" href="life-phase-map.html"><div class="lab-card-top"><span class="lab-index">48</span><span class="lab-badge live">live</span></div><h3>Life Phase Map</h3><p>扫描 Bᵦ/Sₛ 规则切片，把规则空间直接画成长期密度相图。</p><div class="lab-glyph">Φ</div><div class="lab-tags"><span class="lab-tag">PHASE MAP</span><span class="lab-tag">RULE SCAN</span></div></a>
     </div>
   </section>
 
   <section class="lab-section">
-    <div class="lab-section-head"><h2>Pattern Formation & Statistical Physics</h2><span>fields / phase transitions / criticality / spectra</span></div>
+    <div class="lab-section-head"><h2>Fields, Waves & Pattern Formation</h2><span>PDE / flow / interfaces / excitable media</span></div>
     <div class="lab-grid">
       <a class="lab-card" href="reaction-diffusion.html"><div class="lab-card-top"><span class="lab-index">05</span><span class="lab-badge live">live</span></div><h3>Gray–Scott</h3><p>反应扩散方程产生 spots、worms、mitosis 与复杂纹理。</p><div class="lab-glyph">∇²</div><div class="lab-tags"><span class="lab-tag">PDE</span><span class="lab-tag">PATTERN</span></div></a>
+      <a class="lab-card" href="wave-lab.html"><div class="lab-card-top"><span class="lab-index">15</span><span class="lab-badge live">live</span></div><h3>Wave Lab</h3><p>二维波动方程：点源、固定边界、双缝干涉和驻波。</p><div class="lab-glyph">∿</div><div class="lab-tags"><span class="lab-tag">WAVE PDE</span><span class="lab-tag">INTERFERENCE</span></div></a>
+      <a class="lab-card" href="cahn-hilliard.html"><div class="lab-card-top"><span class="lab-index">20</span><span class="lab-badge live">live</span></div><h3>Cahn–Hilliard</h3><p>守恒序参量的 spinodal decomposition 与 domain coarsening。</p><div class="lab-glyph">φ</div><div class="lab-tags"><span class="lab-tag">PHASE FIELD</span><span class="lab-tag">COARSENING</span></div></a>
+      <a class="lab-card" href="forest-fire.html"><div class="lab-card-top"><span class="lab-index">25</span><span class="lab-badge live">live</span></div><h3>Forest Fire</h3><p>树木生长、雷击与传播前沿产生间歇性灾变。</p><div class="lab-glyph">△</div><div class="lab-tags"><span class="lab-tag">STOCHASTIC CA</span><span class="lab-tag">TWO TIMESCALES</span></div></a>
+      <a class="lab-card" href="lattice-boltzmann.html"><div class="lab-card-top"><span class="lab-index">37</span><span class="lab-badge live">live</span></div><h3>Lattice Boltzmann Flow</h3><p>D2Q9 碰撞与 streaming 从局部粒子分布涌现出宏观流动和圆柱尾迹。</p><div class="lab-glyph">LB</div><div class="lab-tags"><span class="lab-tag">FLUID</span><span class="lab-tag">D2Q9</span></div></a>
+      <a class="lab-card" href="swift-hohenberg.html"><div class="lab-card-top"><span class="lab-index">38</span><span class="lab-badge live">live</span></div><h3>Swift–Hohenberg</h3><p>有限波数失稳自发选择条纹、斑点、晶界和缺陷。</p><div class="lab-glyph">k*</div><div class="lab-tags"><span class="lab-tag">PATTERN PDE</span><span class="lab-tag">INSTABILITY</span></div></a>
+      <a class="lab-card" href="kpz-growth.html"><div class="lab-card-top"><span class="lab-index">39</span><span class="lab-badge live">live</span></div><h3>KPZ Growth</h3><p>噪声、扩散和非线性斜率项共同产生随机界面粗糙化。</p><div class="lab-glyph">h</div><div class="lab-tags"><span class="lab-tag">GROWTH</span><span class="lab-tag">UNIVERSALITY</span></div></a>
+      <a class="lab-card" href="fitzhugh-nagumo-field.html"><div class="lab-card-top"><span class="lab-index">40</span><span class="lab-badge live">live</span></div><h3>FitzHugh–Nagumo Field</h3><p>二维 excitable medium 中的波前、环波、碰撞与螺旋波。</p><div class="lab-glyph">⚡</div><div class="lab-tags"><span class="lab-tag">REACTION-DIFFUSION</span><span class="lab-tag">SPIRAL WAVE</span></div></a>
+      <a class="lab-card" href="chladni-patterns.html"><div class="lab-card-top"><span class="lab-index">47</span><span class="lab-badge live">live</span></div><h3>Chladni Patterns</h3><p>薄板 standing-wave modes 的节点线与“沙粒”聚集几何。</p><div class="lab-glyph">⌁</div><div class="lab-tags"><span class="lab-tag">STANDING WAVE</span><span class="lab-tag">NODAL SET</span></div></a>
+    </div>
+  </section>
+
+  <section class="lab-section">
+    <div class="lab-section-head"><h2>Statistical Physics & Criticality</h2><span>phase transitions / SOC / spectra / absorbing states</span></div>
+    <div class="lab-grid">
       <a class="lab-card" href="ising.html"><div class="lab-card-top"><span class="lab-index">06</span><span class="lab-badge live">live</span></div><h3>2D Ising Model</h3><p>Metropolis 动力学、磁畴粗化与临界涨落。</p><div class="lab-glyph">↑↓</div><div class="lab-tags"><span class="lab-tag">MONTE CARLO</span><span class="lab-tag">PHASE TRANSITION</span></div></a>
       <a class="lab-card" href="sandpile.html"><div class="lab-card-top"><span class="lab-index">07</span><span class="lab-badge live">live</span></div><h3>Sandpile · v2</h3><p>near-critical warm start、分帧 avalanche、size / duration / area 统计。</p><div class="lab-glyph">▴</div><div class="lab-tags"><span class="lab-tag">SOC</span><span class="lab-tag">AVALANCHE</span></div></a>
       <a class="lab-card" href="percolation.html"><div class="lab-card-top"><span class="lab-index">13</span><span class="lab-badge live">live</span></div><h3>Percolation</h3><p>调节占据概率 p，观察 spanning cluster 在临界点附近出现。</p><div class="lab-glyph">⋮</div><div class="lab-tags"><span class="lab-tag">PERCOLATION</span><span class="lab-tag">CRITICALITY</span></div></a>
-      <a class="lab-card" href="cahn-hilliard.html"><div class="lab-card-top"><span class="lab-index">20</span><span class="lab-badge live">live</span></div><h3>Cahn–Hilliard</h3><p>守恒序参量的 spinodal decomposition 与 domain coarsening。</p><div class="lab-glyph">φ</div><div class="lab-tags"><span class="lab-tag">PHASE FIELD</span><span class="lab-tag">COARSENING</span></div></a>
       <a class="lab-card" href="xy-model.html"><div class="lab-card-top"><span class="lab-index">21</span><span class="lab-badge live">live</span></div><h3>2D XY Model</h3><p>连续 O(2) spins、vortex seed 与 BKT 相关动力学。</p><div class="lab-glyph">↗</div><div class="lab-tags"><span class="lab-tag">BKT</span><span class="lab-tag">VORTEX</span></div></a>
-      <a class="lab-card" href="forest-fire.html"><div class="lab-card-top"><span class="lab-index">25</span><span class="lab-badge live">live</span></div><h3>Forest Fire</h3><p>树木生长、雷击与传播前沿产生间歇性灾变。</p><div class="lab-glyph">△</div><div class="lab-tags"><span class="lab-tag">STOCHASTIC CA</span><span class="lab-tag">TWO TIMESCALES</span></div></a>
+      <a class="lab-card" href="bak-sneppen.html"><div class="lab-card-top"><span class="lab-index">27</span><span class="lab-badge live">live</span></div><h3>Bak–Sneppen</h3><p>极值选择 + 局部突变把进化系统推向自组织临界阈值。</p><div class="lab-glyph">min</div><div class="lab-tags"><span class="lab-tag">EVOLUTION</span><span class="lab-tag">SOC</span></div></a>
       <a class="lab-card" href="potts-model.html"><div class="lab-card-top"><span class="lab-index">32</span><span class="lab-badge live">live</span></div><h3>Potts Model</h3><p>q-state spins 的有序—无序相变与 domain coarsening。</p><div class="lab-glyph">q</div><div class="lab-tags"><span class="lab-tag">Q-STATE</span><span class="lab-tag">METROPOLIS</span></div></a>
       <a class="lab-card" href="random-matrix.html"><div class="lab-card-top"><span class="lab-index">33</span><span class="lab-badge live">live</span></div><h3>Wigner Semicircle</h3><p>随机对称矩阵的微观随机性如何涌现出稳定谱密度。</p><div class="lab-glyph">ρ</div><div class="lab-tags"><span class="lab-tag">RMT</span><span class="lab-tag">SPECTRUM</span></div></a>
+      <a class="lab-card" href="contact-process.html"><div class="lab-card-top"><span class="lab-index">44</span><span class="lab-badge live">live</span></div><h3>Contact Process</h3><p>感染与死亡竞争产生 absorbing-state transition 与 directed-percolation 临界性。</p><div class="lab-glyph">λ</div><div class="lab-tags"><span class="lab-tag">ABSORBING STATE</span><span class="lab-tag">DP</span></div></a>
     </div>
   </section>
 
   <section class="lab-section">
-    <div class="lab-section-head"><h2>Collective Emergence & Networks</h2><span>agents / synchronization / adaptation / spreading</span></div>
+    <div class="lab-section-head"><h2>Collective Emergence & Networks</h2><span>agents / synchronization / adaptation / spreading / games</span></div>
     <div class="lab-grid">
       <a class="lab-card" href="boids.html"><div class="lab-card-top"><span class="lab-index">08</span><span class="lab-badge live">live</span></div><h3>Boids</h3><p>Separation + Alignment + Cohesion 产生 flocking。</p><div class="lab-glyph">››</div><div class="lab-tags"><span class="lab-tag">FLOCKING</span><span class="lab-tag">LOCAL RULES</span></div></a>
       <a class="lab-card" href="physarum.html"><div class="lab-card-top"><span class="lab-index">09</span><span class="lab-badge live">live</span></div><h3>Physarum</h3><p>移动粒子与 chemical trail 双向耦合，自组织成网络。</p><div class="lab-glyph">⌁</div><div class="lab-tags"><span class="lab-tag">SLIME MOLD</span><span class="lab-tag">FIELD COUPLING</span></div></a>
@@ -56,18 +71,27 @@
       <a class="lab-card" href="vicsek.html"><div class="lab-card-top"><span class="lab-index">14</span><span class="lab-badge live">live</span></div><h3>Vicsek Model</h3><p>局部取向耦合 + 噪声产生 active-matter flocking transition。</p><div class="lab-glyph">→</div><div class="lab-tags"><span class="lab-tag">ACTIVE MATTER</span><span class="lab-tag">NOISE</span></div></a>
       <a class="lab-card" href="schelling.html"><div class="lab-card-top"><span class="lab-index">22</span><span class="lab-badge live">live</span></div><h3>Schelling Model</h3><p>轻微局部偏好被迁移反馈放大成宏观 segregation。</p><div class="lab-glyph">◧</div><div class="lab-tags"><span class="lab-tag">AGENT MODEL</span><span class="lab-tag">SOCIAL DYNAMICS</span></div></a>
       <a class="lab-card" href="sir-network.html"><div class="lab-card-top"><span class="lab-index">26</span><span class="lab-badge live">live</span></div><h3>SIR Network</h3><p>疾病在 small-world network 上传播；调 β、γ、免疫率与 rewiring。</p><div class="lab-glyph">◎</div><div class="lab-tags"><span class="lab-tag">NETWORK</span><span class="lab-tag">SPREADING</span></div></a>
-      <a class="lab-card" href="bak-sneppen.html"><div class="lab-card-top"><span class="lab-index">27</span><span class="lab-badge live">live</span></div><h3>Bak–Sneppen</h3><p>极值选择 + 局部突变把进化系统推向自组织临界阈值。</p><div class="lab-glyph">min</div><div class="lab-tags"><span class="lab-tag">EVOLUTION</span><span class="lab-tag">SOC</span></div></a>
       <a class="lab-card" href="preferential-attachment.html"><div class="lab-card-top"><span class="lab-index">34</span><span class="lab-badge live">live</span></div><h3>Preferential Attachment</h3><p>富者愈富规则产生 hub 与 heavy-tailed degree distribution。</p><div class="lab-glyph">k</div><div class="lab-tags"><span class="lab-tag">SCALE-FREE</span><span class="lab-tag">NETWORK GROWTH</span></div></a>
       <a class="lab-card" href="network-percolation.html"><div class="lab-card-top"><span class="lab-index">35</span><span class="lab-badge live">live</span></div><h3>Network Percolation</h3><p>边占据概率越过阈值后 giant component 快速出现。</p><div class="lab-glyph">S</div><div class="lab-tags"><span class="lab-tag">GIANT COMPONENT</span><span class="lab-tag">ROBUSTNESS</span></div></a>
+      <a class="lab-card" href="voter-model.html"><div class="lab-card-top"><span class="lab-index">43</span><span class="lab-badge live">live</span></div><h3>Voter Model</h3><p>随机复制邻居意见，通过界面涨落和畴粗化最终走向共识。</p><div class="lab-glyph">±</div><div class="lab-tags"><span class="lab-tag">CONSENSUS</span><span class="lab-tag">COARSENING</span></div></a>
+      <a class="lab-card" href="rock-paper-scissors.html"><div class="lab-card-top"><span class="lab-index">45</span><span class="lab-badge live">live</span></div><h3>Spatial RPS</h3><p>循环优势 A→B→C→A 维持空间共存与不断重组的 domain pattern。</p><div class="lab-glyph">RPS</div><div class="lab-tags"><span class="lab-tag">CYCLIC DOMINANCE</span><span class="lab-tag">ECOLOGY</span></div></a>
+      <a class="lab-card" href="network-kuramoto.html"><div class="lab-card-top"><span class="lab-index">46</span><span class="lab-badge live">live</span></div><h3>Kuramoto on Networks</h3><p>拓扑结构改变局部锁相、同步阈值和全局 order parameter。</p><div class="lab-glyph">R</div><div class="lab-tags"><span class="lab-tag">NETWORK SYNC</span><span class="lab-tag">TOPOLOGY</span></div></a>
     </div>
   </section>
 
   <section class="lab-section">
-    <div class="lab-section-head"><h2>Chaos, Fractals & Nonlinear Dynamics</h2><span>bifurcation / sensitivity / growth / excitable systems</span></div>
+    <div class="lab-section-head"><h2>Computation, Memory & Information Dynamics</h2><span>attractors / Boolean computation / associative memory</span></div>
+    <div class="lab-grid">
+      <a class="lab-card" href="kauffman-network.html"><div class="lab-card-top"><span class="lab-index">41</span><span class="lab-badge live">live</span></div><h3>Kauffman Boolean Network</h3><p>随机布尔函数与连接度 K 控制冻结态、复杂态和扰动扩散。</p><div class="lab-glyph">01</div><div class="lab-tags"><span class="lab-tag">BOOLEAN NETWORK</span><span class="lab-tag">EDGE OF CHAOS</span></div></a>
+      <a class="lab-card" href="hopfield-network.html"><div class="lab-card-top"><span class="lab-index">42</span><span class="lab-badge live">live</span></div><h3>Hopfield Network</h3><p>受损输入沿能量下降回到最近的记忆 attractor。</p><div class="lab-glyph">E</div><div class="lab-tags"><span class="lab-tag">MEMORY</span><span class="lab-tag">ATTRACTOR</span></div></a>
+    </div>
+  </section>
+
+  <section class="lab-section">
+    <div class="lab-section-head"><h2>Chaos, Fractals & Nonlinear Dynamics</h2><span>bifurcation / sensitivity / strange attractors / nonlinear oscillators</span></div>
     <div class="lab-grid">
       <a class="lab-card" href="lorenz.html"><div class="lab-card-top"><span class="lab-index">11</span><span class="lab-badge live">live</span></div><h3>Lorenz Attractor</h3><p>三个 ODE 形成 strange attractor；近邻初态指数级分离。</p><div class="lab-glyph">∞</div><div class="lab-tags"><span class="lab-tag">CHAOS</span><span class="lab-tag">ATTRACTOR</span></div></a>
       <a class="lab-card" href="double-pendulum.html"><div class="lab-card-top"><span class="lab-index">12</span><span class="lab-badge live">live</span></div><h3>Double Pendulum</h3><p>两个耦合摆从规则运动过渡到机械混沌。</p><div class="lab-glyph">⌇</div><div class="lab-tags"><span class="lab-tag">MECHANICS</span><span class="lab-tag">CHAOS</span></div></a>
-      <a class="lab-card" href="wave-lab.html"><div class="lab-card-top"><span class="lab-index">15</span><span class="lab-badge live">live</span></div><h3>Wave Lab</h3><p>二维波动方程：点源、固定边界、双缝干涉和驻波。</p><div class="lab-glyph">∿</div><div class="lab-tags"><span class="lab-tag">WAVE PDE</span><span class="lab-tag">INTERFERENCE</span></div></a>
       <a class="lab-card" href="logistic-map.html"><div class="lab-card-top"><span class="lab-index">17</span><span class="lab-badge live">live</span></div><h3>Logistic Map</h3><p>定点 → 倍周期分岔 → 混沌；含完整 bifurcation diagram。</p><div class="lab-glyph">λ</div><div class="lab-tags"><span class="lab-tag">BIFURCATION</span><span class="lab-tag">FEIGENBAUM</span></div></a>
       <a class="lab-card" href="mandelbrot.html"><div class="lab-card-top"><span class="lab-index">18</span><span class="lab-badge live">live</span></div><h3>Mandelbrot</h3><p>复二次映射的 escape-time fractal，可交互持续缩放。</p><div class="lab-glyph">ℂ</div><div class="lab-tags"><span class="lab-tag">FRACTAL</span><span class="lab-tag">COMPLEX MAP</span></div></a>
       <a class="lab-card" href="dla.html"><div class="lab-card-top"><span class="lab-index">19</span><span class="lab-badge live">live</span></div><h3>DLA</h3><p>随机游走粒子粘附形成 screening-driven branching fractal。</p><div class="lab-glyph">Y</div><div class="lab-tags"><span class="lab-tag">RANDOM WALK</span><span class="lab-tag">FRACTAL GROWTH</span></div></a>
@@ -79,7 +103,7 @@
     </div>
   </section>
 
-  <footer class="lab-footer"><span>Complex Systems Lab · 36 live experiments</span><span><code>local rules → nonlinear dynamics → emergence</code></span></footer>
+  <footer class="lab-footer"><span>Complex Systems Lab · 48 live experiments</span><span><code>local rules → nonlinear dynamics → emergence</code></span></footer>
 </main>
 </body>
 </html>

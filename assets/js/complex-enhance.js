@@ -251,11 +251,14 @@
       if (['input','textarea','select','button'].includes(tag) || e.target?.isContentEditable) return;
       if (e.code === 'Space') {
         e.preventDefault();
+        e.stopImmediatePropagation();
         if (STATIC_PAGES.has(PAGE)) primaryStaticAction(); else togglePlay() || primaryStaticAction();
       } else if (e.key.toLowerCase() === 'r') {
+        e.preventDefault();
+        e.stopImmediatePropagation();
         if (!resetLike()) primaryStaticAction();
       }
-    }, {passive:false});
+    }, {capture:true, passive:false});
   }
 
   function normalizePlayButton() {

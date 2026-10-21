@@ -229,7 +229,7 @@
     const main = $('main') || document.body;
     const guide = document.createElement('section');
     guide.className = 'cx-guide';
-    const cases = (meta.cases || []).map(([name]) => `<button type="button" class="cx-case" data-cx-case="${name.replace(/"/g,'&quot;')}">${name}</button>`).join('');
+    const cases = (meta.cases || []).map(([name, action]) => `<button type="button" class="cx-case" data-cx-case="${name.replace(/"/g,'&quot;')}" data-cx-action="${String(action || name).replace(/"/g,'&quot;')}">${name}</button>`).join('');
     guide.innerHTML = `
       <div class="cx-guide-head"><h2>How to explore this system</h2><span class="cx-guide-sub">先选一个经典案例，再改一个参数</span></div>
       <div class="cx-cases">${cases}</div>
@@ -242,7 +242,7 @@
       <div class="cx-tip"><strong>推荐操作：</strong>不要一次改很多参数。先点一个经典案例，观察 5–20 秒，再只改一个 slider；这样最容易看出控制参数和宏观行为之间的因果关系。</div>`;
     const footer = $('footer');
     if (footer && footer.parentNode === main) main.insertBefore(guide, footer); else main.appendChild(guide);
-    $$('.cx-case', guide).forEach(b => b.addEventListener('click', () => applyCase(b.dataset.cxCase)));
+    $$('.cx-case', guide).forEach(b => b.addEventListener('click', () => applyCase(b.dataset.cxAction || b.dataset.cxCase)));
   }
 
   function keyboard() {

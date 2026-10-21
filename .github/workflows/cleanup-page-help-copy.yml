@@ -1,0 +1,21 @@
+name: Cleanup Complex Lab page-help copy
+on:
+  push:
+    paths:
+      - '.github/workflows/cleanup-page-help-copy.yml'
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cleanup page-help copy
+        run: python .github/scripts/cleanup_page_help_copy.py
+      - name: Commit changes
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add assets/js/complex-page-help.js
+          git commit -m 'refactor: simplify Complex Lab page-help copy'
+          git push

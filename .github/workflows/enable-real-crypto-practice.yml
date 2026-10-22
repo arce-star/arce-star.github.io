@@ -1,0 +1,24 @@
+name: Enable real crypto practice
+on:
+  push:
+    paths:
+      - '.github/workflows/enable-real-crypto-practice.yml'
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  patch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python .github/scripts/enable_real_crypto_practice.py
+      - run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add investment-study.html
+          if git diff --cached --quiet; then
+            echo 'No changes'
+          else
+            git commit -m 'feat: enable real crypto blind practice'
+            git push
+          fi

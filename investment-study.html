@@ -3,22 +3,33 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="投资学习工作台：整理、比较投资者公开内容中的方法、条件、风险与案例。">
+  <meta name="description" content="投资学习工作台：Martin Luk 与 Ross Cameron 的公开交易方法、规则、风险控制与案例。">
   <title>投资学习 · arce-star</title>
   <style>
-    :root{--bg:#f7f7f5;--paper:#fff;--text:#171717;--muted:#747474;--line:#deded9;--soft:#f0f0ed;--accent:#111;--warn:#8a5a00}
-    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;line-height:1.65}
-    a{color:inherit}.shell{max-width:1320px;margin:0 auto;padding:36px 28px 80px}.top{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;padding-bottom:28px;border-bottom:1px solid var(--line)}
-    .back{font-size:14px;text-decoration:none;color:var(--muted)}.back:hover{color:var(--text)}h1{font-size:42px;line-height:1.05;margin:24px 0 12px;letter-spacing:-.03em}.intro{max-width:760px;color:#505050;margin:0}.status{font-size:12px;border:1px solid var(--line);padding:6px 10px;border-radius:999px;color:var(--muted);white-space:nowrap}
-    .notice{margin:24px 0;padding:14px 16px;border-left:3px solid #bbb;background:var(--paper);font-size:14px;color:#555}.notice strong{color:var(--text)}
-    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}.card-head{padding:22px 22px 18px;border-bottom:1px solid var(--line)}
-    .source-no{font:600 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#999;text-transform:uppercase;letter-spacing:.08em}.card h2{font-size:24px;margin:8px 0 6px}.src-meta{font-size:13px;color:var(--muted)}.src-link{display:inline-block;margin-top:12px;padding:7px 11px;border:1px solid #bbb;border-radius:6px;text-decoration:none;font-size:13px}.src-link:hover{background:#111;color:white;border-color:#111}
-    .fields{padding:6px 22px 22px}.field{padding:17px 0;border-bottom:1px solid #ecece8}.field:last-child{border-bottom:0}.label{font-size:13px;font-weight:700;margin-bottom:7px}.hint{font-size:12px;color:#999;margin-bottom:8px}.editable{min-height:62px;padding:10px 11px;background:#fafaf8;border:1px solid #e6e6e2;border-radius:7px;font-size:14px;outline:none;white-space:pre-wrap}.editable:focus{border-color:#999;background:white}.editable:empty:before{content:attr(data-placeholder);color:#aaa}
-    .compare{margin-top:24px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}.compare h2{font-size:21px;margin:0;padding:20px 22px;border-bottom:1px solid var(--line)}table{border-collapse:collapse;width:100%}th,td{padding:13px 16px;border-bottom:1px solid #ecece8;border-right:1px solid #ecece8;text-align:left;vertical-align:top;font-size:13px}th:last-child,td:last-child{border-right:0}tr:last-child td{border-bottom:0}th{background:#fafaf8;font-weight:700}.metric{width:160px;color:#555}.compare-edit{min-height:36px;outline:none}.compare-edit:empty:before{content:"待整理";color:#bbb}
-    .study{margin-top:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.study-box{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px}.study-box h3{font-size:15px;margin:0 0 8px}.study-box p{font-size:13px;color:#666;margin:0}.warning{color:var(--warn)}
-    .saved{position:fixed;right:18px;bottom:18px;background:#111;color:white;border-radius:999px;padding:8px 12px;font-size:12px;opacity:0;transform:translateY(5px);transition:.2s;pointer-events:none}.saved.show{opacity:1;transform:none}
-    footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:#999;display:flex;justify-content:space-between;gap:15px}
-    @media(max-width:850px){.shell{padding:24px 16px 60px}.top{display:block}.status{display:inline-block;margin-top:18px}h1{font-size:34px}.grid{grid-template-columns:1fr}.study{grid-template-columns:1fr}.compare{overflow-x:auto}table{min-width:680px}}
+    :root{
+      --bg:#f5f5f2;--paper:#fff;--text:#171717;--muted:#72726d;--line:#deded8;
+      --soft:#f8f8f5;--dark:#111;--green:#1f6f4a;--red:#9f342e;--amber:#8b6200;
+      --mono:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    }
+    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;line-height:1.65}
+    a{color:inherit}.shell{max-width:1380px;margin:0 auto;padding:34px 28px 80px}.top{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;padding-bottom:27px;border-bottom:1px solid var(--line)}
+    .back{font-size:14px;text-decoration:none;color:var(--muted)}.back:hover{color:var(--text)}h1{font-size:42px;line-height:1.05;margin:23px 0 11px;letter-spacing:-.035em}.intro{max-width:820px;color:#50504c;margin:0}.status{font:600 12px var(--mono);border:1px solid var(--line);padding:7px 11px;border-radius:999px;color:var(--muted);white-space:nowrap}
+    .notice{margin:22px 0;padding:13px 16px;border-left:3px solid #aaa;background:var(--paper);font-size:13px;color:#555}.notice strong{color:var(--text)}
+    .jump{display:flex;gap:8px;flex-wrap:wrap;margin:0 0 22px}.jump a{text-decoration:none;border:1px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 11px;font-size:12px;color:#555}.jump a:hover{border-color:#999;color:#111}
+    .profiles{display:grid;grid-template-columns:1fr 1fr;gap:18px}.profile{background:var(--paper);border:1px solid var(--line);border-radius:13px;overflow:hidden}.profile-head{padding:22px;border-bottom:1px solid var(--line)}
+    .eyebrow{font:700 11px var(--mono);letter-spacing:.09em;color:#999}.profile h2{font-size:27px;margin:7px 0 2px;letter-spacing:-.02em}.subtitle{font-size:13px;color:var(--muted)}.src-link{display:inline-block;margin-top:11px;font-size:12px;text-decoration:none;border-bottom:1px solid #aaa}
+    .stats{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--line)}.stat{padding:14px 13px;border-right:1px solid var(--line)}.stat:last-child{border-right:0}.stat b{display:block;font:700 18px var(--mono);line-height:1.1}.stat span{display:block;margin-top:5px;font-size:10px;color:#888;line-height:1.35}
+    .body{padding:3px 22px 20px}.section{padding:17px 0;border-bottom:1px solid #ecece7}.section:last-child{border-bottom:0}.section h3{font-size:14px;margin:0 0 8px}.section p{font-size:13px;margin:6px 0;color:#444}.section ul,.section ol{margin:7px 0;padding-left:20px}.section li{font-size:13px;margin:5px 0;color:#3d3d3a}.rule{display:grid;grid-template-columns:118px 1fr;gap:12px;font-size:13px;padding:6px 0}.rule .k{color:#777;font-weight:600}.tag{display:inline-block;padding:2px 7px;margin:2px 3px 2px 0;border:1px solid #d8d8d2;border-radius:999px;font-size:10px;color:#666;background:#fafaf8}
+    .formula{font-family:var(--mono);background:#f4f4f1;border:1px solid #e1e1dc;border-radius:7px;padding:10px 11px;font-size:12px;overflow:auto}.good{color:var(--green)}.bad{color:var(--red)}.warn{color:var(--amber)}
+    details{border:1px solid #e4e4df;border-radius:8px;background:#fafaf8;margin:8px 0}summary{cursor:pointer;padding:9px 11px;font-size:12px;font-weight:700}.detail-inner{padding:0 12px 11px;font-size:12px;color:#444}.detail-inner p{font-size:12px}
+    .compare,.tool,.common,.notes{margin-top:22px;background:var(--paper);border:1px solid var(--line);border-radius:13px;overflow:hidden}.block-head{padding:19px 21px;border-bottom:1px solid var(--line)}.block-head h2{font-size:21px;margin:0}.block-head p{font-size:12px;color:#777;margin:4px 0 0}
+    .table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:760px}th,td{padding:12px 14px;border-bottom:1px solid #e9e9e4;border-right:1px solid #e9e9e4;text-align:left;vertical-align:top;font-size:12px}th:last-child,td:last-child{border-right:0}tr:last-child td{border-bottom:0}th{background:#fafaf8;font-weight:700}.metric{width:145px;color:#666}
+    .common-grid{display:grid;grid-template-columns:repeat(4,1fr)}.common-item{padding:17px;border-right:1px solid var(--line)}.common-item:last-child{border-right:0}.common-item b{display:block;font-size:13px;margin-bottom:5px}.common-item p{margin:0;font-size:12px;color:#666}
+    .tool-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;padding:18px 21px}.input label{display:block;font-size:11px;color:#777;margin-bottom:5px}.input input{width:100%;padding:9px 10px;border:1px solid #d9d9d4;border-radius:7px;background:#fff;font:13px var(--mono);outline:none}.input input:focus{border-color:#888}.calc-results{display:grid;grid-template-columns:repeat(6,1fr);border-top:1px solid var(--line)}.calc{padding:14px;border-right:1px solid var(--line)}.calc:last-child{border-right:0}.calc b{display:block;font:700 16px var(--mono)}.calc span{font-size:10px;color:#888}
+    .notes-grid{display:grid;grid-template-columns:1fr 1fr}.note{padding:18px 20px}.note:first-child{border-right:1px solid var(--line)}.note h3{font-size:14px;margin:0 0 8px}.editable{min-height:120px;padding:11px;border:1px solid #e1e1dc;border-radius:8px;background:#fafaf8;font-size:13px;outline:none;white-space:pre-wrap}.editable:focus{background:#fff;border-color:#999}.editable:empty:before{content:attr(data-placeholder);color:#aaa}.saved{position:fixed;right:18px;bottom:18px;background:#111;color:#fff;padding:8px 12px;border-radius:999px;font-size:11px;opacity:0;transform:translateY(5px);transition:.2s}.saved.show{opacity:1;transform:none}
+    footer{display:flex;justify-content:space-between;gap:16px;margin-top:32px;padding-top:17px;border-top:1px solid var(--line);color:#999;font-size:11px}
+    @media(max-width:980px){.profiles{grid-template-columns:1fr}.common-grid{grid-template-columns:1fr 1fr}.common-item{border-bottom:1px solid var(--line)}.tool-grid{grid-template-columns:1fr 1fr}.calc-results{grid-template-columns:1fr 1fr 1fr}.calc{border-bottom:1px solid var(--line)}.notes-grid{grid-template-columns:1fr}.note:first-child{border-right:0;border-bottom:1px solid var(--line)}}
+    @media(max-width:650px){.shell{padding:23px 14px 60px}.top{display:block}h1{font-size:34px}.status{display:inline-block;margin-top:16px}.stats{grid-template-columns:1fr 1fr}.stat:nth-child(2){border-right:0}.stat:nth-child(-n+2){border-bottom:1px solid var(--line)}.common-grid{grid-template-columns:1fr}.common-item{border-right:0}.tool-grid{grid-template-columns:1fr}.calc-results{grid-template-columns:1fr 1fr}.notes-grid{grid-template-columns:1fr}.rule{grid-template-columns:1fr}.rule .k{margin-bottom:-7px}}
   </style>
 </head>
 <body>
@@ -27,96 +38,304 @@
     <div>
       <a class="back" href="index.html">← 返回个人主页</a>
       <h1>投资学习</h1>
-      <p class="intro">把公开投资内容拆成可以检查的规则：买什么、为什么买、什么时候买、什么时候退出、仓位多大、什么情况下会失效。页面中的笔记自动保存在当前浏览器。</p>
+      <p class="intro">整理两套高波动美股交易方法。重点看规则、风险和执行，不把收益率当作可复制承诺。</p>
     </div>
-    <div class="status">2 个学习来源</div>
+    <div class="status">2 PLAYBOOKS</div>
   </header>
 
-  <div class="notice"><strong>来源状态：</strong>当前网页环境无法读取这两条小红书视频的字幕与完整正文，因此下方不填任何未经视频确认的“投资手法”。先保留原视频入口和结构化笔记位，避免把推测写成作者观点。</div>
+  <div class="notice"><strong>资料来源：</strong>以下内容按你提供的两段视频文稿整理，没有额外补充作者未说过的规则。比赛成绩、账户收益和交易统计也按原文记录，页面用于学习与复盘。</div>
 
-  <section class="grid">
-    <article class="card">
-      <div class="card-head">
-        <div class="source-no">SOURCE 01</div>
-        <h2>投资者 A</h2>
-        <div class="src-meta">小红书视频 · 笔记 ID 6ad042df000000000a024721</div>
-        <a class="src-link" target="_blank" rel="noopener" href="https://www.xiaohongshu.com/explore/6ad042df000000000a024721">打开原视频 ↗</a>
+  <nav class="jump">
+    <a href="#martin">Martin Luk</a><a href="#ross">Ross Cameron</a><a href="#compare">方法对比</a><a href="#calculator">R / 仓位计算器</a><a href="#notes">我的笔记</a>
+  </nav>
+
+  <section class="profiles">
+    <article class="profile" id="martin">
+      <div class="profile-head">
+        <div class="eyebrow">PLAYBOOK 01 · ASYMMETRIC RISK / REWARD</div>
+        <h2>Martin Luk</h2>
+        <div class="subtitle">香港交易员 · 回调 / 突破 / EP 跳空 · 低胜率、高 R 倍数</div>
+        <a class="src-link" target="_blank" rel="noopener" href="https://www.xiaohongshu.com/explore/6ad042df000000000a024721">原视频 ↗</a>
       </div>
-      <div class="fields">
-        <div class="field"><div class="label">核心逻辑</div><div class="hint">他靠什么获得收益？价值、趋势、事件、周期、情绪、套利，还是其他？</div><div class="editable" contenteditable="true" data-key="a-core" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">标的选择</div><div class="hint">关注什么资产？筛选条件是什么？明确排除什么？</div><div class="editable" contenteditable="true" data-key="a-select" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">买入条件</div><div class="hint">需要同时满足哪些信号？价格、估值、基本面、量价、宏观或催化？</div><div class="editable" contenteditable="true" data-key="a-entry" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">持有与加仓</div><div class="hint">上涨、下跌、横盘时分别怎么处理？什么情况下允许加仓？</div><div class="editable" contenteditable="true" data-key="a-hold" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">退出条件</div><div class="hint">止盈、止损、逻辑失效分别怎么定义？</div><div class="editable" contenteditable="true" data-key="a-exit" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">仓位与风险</div><div class="hint">单笔仓位、总仓位、最大回撤、分散程度。</div><div class="editable" contenteditable="true" data-key="a-risk" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">适用行情</div><div class="hint">牛市、熊市、震荡、趋势、高波动、低波动？</div><div class="editable" contenteditable="true" data-key="a-regime" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">视频中的具体案例</div><div class="hint">记录标的、时间、买卖理由与最终结果，避免只记口号。</div><div class="editable" contenteditable="true" data-key="a-case" data-placeholder="看视频后整理……"></div></div>
+      <div class="stats">
+        <div class="stat"><b>969%</b><span>文稿所述 2025 年收益率</span></div>
+        <div class="stat"><b>940</b><span>全年交易笔数</span></div>
+        <div class="stat"><b>731</b><span>亏损交易</span></div>
+        <div class="stat"><b>+14 / −2%</b><span>平均盈利 / 平均亏损</span></div>
+      </div>
+      <div class="body">
+        <div class="section">
+          <h3>一句话</h3>
+          <p><strong>入场只选止损能放得很近的位置；错了快速亏 1R，对了尽量让盈利扩展到很多 R。</strong></p>
+          <div class="formula">1R = 买入后触发止损时愿意亏的钱<br>R multiple = (卖出价 − 买入价) ÷ (买入价 − 止损价)</div>
+          <p>文稿中的统计：亏损单平均约 −2%，盈利单平均约 +14%；一笔平均盈利约等于 7 笔平均亏损。</p>
+        </div>
+
+        <div class="section">
+          <h3>看图只用这些</h3>
+          <div class="rule"><div class="k">EMA</div><div>9 / 21 / 50，后来加 150；所有周期都用这一组。</div></div>
+          <div class="rule"><div class="k">AVWAP</div><div>锚定成交量加权均价。常从整理区最高 K 线或巨量跳空日开始锚定。</div></div>
+          <div class="rule"><div class="k">成交额</div><div>看成交了多少钱，不只看成交股数。</div></div>
+          <div class="rule"><div class="k">ADR</div><div>平均每日高低波幅。主要做 ADR ≥ 5% 的快股。</div></div>
+          <div><span class="tag">TradingView</span><span class="tag">9EMA</span><span class="tag">21EMA</span><span class="tag">50EMA</span><span class="tag">150EMA</span><span class="tag">AVWAP</span><span class="tag">ADR</span></div>
+        </div>
+
+        <div class="section">
+          <h3>每天先选股</h3>
+          <p><strong>强势股扫描：</strong></p>
+          <ol>
+            <li>市值 ≥ 1 亿美元</li><li>成交额 ≥ 5000 万美元</li><li>最近一周波动率 ≥ 3.5%</li><li>股价在 21EMA 上方</li><li>按涨幅从高到低排</li>
+          </ol>
+          <p>刚大涨的股票通常先放观察名单，等回到均线、波动收窄再找买点。同板块同时出现多只强势股是加分项。</p>
+          <p><strong>盘前跳空扫描：</strong>按盘前涨幅排序；再看 ADR 和成交额，通常日成交额希望 ≥ 1 亿美元。</p>
+        </div>
+
+        <div class="section">
+          <h3>Setup A · 回调 Pullback</h3>
+          <p>2025 年一半以上交易属于这一类。</p>
+          <ol>
+            <li><strong>趋势：</strong>标准形态为 9EMA &gt; 21EMA &gt; 50EMA，且都向上；均线在整理区纠缠也可。</li>
+            <li><strong>位置早：</strong>整理后刚突破，第一次回调最好；已经连续涨几周、远离均线的避开。</li>
+            <li><strong>支撑重合：</strong>EMA、AVWAP、前高/前低、未补缺口越集中越好。</li>
+            <li><strong>日内动作：</strong>喜欢快速急跌到支撑后马上 V 型拉回。</li>
+            <li><strong>触发：</strong>价格一涨过前一根 K 线最高点就买，不等收线。</li>
+          </ol>
+          <p>时间框架：开盘前 5 分钟看 1m；5 分钟后到 1 小时看 5m；1 小时后看 15m。主要做开盘第一小时。</p>
+        </div>
+
+        <div class="section">
+          <h3>Setup B · 突破 Breakout</h3>
+          <ol>
+            <li>先涨过一段，再整理至少 1–2 周。</li><li>最后几天贴 9EMA，波动明显收窄；Inside Day 加分。</li><li>最好在 AVWAP 上方；周线长期整理后的第一次突破更喜欢。</li><li><strong>提前买：</strong>不等突破整个整理区上沿，一过前一天最高点就买。</li><li>也可用开盘区间高点触发。</li>
+          </ol>
+          <p>提前入场的目的：把止损放近。2025 年如果这种方法仍需要 &gt;5% 止损，他更倾向等待回调。</p>
+        </div>
+
+        <div class="section">
+          <h3>Setup C · EP 跳空</h3>
+          <p>财报或其他消息导致大幅跳空。盘前只快速确认“为什么涨”，主要依据图表和交易行为。</p>
+          <ol>
+            <li>传统做法：突破开盘区间高点买。</li><li>2025 年更多等待先砸下来。</li><li>5m / 15m 上出现一根 K 线涨过前一根最高点时买。</li><li>先跌破开盘区间低点再收回，在他的观察里成功率更高。</li>
+          </ol>
+        </div>
+
+        <div class="section">
+          <h3>止损与仓位</h3>
+          <p class="bad"><strong>下单前先决定止损；从不往后补这个步骤。</strong></p>
+          <ul>
+            <li>约 60–70% 止损放当天最低点。</li><li>太远时放触发 K 线或前一根 K 线低点。</li><li>止损上限：ADR 的一半，且绝对不超过 5%。</li><li>实际更严格：超过 3% 通常不做。</li><li>单笔打止损的账户风险平均约 0.5%。</li><li>被止损后，只要形态仍成立，可以重新入场。</li>
+          </ul>
+          <div class="formula">允许亏损金额 = 账户净值 × 风险比例<br>仓位金额 ≈ 允许亏损金额 ÷ 止损百分比<br>股数 = 仓位金额 ÷ 买入价</div>
+          <p>多数仓位约账户 25%–30%，小盘股约 20% 或更低。近期不顺就降低风险；连续盈利后再增加。</p>
+        </div>
+
+        <div class="section">
+          <h3>卖出</h3>
+          <ul>
+            <li>通常至少到 3R–5R 后才考虑第一批；强趋势中第一批可能拖到 15R+。</li>
+            <li>第一批常只卖约 15%。</li><li>涨 2–3 天后，如果日线 9EMA 已升到买入价上方，止损通常抬到成本。</li><li>剩余仓位用日线 9EMA 跟踪，止损放 9EMA 下方附近结构位。</li><li>股价高于 9EMA 15%–20%，或高位突然巨量，减仓。</li><li>大盘刚修复时多锁利润；行情稳定后减少卖出；大盘已连涨数月时更主动落袋。</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>市场环境过滤</h3>
+          <ol>
+            <li><strong>自己的交易反馈：</strong>新仓连续止损 → 降风险；连亏一串 → 停 1–2 天。</li>
+            <li><strong>QQQ / IWM：</strong>指数回到上升的 9EMA / 21EMA 附近较适合出手；连续涨很多周后谨慎开新仓。</li>
+            <li><strong>观察名单宽度：</strong>强股数量减少、从强档掉到中弱档的股票增加 → 环境恶化。</li>
+          </ol>
+          <p class="warn">文稿给出的反例：2025 年 12 月震荡中多空反复切换，账户从高点回撤 26.6%；他复盘认为当月 85 笔里近一半不该做。</p>
+        </div>
+
+        <div class="section">
+          <h3>三个案例</h3>
+          <details><summary>AMPX · 回调 · 约 23R–24R</summary><div class="detail-inner">AVWAP + 9EMA + 21EMA 支撑集中在约 7.4–7.5；开盘快速砸到支撑后拉回，在 7.57 左右入场，止损约 1.98%。一周后先减仓，后续剩余仓位退出，文稿记录约 23R–24R。</div></details>
+          <details><summary>SOFL · 突破 · 约 6R / 19R</summary><div class="detail-inner">整理一周多、最后几天贴 9EMA 回落。突破前一日高点 11.13 后约 11.16 入场，止损约 1.97%；第一批约 6R，剩余持有到 9EMA 跌破附近，约 19R。</div></details>
+          <details><summary>Planet Labs · EP · 约 23R / 27R</summary><div class="detail-inner">财报后高开约 18%，先冲高再跌破开盘价。等待 5 分钟结构重新转强后买入，止损用触发 K 线低点，距离约 2.38%；持有约三周分批退出，文稿记录约 23R 和 27R。</div></details>
+        </div>
       </div>
     </article>
 
-    <article class="card">
-      <div class="card-head">
-        <div class="source-no">SOURCE 02</div>
-        <h2>投资者 B</h2>
-        <div class="src-meta">小红书视频 · 笔记 ID 6ab8ba1e0000000014038dd1</div>
-        <a class="src-link" target="_blank" rel="noopener" href="https://www.xiaohongshu.com/explore/6ab8ba1e0000000014038dd1">打开原视频 ↗</a>
+    <article class="profile" id="ross">
+      <div class="profile-head">
+        <div class="eyebrow">PLAYBOOK 02 · MOMENTUM / CATALYST / LIQUIDITY</div>
+        <h2>Ross Cameron</h2>
+        <div class="subtitle">美国日内交易员 · 小盘动量 · 第一次回调 · 盘口确认</div>
+        <a class="src-link" target="_blank" rel="noopener" href="https://www.xiaohongshu.com/explore/6ab8ba1e0000000014038dd1">原视频 ↗</a>
       </div>
-      <div class="fields">
-        <div class="field"><div class="label">核心逻辑</div><div class="hint">他靠什么获得收益？价值、趋势、事件、周期、情绪、套利，还是其他？</div><div class="editable" contenteditable="true" data-key="b-core" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">标的选择</div><div class="hint">关注什么资产？筛选条件是什么？明确排除什么？</div><div class="editable" contenteditable="true" data-key="b-select" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">买入条件</div><div class="hint">需要同时满足哪些信号？价格、估值、基本面、量价、宏观或催化？</div><div class="editable" contenteditable="true" data-key="b-entry" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">持有与加仓</div><div class="hint">上涨、下跌、横盘时分别怎么处理？什么情况下允许加仓？</div><div class="editable" contenteditable="true" data-key="b-hold" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">退出条件</div><div class="hint">止盈、止损、逻辑失效分别怎么定义？</div><div class="editable" contenteditable="true" data-key="b-exit" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">仓位与风险</div><div class="hint">单笔仓位、总仓位、最大回撤、分散程度。</div><div class="editable" contenteditable="true" data-key="b-risk" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">适用行情</div><div class="hint">牛市、熊市、震荡、趋势、高波动、低波动？</div><div class="editable" contenteditable="true" data-key="b-regime" data-placeholder="看视频后整理……"></div></div>
-        <div class="field"><div class="label">视频中的具体案例</div><div class="hint">记录标的、时间、买卖理由与最终结果，避免只记口号。</div><div class="editable" contenteditable="true" data-key="b-case" data-placeholder="看视频后整理……"></div></div>
+      <div class="stats">
+        <div class="stat"><b>$2K→$105K</b><span>文稿所述小账户挑战</span></div>
+        <div class="stat"><b>46 天</b><span>完成这一轮挑战</span></div>
+        <div class="stat"><b>113</b><span>总交易笔数</span></div>
+        <div class="stat"><b>33</b><span>亏损交易，胜率 &gt;70%</span></div>
+      </div>
+      <div class="body">
+        <div class="section">
+          <h3>一句话</h3>
+          <p><strong>只做全市场最受关注的低流通盘强势股，等第一次回调结束再进；止损放回调低点，行情转弱就分批退出。</strong></p>
+        </div>
+
+        <div class="section">
+          <h3>选股五条</h3>
+          <ol>
+            <li>当日相对前收盘涨幅 ≥ 10%</li><li>Relative Volume（相对成交量）≥ 5× —— 这是必须项</li><li>最好有当天新消息 / 催化剂</li><li>股价 $2–$20，最好 $5–$10</li><li>流通股 &lt; 2000 万股</li>
+          </ol>
+          <p>更严格版本：涨幅 ≥30%、突发新闻、$5–$10、流通盘 &lt;1000 万，胜率更高但机会更少。</p>
+          <p>没有明确新闻也能做，但风险更高、仓位更小。当天成交股数越大越好，尤其是 &gt;2500 万股。</p>
+          <div><span class="tag">Top Gainer</span><span class="tag">RVOL ≥ 5×</span><span class="tag">Catalyst</span><span class="tag">Low Float</span><span class="tag">$2–20</span></div>
+        </div>
+
+        <div class="section">
+          <h3>主要交易时段</h3>
+          <p>美东时间 <strong>07:00–10:00</strong>。突发消息多在早盘出现。9:30 正式开盘后，订单集中进入、波动和停牌风险明显提高。</p>
+        </div>
+
+        <div class="section">
+          <h3>买点 · 第一次回调</h3>
+          <ol>
+            <li>股价快速向上冲时不追。</li><li>等第一次回调：回落几根 K 线，随后跌不动并开始横住。</li><li>下一根 K 线一涨过前一根最高价就买，不等收线。</li><li>止损放这次回调最低点。</li><li>第一目标先看当日高点。</li>
+          </ol>
+          <p>入场前先看盈亏比：<strong>最低 1:1，最好 2:1。</strong>原因是理论空间通常只能吃到一部分。</p>
+        </div>
+
+        <div class="section">
+          <h3>仓位与止损</h3>
+          <ul>
+            <li>仓位不能大到让自己因几分钱波动就失去执行能力。</li><li>跌破回调低点，入场理由失效，必须卖。</li><li class="bad">不下移止损，不补仓摊平。</li><li>没有明确新闻但其他条件很强时，可以做，但减小仓位。</li><li>行情特别强时才考虑加仓。</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>止盈</h3>
+          <p>到当日高点附近，保守做法先卖一半；继续上涨则边涨边卖。激进时可以整笔继续持有，直到出现转弱信号。</p>
+        </div>
+
+        <div class="section">
+          <h3>五类离场信号</h3>
+          <ol>
+            <li><strong>大卖单：</strong>卖一突然出现远大于正常规模的挂单，价格很难继续穿越。</li>
+            <li><strong>隐藏卖家：</strong>持续大量买入，但价格长时间不涨，可能有人隐蔽出货。</li>
+            <li><strong>主动砸盘增多：</strong>逐笔成交中大量按买一或更低成交，同时买一不断下移。</li>
+            <li><strong>价格转弱：</strong>长上影、冲高回落、高位反复受阻。</li>
+            <li><strong>推动减弱：</strong>价格仍上行，但可比时段的成交推动明显下降。</li>
+          </ol>
+          <p>任何一个出现，都应该至少减仓一部分。</p>
+        </div>
+
+        <div class="section">
+          <h3>停工五条</h3>
+          <ol>
+            <li>当天利润从最高点回吐一半。</li><li>达到当天最大亏损额。</li><li>自己最擅长的交易时段已经过去。</li><li>市场没有符合要求的机会。</li><li>当天行情明显转弱。</li>
+          </ol>
+          <p class="good">触发停工后：处理剩余仓位、撤掉未成交订单，当天停止继续寻找新机会。</p>
+        </div>
+
+        <div class="section">
+          <h3>ZTG 案例</h3>
+          <p>盘前约 07:06 进入观察列表。文稿记录：涨幅约 150%、成交活跃、流通盘约 719 万股；没有明确新闻，股价约 $1.6，五条条件大致满足四条，因此降低仓位。</p>
+          <p>使用 10 秒图，在小幅回调后约 $1.55–$1.62 进场。随后冲近 $2.8；观察到卖方成交增加、大卖单与冲高回落后分批卖出，约在 $2.6、$2.3、$2.2、$2.12。文稿记录当日盈利约 $11,400。</p>
+        </div>
       </div>
     </article>
   </section>
 
-  <section class="compare">
-    <h2>方法对比</h2>
-    <table>
-      <thead><tr><th class="metric">比较项</th><th>投资者 A</th><th>投资者 B</th></tr></thead>
-      <tbody>
-        <tr><td class="metric">收益来源</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-edge"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-edge"></td></tr>
-        <tr><td class="metric">持有周期</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-time"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-time"></td></tr>
-        <tr><td class="metric">入场依据</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-entry"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-entry"></td></tr>
-        <tr><td class="metric">退出依据</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-exit"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-exit"></td></tr>
-        <tr><td class="metric">风险控制</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-risk"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-risk"></td></tr>
-        <tr><td class="metric">最依赖的市场环境</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-regime"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-regime"></td></tr>
-        <tr><td class="metric">我值得学习的部分</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-learn"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-learn"></td></tr>
-        <tr><td class="metric">我暂时不采用的部分</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-reject"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-reject"></td></tr>
-      </tbody>
-    </table>
+  <section class="common">
+    <div class="block-head"><h2>两套方法共同的骨架</h2><p>具体标的和持有时间差很多，但执行框架高度一致。</p></div>
+    <div class="common-grid">
+      <div class="common-item"><b>1 · 先找强势</b><p>都不在随机股票里找机会。先筛出高关注、高波动、正在强势运动的标的。</p></div>
+      <div class="common-item"><b>2 · 不追直线</b><p>都更偏好先回调、出现明确支撑或小结构，再利用前高触发进场。</p></div>
+      <div class="common-item"><b>3 · 风险先定</b><p>入场前就知道错了在哪里走。止损位置决定仓位，不靠“扛回来”。</p></div>
+      <div class="common-item"><b>4 · 状态不好就少做</b><p>连续止损、市场环境恶化、机会质量下降时，核心动作是减少交易。</p></div>
+    </div>
   </section>
 
-  <section class="study">
-    <div class="study-box"><h3>1 · 先还原规则</h3><p>先记录作者实际说了什么。把“看好”“低估”“趋势不错”继续追问成可以执行的条件。</p></div>
-    <div class="study-box"><h3>2 · 再找反例</h3><p>同一规则在哪些市场阶段会失效？至少找一个失败案例，不只保存成功截图。</p></div>
-    <div class="study-box"><h3>3 · 最后再测试</h3><p class="warning">公开内容只作为研究材料。要采用某条规则，先做历史验证或纸面交易，不因为博主收益截图直接实盘。</p></div>
+  <section class="compare" id="compare">
+    <div class="block-head"><h2>方法对比</h2><p>学习时最值得区分的是收益分布和时间尺度。</p></div>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th class="metric">比较项</th><th>Martin Luk</th><th>Ross Cameron</th></tr></thead>
+        <tbody>
+          <tr><td class="metric">核心收益结构</td><td>低胜率 + 极高盈亏比；接受大量小亏，等待 10R、20R+ 大单</td><td>较高胜率 + 日内动量；高关注低流通盘中连续捕捉较短行情</td></tr>
+          <tr><td class="metric">主要持有周期</td><td>日内入场，可持有数天到数周</td><td>主要日内，很多交易在早盘完成</td></tr>
+          <tr><td class="metric">标的</td><td>强势成长/动量股；看 ADR、成交额、板块强度</td><td>低价、低流通盘、相对成交量极高、最好有突发消息的股票</td></tr>
+          <tr><td class="metric">主要 Setup</td><td>回调 / 突破 / EP 跳空</td><td>快速上涨后的第一次回调</td></tr>
+          <tr><td class="metric">入场触发</td><td>支撑附近反转后突破前一根 K 线高点；或前一日高点 / 开盘区间高点</td><td>第一次回调横住后，突破前一根 K 线高点</td></tr>
+          <tr><td class="metric">止损</td><td>当天低点或触发 K 线低点；通常要求 ≤3%，硬上限 ≤5% 且 ≤ADR/2</td><td>第一次回调低点；跌破即走，不下移止损</td></tr>
+          <tr><td class="metric">仓位</td><td>按固定账户风险约 0.5% 反推；止损越窄，仓位可越大</td><td>强调仓位要小到能正常执行止损和持有；无消息的票进一步降仓</td></tr>
+          <tr><td class="metric">卖出</td><td>让赢家扩展；分批很慢，9EMA 跟踪，常追求 10R+</td><td>当日高点附近先减；盘口/逐笔/价格出现 5 类转弱信号就减仓</td></tr>
+          <tr><td class="metric">市场过滤</td><td>自己的盈亏反馈 + QQQ/IWM + 观察名单宽度</td><td>交易时段 + 是否仍有高质量强势股 + 当日盈亏停工条件</td></tr>
+          <tr><td class="metric">最大心理要求</td><td>能接受频繁止损和低胜率，不因连续小亏破坏规则</td><td>能在高速盘口中快速决策，并严格在停工点停止交易</td></tr>
+        </tbody>
+      </table>
+    </div>
   </section>
 
-  <footer><span>Investment Study · personal research notes</span><span>来源与个人笔记分开记录</span></footer>
+  <section class="tool" id="calculator">
+    <div class="block-head"><h2>R / 仓位计算器</h2><p>用同一个计算器练 Martin 的固定风险仓位，也可以检查 Ross 入场前的盈亏比。</p></div>
+    <div class="tool-grid">
+      <div class="input"><label>账户净值</label><input id="equity" type="number" value="10000" step="100"></div>
+      <div class="input"><label>单笔风险 %</label><input id="riskPct" type="number" value="0.5" step="0.1"></div>
+      <div class="input"><label>买入价</label><input id="entry" type="number" value="10" step="0.01"></div>
+      <div class="input"><label>止损价</label><input id="stop" type="number" value="9.8" step="0.01"></div>
+      <div class="input"><label>目标 / 卖出价</label><input id="target" type="number" value="11" step="0.01"></div>
+    </div>
+    <div class="calc-results">
+      <div class="calc"><b id="riskDollar">$50.00</b><span>1R / 允许亏损</span></div>
+      <div class="calc"><b id="stopPct">2.00%</b><span>止损宽度</span></div>
+      <div class="calc"><b id="positionDollar">$2,500</b><span>理论仓位金额</span></div>
+      <div class="calc"><b id="shares">250</b><span>理论股数</span></div>
+      <div class="calc"><b id="rMultiple">5.00R</b><span>目标对应 R</span></div>
+      <div class="calc"><b id="rewardRisk">5.00:1</b><span>Reward / Risk</span></div>
+    </div>
+  </section>
+
+  <section class="notes" id="notes">
+    <div class="block-head"><h2>我的学习笔记</h2><p>点击直接写，自动保存在当前浏览器。</p></div>
+    <div class="notes-grid">
+      <div class="note"><h3>Martin · 我准备提炼的规则</h3><div class="editable" contenteditable="true" data-key="martin-notes" data-placeholder="例如：我最值得学的是固定 R 风险和只在窄止损位置进场……"></div></div>
+      <div class="note"><h3>Ross · 我准备提炼的规则</h3><div class="editable" contenteditable="true" data-key="ross-notes" data-placeholder="例如：我最值得学的是筛选当天最强关注度 + 第一次回调 + 停工规则……"></div></div>
+      <div class="note"><h3>共同规则 / 可以量化的部分</h3><div class="editable" contenteditable="true" data-key="common-notes" data-placeholder="把可以写成扫描器、事件研究或回测条件的规则记下来……"></div></div>
+      <div class="note"><h3>反例 / 我暂时不照搬的部分</h3><div class="editable" contenteditable="true" data-key="reject-notes" data-placeholder="记录不适合自己的市场、交易频率、执行要求和风险……"></div></div>
+    </div>
+  </section>
+
+  <footer><span>Investment Study · Martin Luk / Ross Cameron</span><span>资料整理，不构成投资建议</span></footer>
 </main>
-<div class="saved" id="saved">已保存在本机</div>
+<div class="saved" id="saved">已保存</div>
 <script>
-(() => {
-  const prefix = 'investment-study-v1:';
-  const nodes = [...document.querySelectorAll('[contenteditable][data-key]')];
-  const badge = document.getElementById('saved');
-  let timer;
-  nodes.forEach(el => {
-    const saved = localStorage.getItem(prefix + el.dataset.key);
-    if (saved !== null) el.innerText = saved;
-    el.addEventListener('input', () => {
-      localStorage.setItem(prefix + el.dataset.key, el.innerText.trim());
-      badge.classList.add('show');
-      clearTimeout(timer);
-      timer = setTimeout(() => badge.classList.remove('show'), 900);
+  const inputs=['equity','riskPct','entry','stop','target'].map(id=>document.getElementById(id));
+  function money(x){return Number.isFinite(x)?'$'+x.toLocaleString(undefined,{maximumFractionDigits:2}):'—'}
+  function calc(){
+    const equity=+document.getElementById('equity').value;
+    const riskPct=+document.getElementById('riskPct').value/100;
+    const entry=+document.getElementById('entry').value;
+    const stop=+document.getElementById('stop').value;
+    const target=+document.getElementById('target').value;
+    const riskDollar=equity*riskPct;
+    const perShare=Math.abs(entry-stop);
+    const stopPct=entry>0?perShare/entry:NaN;
+    const shares=perShare>0?Math.floor(riskDollar/perShare):NaN;
+    const positionDollar=Number.isFinite(shares)?shares*entry:NaN;
+    const r=perShare>0?(target-entry)/perShare:NaN;
+    document.getElementById('riskDollar').textContent=money(riskDollar);
+    document.getElementById('stopPct').textContent=Number.isFinite(stopPct)?(stopPct*100).toFixed(2)+'%':'—';
+    document.getElementById('positionDollar').textContent=money(positionDollar);
+    document.getElementById('shares').textContent=Number.isFinite(shares)?shares.toLocaleString():'—';
+    document.getElementById('rMultiple').textContent=Number.isFinite(r)?r.toFixed(2)+'R':'—';
+    document.getElementById('rewardRisk').textContent=Number.isFinite(r)?Math.max(r,0).toFixed(2)+':1':'—';
+  }
+  inputs.forEach(x=>x.addEventListener('input',calc));calc();
+
+  const KEY='_arce_investment_study_v2';
+  let state={};try{state=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(_){state={}}
+  const saved=document.getElementById('saved');let timer;
+  document.querySelectorAll('[contenteditable][data-key]').forEach(el=>{
+    const k=el.dataset.key;if(state[k])el.innerText=state[k];
+    el.addEventListener('input',()=>{
+      state[k]=el.innerText;localStorage.setItem(KEY,JSON.stringify(state));
+      saved.classList.add('show');clearTimeout(timer);timer=setTimeout(()=>saved.classList.remove('show'),900);
     });
   });
-})();
 </script>
 </body>
 </html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="投资学习工作台：整理、比较投资者公开内容中的方法、条件、风险与案例。">
+  <title>投资学习 · arce-star</title>
+  <style>
+    :root{--bg:#f7f7f5;--paper:#fff;--text:#171717;--muted:#747474;--line:#deded9;--soft:#f0f0ed;--accent:#111;--warn:#8a5a00}
+    *{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,"PingFang SC","Microsoft YaHei",system-ui,sans-serif;line-height:1.65}
+    a{color:inherit}.shell{max-width:1320px;margin:0 auto;padding:36px 28px 80px}.top{display:flex;justify-content:space-between;gap:28px;align-items:flex-start;padding-bottom:28px;border-bottom:1px solid var(--line)}
+    .back{font-size:14px;text-decoration:none;color:var(--muted)}.back:hover{color:var(--text)}h1{font-size:42px;line-height:1.05;margin:24px 0 12px;letter-spacing:-.03em}.intro{max-width:760px;color:#505050;margin:0}.status{font-size:12px;border:1px solid var(--line);padding:6px 10px;border-radius:999px;color:var(--muted);white-space:nowrap}
+    .notice{margin:24px 0;padding:14px 16px;border-left:3px solid #bbb;background:var(--paper);font-size:14px;color:#555}.notice strong{color:var(--text)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.card{background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}.card-head{padding:22px 22px 18px;border-bottom:1px solid var(--line)}
+    .source-no{font:600 12px/1.2 ui-monospace,SFMono-Regular,Menlo,monospace;color:#999;text-transform:uppercase;letter-spacing:.08em}.card h2{font-size:24px;margin:8px 0 6px}.src-meta{font-size:13px;color:var(--muted)}.src-link{display:inline-block;margin-top:12px;padding:7px 11px;border:1px solid #bbb;border-radius:6px;text-decoration:none;font-size:13px}.src-link:hover{background:#111;color:white;border-color:#111}
+    .fields{padding:6px 22px 22px}.field{padding:17px 0;border-bottom:1px solid #ecece8}.field:last-child{border-bottom:0}.label{font-size:13px;font-weight:700;margin-bottom:7px}.hint{font-size:12px;color:#999;margin-bottom:8px}.editable{min-height:62px;padding:10px 11px;background:#fafaf8;border:1px solid #e6e6e2;border-radius:7px;font-size:14px;outline:none;white-space:pre-wrap}.editable:focus{border-color:#999;background:white}.editable:empty:before{content:attr(data-placeholder);color:#aaa}
+    .compare{margin-top:24px;background:var(--paper);border:1px solid var(--line);border-radius:12px;overflow:hidden}.compare h2{font-size:21px;margin:0;padding:20px 22px;border-bottom:1px solid var(--line)}table{border-collapse:collapse;width:100%}th,td{padding:13px 16px;border-bottom:1px solid #ecece8;border-right:1px solid #ecece8;text-align:left;vertical-align:top;font-size:13px}th:last-child,td:last-child{border-right:0}tr:last-child td{border-bottom:0}th{background:#fafaf8;font-weight:700}.metric{width:160px;color:#555}.compare-edit{min-height:36px;outline:none}.compare-edit:empty:before{content:"待整理";color:#bbb}
+    .study{margin-top:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:14px}.study-box{background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:18px}.study-box h3{font-size:15px;margin:0 0 8px}.study-box p{font-size:13px;color:#666;margin:0}.warning{color:var(--warn)}
+    .saved{position:fixed;right:18px;bottom:18px;background:#111;color:white;border-radius:999px;padding:8px 12px;font-size:12px;opacity:0;transform:translateY(5px);transition:.2s;pointer-events:none}.saved.show{opacity:1;transform:none}
+    footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);font-size:12px;color:#999;display:flex;justify-content:space-between;gap:15px}
+    @media(max-width:850px){.shell{padding:24px 16px 60px}.top{display:block}.status{display:inline-block;margin-top:18px}h1{font-size:34px}.grid{grid-template-columns:1fr}.study{grid-template-columns:1fr}.compare{overflow-x:auto}table{min-width:680px}}
+  </style>
+</head>
+<body>
+<main class="shell">
+  <header class="top">
+    <div>
+      <a class="back" href="index.html">← 返回个人主页</a>
+      <h1>投资学习</h1>
+      <p class="intro">把公开投资内容拆成可以检查的规则：买什么、为什么买、什么时候买、什么时候退出、仓位多大、什么情况下会失效。页面中的笔记自动保存在当前浏览器。</p>
+    </div>
+    <div class="status">2 个学习来源</div>
+  </header>
+
+  <div class="notice"><strong>来源状态：</strong>当前网页环境无法读取这两条小红书视频的字幕与完整正文，因此下方不填任何未经视频确认的“投资手法”。先保留原视频入口和结构化笔记位，避免把推测写成作者观点。</div>
+
+  <section class="grid">
+    <article class="card">
+      <div class="card-head">
+        <div class="source-no">SOURCE 01</div>
+        <h2>投资者 A</h2>
+        <div class="src-meta">小红书视频 · 笔记 ID 6ad042df000000000a024721</div>
+        <a class="src-link" target="_blank" rel="noopener" href="https://www.xiaohongshu.com/explore/6ad042df000000000a024721">打开原视频 ↗</a>
+      </div>
+      <div class="fields">
+        <div class="field"><div class="label">核心逻辑</div><div class="hint">他靠什么获得收益？价值、趋势、事件、周期、情绪、套利，还是其他？</div><div class="editable" contenteditable="true" data-key="a-core" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">标的选择</div><div class="hint">关注什么资产？筛选条件是什么？明确排除什么？</div><div class="editable" contenteditable="true" data-key="a-select" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">买入条件</div><div class="hint">需要同时满足哪些信号？价格、估值、基本面、量价、宏观或催化？</div><div class="editable" contenteditable="true" data-key="a-entry" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">持有与加仓</div><div class="hint">上涨、下跌、横盘时分别怎么处理？什么情况下允许加仓？</div><div class="editable" contenteditable="true" data-key="a-hold" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">退出条件</div><div class="hint">止盈、止损、逻辑失效分别怎么定义？</div><div class="editable" contenteditable="true" data-key="a-exit" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">仓位与风险</div><div class="hint">单笔仓位、总仓位、最大回撤、分散程度。</div><div class="editable" contenteditable="true" data-key="a-risk" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">适用行情</div><div class="hint">牛市、熊市、震荡、趋势、高波动、低波动？</div><div class="editable" contenteditable="true" data-key="a-regime" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">视频中的具体案例</div><div class="hint">记录标的、时间、买卖理由与最终结果，避免只记口号。</div><div class="editable" contenteditable="true" data-key="a-case" data-placeholder="看视频后整理……"></div></div>
+      </div>
+    </article>
+
+    <article class="card">
+      <div class="card-head">
+        <div class="source-no">SOURCE 02</div>
+        <h2>投资者 B</h2>
+        <div class="src-meta">小红书视频 · 笔记 ID 6ab8ba1e0000000014038dd1</div>
+        <a class="src-link" target="_blank" rel="noopener" href="https://www.xiaohongshu.com/explore/6ab8ba1e0000000014038dd1">打开原视频 ↗</a>
+      </div>
+      <div class="fields">
+        <div class="field"><div class="label">核心逻辑</div><div class="hint">他靠什么获得收益？价值、趋势、事件、周期、情绪、套利，还是其他？</div><div class="editable" contenteditable="true" data-key="b-core" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">标的选择</div><div class="hint">关注什么资产？筛选条件是什么？明确排除什么？</div><div class="editable" contenteditable="true" data-key="b-select" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">买入条件</div><div class="hint">需要同时满足哪些信号？价格、估值、基本面、量价、宏观或催化？</div><div class="editable" contenteditable="true" data-key="b-entry" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">持有与加仓</div><div class="hint">上涨、下跌、横盘时分别怎么处理？什么情况下允许加仓？</div><div class="editable" contenteditable="true" data-key="b-hold" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">退出条件</div><div class="hint">止盈、止损、逻辑失效分别怎么定义？</div><div class="editable" contenteditable="true" data-key="b-exit" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">仓位与风险</div><div class="hint">单笔仓位、总仓位、最大回撤、分散程度。</div><div class="editable" contenteditable="true" data-key="b-risk" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">适用行情</div><div class="hint">牛市、熊市、震荡、趋势、高波动、低波动？</div><div class="editable" contenteditable="true" data-key="b-regime" data-placeholder="看视频后整理……"></div></div>
+        <div class="field"><div class="label">视频中的具体案例</div><div class="hint">记录标的、时间、买卖理由与最终结果，避免只记口号。</div><div class="editable" contenteditable="true" data-key="b-case" data-placeholder="看视频后整理……"></div></div>
+      </div>
+    </article>
+  </section>
+
+  <section class="compare">
+    <h2>方法对比</h2>
+    <table>
+      <thead><tr><th class="metric">比较项</th><th>投资者 A</th><th>投资者 B</th></tr></thead>
+      <tbody>
+        <tr><td class="metric">收益来源</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-edge"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-edge"></td></tr>
+        <tr><td class="metric">持有周期</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-time"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-time"></td></tr>
+        <tr><td class="metric">入场依据</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-entry"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-entry"></td></tr>
+        <tr><td class="metric">退出依据</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-exit"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-exit"></td></tr>
+        <tr><td class="metric">风险控制</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-risk"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-risk"></td></tr>
+        <tr><td class="metric">最依赖的市场环境</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-regime"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-regime"></td></tr>
+        <tr><td class="metric">我值得学习的部分</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-learn"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-learn"></td></tr>
+        <tr><td class="metric">我暂时不采用的部分</td><td class="compare-edit" contenteditable="true" data-key="cmp-a-reject"></td><td class="compare-edit" contenteditable="true" data-key="cmp-b-reject"></td></tr>
+      </tbody>
+    </table>
+  </section>
+
+  <section class="study">
+    <div class="study-box"><h3>1 · 先还原规则</h3><p>先记录作者实际说了什么。把“看好”“低估”“趋势不错”继续追问成可以执行的条件。</p></div>
+    <div class="study-box"><h3>2 · 再找反例</h3><p>同一规则在哪些市场阶段会失效？至少找一个失败案例，不只保存成功截图。</p></div>
+    <div class="study-box"><h3>3 · 最后再测试</h3><p class="warning">公开内容只作为研究材料。要采用某条规则，先做历史验证或纸面交易，不因为博主收益截图直接实盘。</p></div>
+  </section>
+
+  <footer><span>Investment Study · personal research notes</span><span>来源与个人笔记分开记录</span></footer>
+</main>
+<div class="saved" id="saved">已保存在本机</div>
+<script>
+(() => {
+  const prefix = 'investment-study-v1:';
+  const nodes = [...document.querySelectorAll('[contenteditable][data-key]')];
+  const badge = document.getElementById('saved');
+  let timer;
+  nodes.forEach(el => {
+    const saved = localStorage.getItem(prefix + el.dataset.key);
+    if (saved !== null) el.innerText = saved;
+    el.addEventListener('input', () => {
+      localStorage.setItem(prefix + el.dataset.key, el.innerText.trim());
+      badge.classList.add('show');
+      clearTimeout(timer);
+      timer = setTimeout(() => badge.classList.remove('show'), 900);
+    });
+  });
+})();
+</script>
+</body>
+</html>

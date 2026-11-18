@@ -589,6 +589,44 @@ a{color:#6b846e}a:hover{color:#a77966}
 }
 @media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
 
+
+
+/* 2026-11: warm paper finish and resilient public/private navigation */
+html{scroll-padding-top:18px}
+body{background:radial-gradient(ellipse at 12% 7%,#fffaf2 0,transparent 31%),
+radial-gradient(ellipse at 91% 30%,rgba(213,222,200,.32),transparent 31%),
+radial-gradient(ellipse at 80% 88%,rgba(230,202,182,.28),transparent 32%),#f5efe5}
+#sidebar{overflow-y:auto;scrollbar-width:thin;scrollbar-color:#dfd2bd transparent}
+.sidebar-brand{position:relative}
+.sidebar-brand:after{content:"";display:block;width:36px;height:1px;background:#c7ad90;margin:13px auto 0}
+.sidebar-nav a{min-height:41px;transition:background .2s,transform .2s,border-color .2s}
+.sidebar-nav a:hover{transform:translateX(3px)}
+.sidebar-nav a:focus-visible{outline:2px solid #92a28d;outline-offset:2px}
+.sidebar-nav a.active{box-shadow:inset 3px 0 #8da48e,0 2px 8px rgba(88,109,85,.055)}
+.content-panel{position:relative;box-shadow:0 16px 38px rgba(92,72,51,.06),inset 0 1px rgba(255,255,255,.82)}
+.content-panel:before{content:"";display:block;width:48px;height:3px;border-radius:9px;background:linear-gradient(90deg,#a1b59a,#e7cab5);margin:0 0 18px}
+.cv-section{border-radius:12px}
+.cv-section-title{letter-spacing:.035em}
+#lock-btn:focus-visible,#exit-private-btn:focus-visible,#lock-private-btn:focus-visible,
+.auth-dialog button:focus-visible,.auth-dialog input:focus-visible{outline:3px solid #a0b197;outline-offset:3px}
+#lock-private-btn{display:none;position:fixed;bottom:20px;right:20px;z-index:1001;
+padding:10px 16px;border:1px solid #dacbb7;border-radius:999px;background:rgba(255,250,242,.97);
+color:#857261;font-size:.82rem;box-shadow:0 7px 20px rgba(89,69,48,.11);cursor:pointer}
+#lock-private-btn.show{display:block}
+#lock-private-btn:hover{background:#fffdf9}
+#private-view{transition:opacity .2s ease}
+#exit-private-btn{left:20px;transform:none}
+#exit-private-btn.show{display:block}
+@media(max-width:720px){
+ #sidebar{overflow-y:visible;scrollbar-width:none}
+ .sidebar-brand:after{display:none}
+ .sidebar-nav a:hover{transform:none}
+ .content-panel:before{margin-bottom:12px}
+ #exit-private-btn{left:12px;bottom:12px;transform:none;padding:9px 12px}
+ #lock-private-btn{right:12px;bottom:12px;padding:9px 12px}
+}
+@media(max-width:360px){#exit-private-btn,#lock-private-btn{font-size:.73rem;padding:9px}}
+
     </style>
 </head>
 <body>
@@ -1338,23 +1376,43 @@ def default_calcset(ohlcv):
         <iframe id="private-frame"></iframe>
     </div>
 
-    <button id="exit-private-btn">← 返回公开页</button>
+    <button id="exit-private-btn" type="button" title="不锁定，稍后可直接返回">← 返回公开页</button>
+    <button id="lock-private-btn" type="button" title="锁定后须重新输入密码">锁定私人区</button>
 
     <script src="js/auth.js"></script>
     <script src="js/encrypted-content.js"></script>
     <script>
         // ===== 侧栏导航 =====
-        document.querySelectorAll('.sidebar-nav a').forEach(link => {
-            link.addEventListener('click', function(e) {
-                if (!this.dataset.panel) return; // 直接跳转链接（如五子棋），不拦截
-                e.preventDefault();
-                document.querySelectorAll('.sidebar-nav a').forEach(l => l.classList.remove('active'));
-                this.classList.add('active');
-                document.querySelectorAll('.content-panel').forEach(p => p.classList.remove('active'));
-                document.getElementById('panel-' + this.dataset.panel).classList.add('active');
-                window.scrollTo(0, 0);
+        // Use real links for keyboard/mobile accessibility, and guard unavailable panels.
+        const panelLinks = [...document.querySelectorAll('.sidebar-nav a[data-panel]')];
+        function showPublicPanel(panelName, updateHash = true) {
+            const target = document.getElementById('panel-' + panelName);
+            if (!target) return false;
+            document.querySelectorAll('.content-panel').forEach(p => p.classList.toggle('active', p === target));
+            panelLinks.forEach(link => {
+                const selected = link.dataset.panel === panelName;
+                link.classList.toggle('active', selected);
+                if (selected) link.setAttribute('aria-current', 'page');
+                else link.removeAttribute('aria-current');
+            });
+            if (updateHash && history.replaceState) history.replaceState(null, '', '#panel-' + panelName);
+            window.scrollTo({ top: 0, behavior: 'auto' });
+            return true;
+        }
+        panelLinks.forEach(link => {
+            const panelName = link.dataset.panel;
+            const target = document.getElementById('panel-' + panelName);
+            if (!target) return;
+            link.setAttribute('href', '#panel-' + panelName);
+            link.setAttribute('aria-controls', target.id);
+            link.addEventListener('click', event => {
+                event.preventDefault();
+                showPublicPanel(panelName);
             });
         });
+        const requestedPanel = location.hash.match(/^#panel-([a-z0-9-]+)$/i);
+        if (requestedPanel) showPublicPanel(requestedPanel[1], false);
+        else showPublicPanel('about', false);
 
         // ===== 课程可见性编辑 =====
         const STORAGE_KEY = '_arce_course_visibility';
@@ -1465,22 +1523,59 @@ def default_calcset(ohlcv):
         const privateView = document.getElementById('private-view');
         const privateFrame = document.getElementById('private-frame');
         const exitPrivateBtn = document.getElementById('exit-private-btn');
-        let privateBlobUrl = null;
-
+        // Decrypted markup stays in this page's memory only. Returning to the public
+        // page does not silently discard it; reloading or explicitly locking does.
+        let privateUnlocked = false;
         if (Auth.isLoggedIn()) Auth.clearSession();
         updateEditButton();
 
+        function updateLockUI() {
+            const isPrivate = privateView.classList.contains('show');
+            lockBtn.classList.toggle('logged-in', privateUnlocked);
+            lockBtn.title = isPrivate ? '锁定私人区' : (privateUnlocked ? '返回已解锁的私人区' : '进入私人区');
+            lockBtn.setAttribute('aria-label', lockBtn.title);
+            lockBtn.innerHTML = privateUnlocked
+                ? '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m9.5 15 1.8 1.8 3.5-3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+                : '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="15.5" r="1.15" fill="currentColor"/></svg>';
+        }
+        function closeAuthDialog() {
+            authOverlay.classList.remove('show');
+            pwdInput.value = '';
+            authError.style.display = 'none';
+            lockBtn.focus();
+        }
         function resetPrivateView() {
+            // Explicit lock destroys the decrypted iframe and all in-memory access.
+            privateUnlocked = false;
             Auth.clearSession();
-            privateFrame.src = 'about:blank';
-            if (privateBlobUrl) { URL.revokeObjectURL(privateBlobUrl); privateBlobUrl = null; }
+            privateFrame.srcdoc = '';
+            privateFrame.removeAttribute('src');
             publicView.style.display = '';
             privateView.classList.remove('show');
             exitPrivateBtn.classList.remove('show');
-            lockBtn.classList.remove('logged-in');
-            lockBtn.title = '进入私人区';
-            lockBtn.setAttribute('aria-label', '进入私人区');
-            lockBtn.innerHTML = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="15.5" r="1.15" fill="currentColor"/></svg>';
+            document.getElementById('lock-private-btn').classList.remove('show');
+            updateLockUI();
+            updateEditButton();
+        }
+        function showPublicView() {
+            // Switching views retains the unlocked iframe for the current page only.
+            publicView.style.display = '';
+            privateView.classList.remove('show');
+            exitPrivateBtn.classList.remove('show');
+            document.getElementById('lock-private-btn').classList.remove('show');
+            updateLockUI();
+        }
+        function enterPrivateMode() {
+            if (!privateUnlocked || !Auth.isLoggedIn()) {
+                resetPrivateView();
+                openAuthDialog();
+                return;
+            }
+            publicView.style.display = 'none';
+            privateView.classList.add('show');
+            exitPrivateBtn.classList.add('show');
+            document.getElementById('lock-private-btn').classList.add('show');
+            updateLockUI();
             updateEditButton();
         }
         function openAuthDialog() {
@@ -1489,60 +1584,62 @@ def default_calcset(ohlcv):
             window.setTimeout(() => pwdInput.focus(), 30);
         }
         lockBtn.addEventListener('click', () => {
-            if (Auth.isLoggedIn() && privateBlobUrl) enterPrivateMode();
-            else { Auth.clearSession(); openAuthDialog(); }
+            if (privateView.classList.contains('show')) resetPrivateView();
+            else if (privateUnlocked) enterPrivateMode();
+            else openAuthDialog();
         });
-        authClose.addEventListener('click', () => {
-            authOverlay.classList.remove('show'); pwdInput.value = ''; authError.style.display = 'none';
+        authClose.addEventListener('click', closeAuthDialog);
+        authOverlay.addEventListener('click', event => {
+            if (event.target === authOverlay) closeAuthDialog();
         });
-        authOverlay.addEventListener('click', (e) => {
-            if (e.target === authOverlay) { authOverlay.classList.remove('show'); pwdInput.value = ''; authError.style.display = 'none'; }
-        });
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && authOverlay.classList.contains('show')) {
-                authOverlay.classList.remove('show'); pwdInput.value = ''; authError.style.display = 'none';
-            }
+        document.addEventListener('keydown', event => {
+            if (event.key === 'Escape' && authOverlay.classList.contains('show')) closeAuthDialog();
         });
         loginBtn.addEventListener('click', attemptLogin);
-        pwdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
+        pwdInput.addEventListener('keydown', event => {
+            if (event.key === 'Enter' && !loginBtn.disabled) attemptLogin();
+        });
 
         async function attemptLogin() {
+            if (loginBtn.disabled) return;
             const pwd = pwdInput.value;
-            if (!pwd) return;
-            loginBtn.textContent = '正在验证…'; loginBtn.disabled = true; authError.style.display = 'none';
+            if (!pwd) { pwdInput.focus(); return; }
+            if (typeof Auth === 'undefined' || typeof ENCRYPTED_CONTENT === 'undefined') {
+                authError.textContent = '加密模块未加载，请刷新后重试。';
+                authError.style.display = 'block';
+                return;
+            }
+            loginBtn.textContent = '正在验证…';
+            loginBtn.disabled = true;
+            authError.style.display = 'none';
             try {
                 const decryptedHtml = await Auth.decryptContent(ENCRYPTED_CONTENT, pwd);
                 if (!decryptedHtml) {
-                    authError.textContent = '密码不正确，请再试一次。'; authError.style.display = 'block';
-                    pwdInput.value = ''; pwdInput.focus(); return;
+                    authError.textContent = '密码不正确，请再试一次。';
+                    authError.style.display = 'block';
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                    return;
                 }
                 if (!Auth.setSession()) throw new Error('浏览器无法建立私人区会话，请检查存储设置。');
-                authOverlay.classList.remove('show'); pwdInput.value = '';
-                revealPrivateContent(decryptedHtml);
+                // srcdoc resolves relative assets against this homepage, unlike blob: URLs.
+                // Do not store plaintext in localStorage/sessionStorage or public HTML.
+                privateFrame.srcdoc = decryptedHtml;
+                privateUnlocked = true;
+                authOverlay.classList.remove('show');
+                pwdInput.value = '';
+                enterPrivateMode();
             } catch (err) {
                 authError.textContent = err && err.message ? err.message : '暂时无法解锁，请稍后重试。';
                 authError.style.display = 'block';
             } finally {
-                loginBtn.textContent = '进入私人空间'; loginBtn.disabled = false;
+                loginBtn.textContent = '进入私人空间';
+                loginBtn.disabled = false;
             }
         }
-        function revealPrivateContent(decryptedHtml) {
-            if (privateBlobUrl) URL.revokeObjectURL(privateBlobUrl);
-            privateBlobUrl = URL.createObjectURL(new Blob([decryptedHtml], { type: 'text/html' }));
-            privateFrame.src = privateBlobUrl;
-            publicView.style.display = 'none'; privateView.classList.add('show'); exitPrivateBtn.classList.add('show');
-            lockBtn.classList.add('logged-in'); lockBtn.title = '私人区已解锁'; lockBtn.setAttribute('aria-label', '私人区已解锁');
-            lockBtn.innerHTML = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m9.5 15 1.8 1.8 3.5-3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
-            updateEditButton();
-        }
-        function enterPrivateMode() {
-            if (!Auth.isLoggedIn() || !privateBlobUrl) {
-                Auth.clearSession(); openAuthDialog(); updateEditButton(); return;
-            }
-            publicView.style.display = 'none'; privateView.classList.add('show'); exitPrivateBtn.classList.add('show');
-            updateEditButton();
-        }
-        exitPrivateBtn.addEventListener('click', () => { authOverlay.classList.remove('show'); resetPrivateView(); });
+        exitPrivateBtn.addEventListener('click', showPublicView);
+        document.getElementById('lock-private-btn').addEventListener('click', resetPrivateView);
+        updateLockUI();
     </script>
 
     <script>
@@ -1969,7 +2066,7 @@ def default_calcset(ohlcv):
     </div>
 
     <script src="js/quantum-sea.js?v=10"></script>
-    <script>document.addEventListener('DOMContentLoaded', () => { new QuantumSea('quantum-bg'); });</script>
+    <script>document.addEventListener('DOMContentLoaded', () => { if (typeof QuantumSea !== 'undefined') new QuantumSea('quantum-bg'); });</script>
     <script src="js/project-browser.js?v=11"></script>
     <script src="js/madevolve-browser.js?v=9"></script>
     <script src="js/ai-assistant.js?v=6"></script>
@@ -2069,8 +2166,8 @@ def default_calcset(ohlcv):
 
         // document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.addEventListener('DOMContentLoaded', () => {
-            AiAssistant.init();
-            if (window.Tavern) Tavern.init();
+            if (window.AiAssistant && typeof AiAssistant.init === 'function') AiAssistant.init();
+            if (window.Tavern && typeof Tavern.init === 'function') Tavern.init();
             
             // 页面加载完成后，自动渲染全页的静态 LaTeX 数学公式
             if (typeof renderMathInElement !== 'undefined') {
@@ -2087,13 +2184,20 @@ def default_calcset(ohlcv):
                 }
             }
         });
-        document.querySelector('[data-panel="projects"]').addEventListener('click', () => {
-            setTimeout(() => ProjectBrowser.loadRoot(), 100);
+        const projectLink = document.querySelector('[data-panel="projects"]');
+        if (projectLink) projectLink.addEventListener('click', () => {
+            if (window.ProjectBrowser && typeof ProjectBrowser.loadRoot === 'function') {
+                setTimeout(() => ProjectBrowser.loadRoot(), 100);
+            }
         });
-        document.querySelector('[data-panel="madevolve"]').addEventListener('click', () => {
-            setTimeout(() => MadEvolveBrowser.loadRoot(), 100);
+        const madevolveLink = document.querySelector('[data-panel="madevolve"]');
+        if (madevolveLink) madevolveLink.addEventListener('click', () => {
+            if (window.MadEvolveBrowser && typeof MadEvolveBrowser.loadRoot === 'function') {
+                setTimeout(() => MadEvolveBrowser.loadRoot(), 100);
+            }
         });
-        document.querySelector('[data-panel="leetcode"]').addEventListener('click', () => {
+        const leetcodeLink = document.querySelector('[data-panel="leetcode"]');
+        if (leetcodeLink && window.LeetCodeUI) leetcodeLink.addEventListener('click', () => {
             LeetCodeUI.init();
         });
         // 课程笔记: 点击标签加载 markdown
@@ -2121,7 +2225,7 @@ def default_calcset(ohlcv):
                     }
                     const text = await resp.text();
                     // 渲染 markdown
-                    let html = ProjectBrowser ? ProjectBrowser.renderMD(text) : text.replace(/\n/g,'<br>');
+                    let html = window.ProjectBrowser && typeof ProjectBrowser.renderMD === 'function' ? ProjectBrowser.renderMD(text) : text.replace(/\n/g,'<br>');
                     content.innerHTML = html;
 
                     // KaTeX 渲染数学公式

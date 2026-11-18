@@ -1146,22 +1146,22 @@
     },
     {
       "id": "W058",
-      "title": "给亡妇",
+      "title": "歌声",
       "author": "朱自清",
-      "year": "1936",
+      "year": "1921",
       "genre": "散文",
       "region": "中国",
       "tags": [
-        "悼念",
-        "亲情",
-        "回忆"
+        "音乐",
+        "感官",
+        "审美"
       ],
-      "focus": "关注第二人称倾诉和日常记忆的组织方式",
-      "source": "Wikisource",
-      "sourcePage": "给亡妇",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%BB%99%E4%BA%A1%E5%A6%87%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "focus": "观察作者如何把听觉经验转化为视觉、嗅觉与身体感受，体会通感和联想的组织方式",
+      "source": "维基文库",
+      "sourcePage": "歌聲",
+      "sourceUrl": "https://zh.wikisource.org/wiki/歌聲",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

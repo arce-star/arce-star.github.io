@@ -926,22 +926,22 @@
     },
     {
       "id": "W047",
-      "title": "竞选州长",
-      "author": "马克·吐温",
-      "year": "1870",
+      "title": "狂人日记",
+      "author": "鲁迅",
+      "year": "1918",
       "genre": "小说",
-      "region": "美国",
+      "region": "中国",
       "tags": [
-        "政治",
-        "讽刺",
-        "舆论"
+        "意识流",
+        "象征",
+        "社会批判"
       ],
-      "focus": "观察夸张叙事和舆论机制形成的讽刺效果",
-      "source": "Wikisource",
-      "sourcePage": "竞选州长",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%AB%9E%E9%80%89%E5%B7%9E%E9%95%BF%20%E9%A9%AC%E5%85%8B%C2%B7%E5%90%90%E6%B8%A9",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "focus": "从日记体叙事、迫害妄想与“吃人”隐喻入手，分析个人精神危机如何成为社会批判的表达方式",
+      "source": "维基文库",
+      "sourcePage": "狂人日记",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/狂人日记",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

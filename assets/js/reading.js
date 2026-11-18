@@ -169,7 +169,7 @@ async function discover(){
  try{
  const existing=state.works.slice(0,100).map(w=>w.title+'（'+w.author+'）').join('、');
  const result=await requestAI([
- {role:'system',content:'你是中文文学书目编辑。请只推荐确实存在的真实文学作品，不编造书名、作者、出版信息或网络链接。不要推荐题目。仅输出严格 JSON 数组，元素包含 title、author、genre（小说或散文）、year、region、tags（最多3项）、focus 字段。不要在 JSON 之外添加解释。如果无法确信真实存在，减少候选数量。'},
+ {role:'system',content:'你是中文文学书目编辑。请只推荐确实存在的真实文学作品，不编造书名、作者、出版信息或网络链接。不要推荐题目。仅输出严格 JSON 数组，元素包含 title、author、genre（小说或散文）、year、region、tags（最多3项）、focus、sourceUrl（可核实的直接来源链接；不确定则留空） 字段。不要在 JSON 之外添加解释。如果无法确信真实存在，减少候选数量。'},
  {role:'user',content:'为文学阅读馆提出 6 篇新的经典小说或散文候选作品，优先中文原作，适合深度细读，不重复以下馆藏：'+existing.slice(0,7000)}
  ],1600,'',true);
  let raw=result.text.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'').trim();
@@ -187,6 +187,7 @@ function renderCandidates(){
  const d=document.createElement('div');d.className='candidate';d.append(textEl('strong',w.title),textEl('small',w.author+' · '+(w.genre||'待分类')+' · 仅为 AI 推荐，尚未核验'));
  d.append(textEl('p',w.focus||'文学阅读候选'));
  const source=document.createElement('a');source.href=safeLink(w.sourceUrl);source.target='_blank';source.rel='noopener noreferrer';safeSet(source,'查找原始出处 ↗');d.append(source);
+ if(w.suggestedSourceUrl&&safeLink(w.suggestedSourceUrl)!=='#'){const suggested=document.createElement('a');suggested.href=safeLink(w.suggestedSourceUrl);suggested.target='_blank';suggested.rel='noopener noreferrer';suggested.style.display='block';safeSet(suggested,'AI 提供的来源（待核验） ↗');d.append(suggested)}
  const field=document.createElement('input');field.type='url';field.value='';field.placeholder='核验后的真实来源 HTTPS 链接';field.style.cssText='width:100%;padding:8px;margin:10px 0;border:1px solid #d8cebf;background:var(--white);color:var(--ink)';
  d.append(field);
  const btn=createBtn('审核后写入 GitHub','ghost',async()=>{

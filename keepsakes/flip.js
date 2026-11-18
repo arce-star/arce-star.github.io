@@ -153,6 +153,7 @@ function bookPointerEnd(e,cancelled=false){
  const commit=!cancelled&&(p.turn.progress>=.29||Math.abs(dx)>85);
  settlePaperTurn(p.turn,commit);
 }
+document.addEventListener('DOMContentLoaded',()=>{
 for(const stage of [$('desktopBook'),$('mobileBook')]){
  stage.addEventListener('pointerdown',bookPointerDown);
  stage.addEventListener('click',e=>{
@@ -173,4 +174,6 @@ window.addEventListener('resize',()=>{
   previousCompact=compactBook.matches;
   if(currentView==='book'){renderBook();renderMobileBook()}
  }
+});
+
 });

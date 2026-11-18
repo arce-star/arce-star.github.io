@@ -54,7 +54,7 @@ DeepSeek 官方文档：https://api-docs.deepseek.com/api/create-chat-completion
 - `assets/css/reading.css`：响应式阅读样式
 - `assets/js/reading.js`：书目展示、交互、发现与赏析
 - `assets/data/reading/catalog.json`：100 篇精选书目（小说 50、散文 50）
-- `assets/data/reading/fulltext.json`：已实际收录并随站点发布的完整原文，目前 14 篇；每篇附来源、署名与许可信息。其余书目暂为作品索引，不冒充已收录全文
+- `assets/data/reading/fulltext.json`：已实际收录并随站点发布的完整原文，目前 15 篇；每篇附来源、署名与许可信息。其余书目暂为作品索引，不冒充已收录全文
 - `api/reading.js`：USTC/DeepSeek 请求转发及受保护的 GitHub 书目发布
 
 ## 内容治理

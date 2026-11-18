@@ -1,0 +1,13 @@
+{
+  "title": "示例：一场精彩的排位赛",
+  "date": "2026-11-18",
+  "hero": "请填写真实英雄",
+  "mode": "排位赛",
+  "result": "WIN",
+  "kills": 0,
+  "deaths": 0,
+  "assists": 0,
+  "rating": null,
+  "achievements": [],
+  "note": "请根据真实截图填写，不确定时询问用户"
+}

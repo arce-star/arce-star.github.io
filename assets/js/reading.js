@@ -102,8 +102,10 @@ async function openWork(w){
   body.replaceChildren();
   localText.content.split(/\\n\\s*\\n/).map(p=>p.trim()).filter(Boolean).forEach(p=>body.append(textEl('p',p)));
   state.fullText=localText.content;
-  source.append(textEl('p','全文已随网站数据保存在 GitHub 仓库中，可离线于来源站点独立阅读。原文归属：'+localText.author+'《'+localText.title+'》；来源：维基文库。'));
+  source.append(textEl('p','全文已随网站数据保存在 GitHub 仓库中，可直接阅读，不依赖来源网站在线。'));
+  source.append(textEl('p',localText.attribution||('作者：'+localText.author+'；作品：'+localText.title+'；来源：维基文库。')));
   source.append(textEl('p',localText.license||'页面文本按来源页许可与作品公有领域标注使用。'));
+  if(localText.editionNote)source.append(textEl('p','版本说明：'+localText.editionNote));
  }else{
   await loadWorkText(w);
  }

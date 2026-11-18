@@ -107,7 +107,10 @@ async function loadWorkText(w){
  const response=await fetch(url,{mode:'cors',signal:AbortSignal.timeout(12000)});
  if(!response.ok)throw Error('来源无法访问');const data=await response.json();
  if(!data.parse?.text||!data.parse?.title)throw Error('来源没有返回正文');
- const parsed=new DOMParser().parseFromString(data.parse.text,'text/html');parsed.querySelectorAll('script,style,nav,aside,table,.mw-editsection,.reference,.noprint,.metadata,.catlinks,.ws-noexport,.mw-cite-backlink').forEach(n=>n.remove());
+ const parsed=new DOMParser().parseFromString(data.parse.text,'text/html');
+ const visibleMeta=(parsed.body?.textContent||'').slice(0,2400);
+ if(!data.parse.title.includes(w.title.replace(/（节选）/g,''))||!visibleMeta.includes(w.author))throw Error('原文标题或作者无法核对');
+ parsed.querySelectorAll('script,style,nav,aside,table,.mw-editsection,.reference,.noprint,.metadata,.catlinks,.ws-noexport,.mw-cite-backlink').forEach(n=>n.remove());
  const container=parsed.querySelector('.mw-parser-output')||parsed.body;
  const paragraphEls=[...container.querySelectorAll('p')];
  const paras=paragraphEls.map(p=>p.textContent.replace(/\s+/g,' ').trim()).filter(s=>s.length>14&&!/^(本页|此文|作品|作者|维基文库)/.test(s));

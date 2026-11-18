@@ -1,0 +1,57 @@
+/* Page turning v2: live paper sheet, readable front/back, tactile corner tabs */
+#bookView .tabletop{perspective:1800px}
+#desktopBook{perspective:2200px;transform-style:preserve-3d;isolation:isolate}
+#desktopBook>.page{height:100%}
+#desktopBook.is-turning>.page{pointer-events:none}
+.book-turn-sheet{position:absolute;top:0;bottom:0;width:50%;z-index:9;transform-style:preserve-3d;will-change:transform;pointer-events:none}
+.book-turn-sheet.forward{left:50%;transform-origin:left center}
+.book-turn-sheet.backward{left:0;transform-origin:right center}
+.book-turn-face{position:absolute;inset:0;display:block;backface-visibility:hidden;-webkit-backface-visibility:hidden;transform-style:flat;pointer-events:none;overflow:hidden;box-shadow:0 3px 18px rgba(91,63,41,.12)}
+.book-turn-face.back{transform:rotateY(180deg)}
+.book-turn-sheet.forward .book-turn-face.front{box-shadow:inset 19px 0 27px -23px #52382077,-8px 14px 28px #59432f20}
+.book-turn-sheet.backward .book-turn-face.front{box-shadow:inset -19px 0 27px -23px #52382077,8px 14px 28px #59432f20}
+.book-turn-sheet .book-turn-face img{pointer-events:none!important}
+#desktopBook.is-turning:before{z-index:6}
+.book-turn-sheet:after{content:"";position:absolute;inset:0;pointer-events:none;transform:translateZ(-1px);background:linear-gradient(90deg,transparent 5%,#8a6a4730 95%);opacity:.6;backface-visibility:hidden}
+.page-corner{position:absolute;z-index:12;bottom:12px;width:56px;height:57px;border:0;background:transparent;color:#ad8f75;padding:7px;display:grid;place-items:end;opacity:.76;transition:opacity .2s,transform .2s;touch-action:pan-y}
+.page-corner svg{width:36px;height:36px;filter:drop-shadow(0 3px 2px #8c75501f)}
+.page-corner.previous{left:8px;place-items:end start}
+.page-corner.next{right:8px;place-items:end}
+.page-corner:hover{opacity:1;transform:translateY(-3px);color:#7f8d78}
+.page-corner:focus-visible{outline:2px solid #7c907d;border-radius:8px}
+.page-corner:disabled{opacity:.15;cursor:default;transform:none}
+#desktopBook.is-turning .page-corner,#mobileBook.is-turning .page-corner{opacity:0;pointer-events:none}
+.book-hint{text-align:center;color:#a48e78;font-size:11px;letter-spacing:1.2px;margin-top:12px;line-height:1.6}
+.book-hint svg{width:14px;height:14px;vertical-align:-3px;margin:0 5px;stroke:currentColor;fill:none;stroke-linecap:round;stroke-width:1.5}
+#desktopBook,#mobileBook{touch-action:pan-y}
+#mobileBook{display:none}
+.mobile-book{position:relative;width:min(100%,445px);margin:0 auto;perspective:1700px;transform-style:preserve-3d;isolation:isolate}
+.mobile-paper{height:clamp(525px,76svh,638px);border-radius:8px 19px 19px 8px;border-left:8px solid #a78e78;background:radial-gradient(circle at 16% 10%,#fffdf8,transparent 52%),linear-gradient(125deg,#fff9ed,#f9f1e5);box-shadow:0 17px 30px #69543a38,0 4px 0 #c6af94,0 8px 0 #baa288;position:relative;overflow:hidden;padding:26px 25px 41px;display:flex;flex-direction:column;min-width:0}
+.mobile-paper:before{content:"";position:absolute;top:0;bottom:0;left:0;width:17px;background:linear-gradient(90deg,#b9a08565,transparent);pointer-events:none}
+.mobile-paper:after{content:"";position:absolute;left:23px;right:23px;bottom:32px;border-bottom:1px solid #e6d9c7;pointer-events:none}
+.mobile-paper-head{display:flex;justify-content:space-between;gap:10px;font-size:9px;letter-spacing:1.4px;color:#a28e79}
+.mobile-paper h2{font-size:clamp(19px,5.6vw,27px);font-family:"Noto Serif CJK SC","Songti SC",serif;letter-spacing:1px;margin:20px 0 6px;line-height:1.4;color:#665243}
+.mobile-paper-meta{font-size:11px;color:#a18c79}
+.mobile-photo{position:relative;display:flex;justify-content:center;align-items:center;flex:1;min-height:130px;max-height:245px;margin:20px 14px 12px;padding:15px 10px;background:linear-gradient(132deg,#f0e5d5,#f9f3e9);border:9px solid #fffbf3;box-shadow:5px 8px 15px #88715a33;transform:rotate(-2.1deg)}
+.mobile-photo:after{content:"";position:absolute;top:-17px;left:calc(50% - 43px);width:86px;height:23px;background:#c4b89d77;transform:rotate(3deg);border-left:1px solid #ffffff70;border-right:1px solid #ffffff90;pointer-events:none}
+.mobile-photo img{max-width:100%;max-height:100%;object-fit:contain;cursor:zoom-in;filter:drop-shadow(4px 6px 6px #78604830)}
+.mobile-note{font-family:"Noto Serif CJK SC","Songti SC",serif;font-size:13px;line-height:1.9;color:#786b5c;display:-webkit-box;-webkit-line-clamp:4;-webkit-box-orient:vertical;overflow:hidden;min-height:3.7em;margin:7px 5px 8px}
+.mobile-tags{display:flex;gap:7px;flex-wrap:wrap;min-height:24px;margin:0 5px}.mobile-tags span{font-size:10px;color:#7b8a7c;background:#eaf0e6;border:1px solid #dbe4d4;border-radius:12px;padding:3px 9px}
+.mobile-page-num{position:absolute;right:28px;bottom:13px;font-family:Georgia,serif;font-size:12px;color:#b19e8b;letter-spacing:2px}
+.mobile-verse{height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:22px;background:linear-gradient(135deg,#f8efde,#fffaf2);color:#b69a83;text-align:center;font-family:Georgia,serif;font-style:italic;letter-spacing:1.8px}
+.mobile-verse:before{content:"";height:72px;width:72px;border:1px solid #c7b29a;border-radius:50%;background:radial-gradient(circle,#b5c5b1 5px,transparent 6px),linear-gradient(45deg,transparent 48%,#b5c5b1 49%,#b5c5b1 51%,transparent 52%);opacity:.7}
+.mobile-verse strong{font-size:20px;font-weight:400}.mobile-verse small{font-size:10px;font-style:normal;letter-spacing:3px}
+#mobileBook .book-turn-sheet{width:100%;left:0;transform-origin:left center}
+#mobileBook .book-turn-face{border-radius:8px 19px 19px 8px}
+#mobileBook .book-turn-face.back{border-left:7px solid #c1a98a}
+#mobileBook .book-turn-face.mobile-paper{height:100%}
+@media(max-width:780px){
+ #desktopBook{display:none}
+ #mobileBook{display:block}
+ #bookView .tabletop{padding:16px 10px 19px;overflow:hidden;border-radius:22px}
+ #bookView .desk-leaf,#bookView .desk-pencil{display:none}
+ #bookView .pager{margin-top:15px}
+ #bookView .book-hint{margin:10px 6px 0;font-size:10px}
+}
+@media(max-width:380px){.mobile-paper{padding:22px 18px 40px;height:clamp(500px,77svh,580px)}.mobile-paper h2{margin-top:13px}.mobile-photo{margin:14px 5px 8px;max-height:200px}.mobile-note{font-size:12px;line-height:1.75}.mobile-tags span{font-size:9px}.page-corner{bottom:2px}}
+@media(prefers-reduced-motion:reduce){.book-turn-sheet,.page-corner{transition:none!important}}

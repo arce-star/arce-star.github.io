@@ -7,7 +7,7 @@ const saveJSON=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
 const state={works:[],filtered:[],visible:24,genre:'全部',topic:'',region:'',search:'',active:null,provider:'ustc',apiKey:'',model:'deepseek-v4-flash',proxy:'',remember:false,analysis:'',favs:new Set(getJSON(keys.favs,[])),notes:getJSON(keys.notes,{}),progress:getJSON(keys.progress,{}),manualText:'',fullText:'',candidates:[],activeSection:'library'};
 const providers={
  ustc:{label:'USTC LLM',endpoint:'https://api.llm.ustc.edu.cn/v1/chat/completions',model:'deepseek-v4-flash',help:'学校平台：OpenAI 兼容的 /v1/chat/completions；请根据学校模型列表选择有权限调用的模型。'},
- deepseek:{label:'DeepSeek 官方',endpoint:'https://api.deepseek.com/chat/completions',model:'deepseek-chat',help:'DeepSeek 官方：/chat/completions，常见模型 deepseek-chat、deepseek-reasoner；请使用官方平台生成的 Key。'}
+ deepseek:{label:'DeepSeek 官方',endpoint:'https://api.deepseek.com/chat/completions',model:'deepseek-flash',help:'DeepSeek 官方：/chat/completions，当前模型 deepseek-flash、deepseek-v4-pro；发现文章时支持官方联网搜索工具。'}
 };
 const esc = x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function safeSet(node,value){node.textContent=String(value??'')}
@@ -128,9 +128,9 @@ function proxyEndpoint(){
  if(raw==='/api/reading'&&!location.hostname.endsWith('github.io'))return raw;
  const url=new URL(raw,location.href);if(url.protocol!=='https:'&&!['localhost','127.0.0.1'].includes(url.hostname))throw Error('代理地址必须使用 HTTPS');return url.href
 }
-async function requestAI(messages,max_tokens=1800,adminToken=''){
+async function requestAI(messages,max_tokens=1800,adminToken='',enableWebSearch=false){
  const url=proxyEndpoint();if(!state.apiKey&&!adminToken)throw Error('请在 API 设置中填写 Key');
- const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...(adminToken?{'X-Reading-Admin-Token':adminToken}:{})},body:JSON.stringify(adminToken?{action:'publish',work:messages}:{action:'chat',provider:state.provider,apiKey:state.apiKey,model:state.model,max_tokens,messages})});
+ const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...(adminToken?{'X-Reading-Admin-Token':adminToken}:{})},body:JSON.stringify(adminToken?{action:'publish',work:messages}:{action:'chat',provider:state.provider,apiKey:state.apiKey,model:state.model,max_tokens,messages,enableWebSearch})});
  const data=await res.json().catch(()=>({error:'后端未返回 JSON'}));if(!res.ok)throw Error(data.error||'HTTP '+res.status);return data;
 }
 function analyseMessages(work,question='',selected=''){
@@ -171,11 +171,11 @@ async function discover(){
  const result=await requestAI([
  {role:'system',content:'你是中文文学书目编辑。请只推荐确实存在的真实文学作品，不编造书名、作者、出版信息或网络链接。不要推荐题目。仅输出严格 JSON 数组，元素包含 title、author、genre（小说或散文）、year、region、tags（最多3项）、focus 字段。不要在 JSON 之外添加解释。如果无法确信真实存在，减少候选数量。'},
  {role:'user',content:'为文学阅读馆提出 6 篇新的经典小说或散文候选作品，优先中文原作，适合深度细读，不重复以下馆藏：'+existing.slice(0,7000)}
- ],1600);
+ ],1600,'',true);
  let raw=result.text.replace(/^```(?:json)?\s*/,'').replace(/\s*```$/,'').trim();
  const match=raw.match(/\[[\s\S]*\]/);if(match)raw=match[0];
  const list=JSON.parse(raw);if(!Array.isArray(list))throw Error('模型没有返回候选数组');
- state.candidates=list.filter(x=>x?.title&&x?.author).slice(0,8).map(x=>({...x,sourceUrl:'https://zh.wikisource.org/w/index.php?search='+encodeURIComponent(x.title+' '+x.author)}));
+ state.candidates=list.filter(x=>x?.title&&x?.author).slice(0,8).map(x=>({...x,suggestedSourceUrl:x.sourceUrl||'',sourceUrl:'https://zh.wikisource.org/w/index.php?search='+encodeURIComponent(x.title+' '+x.author)}));
  if(!state.candidates.length)throw Error('没有可用候选');
  renderCandidates();
  }catch(err){area.append(textEl('p','发现失败：'+err.message,'muted'))}

@@ -68,7 +68,7 @@ function renderCards(){
  card.addEventListener('click',()=>openWork(w));card.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openWork(w)}});area.append(card);
  });
  $('loadMore').classList.toggle('hidden',state.filtered.length<=state.visible);
- setStatus('显示 '+Math.min(state.visible,state.filtered.length)+' / '+state.filtered.length+' 篇 · 全馆 '+state.works.length+' 篇 · 未核准全文的作品仅提供来源检索和赏析方向');
+ setStatus('显示 '+Math.min(state.visible,state.filtered.length)+' / '+state.filtered.length+' 篇 · 全馆 '+state.works.length+' 篇 · 本地全文 '+Object.keys(state.fulltexts).length+' 篇 · 其余作品保留来源入口');
 }
 function toggleFavorite(id){state.favs.has(id)?state.favs.delete(id):state.favs.add(id);saveJSON(keys.favs,[...state.favs]);if(state.active?.id===id)safeSet($('readerFav'),state.favs.has(id)?'♥ 已收藏':'♡ 收藏')}
 function showSection(which){

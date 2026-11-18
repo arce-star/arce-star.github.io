@@ -627,6 +627,16 @@ color:#857261;font-size:.82rem;box-shadow:0 7px 20px rgba(89,69,48,.11);cursor:p
 }
 @media(max-width:360px){#exit-private-btn,#lock-private-btn{font-size:.73rem;padding:9px}}
 
+
+/* Only explicitly public destinations are presented in the public navigation. */
+.sidebar-private-button{width:100%;display:flex;align-items:center;gap:10px;padding:11px 13px;margin-top:10px;
+border:1px dashed #d5c8b7;border-radius:12px;background:#fffaf2;color:#637c68;cursor:pointer;
+font-family:inherit;font-size:.88rem;text-align:left;transition:background .2s,border-color .2s}
+.sidebar-private-button:hover{background:#edf1e8;border-color:#9bad96}
+.sidebar-private-button:focus-visible{outline:2px solid #91a68f;outline-offset:2px}
+.sidebar-private-button svg{flex:none}
+@media(max-width:720px){.sidebar-private-button{width:auto;flex:0 0 auto;white-space:nowrap;margin:0;padding:8px 11px;font-size:.78rem}}
+
     </style>
 </head>
 <body>
@@ -634,7 +644,7 @@ color:#857261;font-size:.82rem;box-shadow:0 7px 20px rgba(89,69,48,.11);cursor:p
     <canvas id="quantum-bg" style="position:fixed;top:0;left:0;width:100%;height:100%;z-index:0;pointer-events:none;"></canvas>
 
     <!-- 笔记大纲 (body 层级，fixed 不受 backdrop-filter 影响) -->
-    <div id="note-toc" style="display:none;"><div class="toc-inner"><div class="toc-title">大纲</div></div></div>
+    
 
     <!-- 公开区 · 双栏布局 -->
     <div id="public-view">
@@ -645,20 +655,14 @@ color:#857261;font-size:.82rem;box-shadow:0 7px 20px rgba(89,69,48,.11);cursor:p
                 <div class="sub">中国科学技术大学</div>
             </div>
             <div class="sidebar-nav">
-                <a class="active" data-panel="about"><i class="fas fa-user"></i> 关于我</a>
-                <!-- TODO: 暂不公开 <a data-panel="courses"><i class="fas fa-graduation-cap"></i> 课程笔记</a> -->
-                <a data-panel="proj-notes"><i class="fas fa-project-diagram"></i> 项目笔记</a>
-                <a data-panel="papers"><i class="fas fa-file-alt"></i> 论文</a>
-                <a data-panel="projects"><i class="fas fa-code-branch"></i> MATLAB 项目</a>
-                <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
-                <a data-panel="docs"><i class="fas fa-file-alt"></i> 证明材料</a>
-                <a data-panel="tavern"><i class="fas fa-comments"></i> AI 酒馆</a>
-                <a href="complex-lab.html"><i class="fas fa-project-diagram"></i> Complex Lab</a>
-                <a href="investment-study.html"><i class="fas fa-chart-line"></i> 投资学习</a>
-                <a href="gomoku.html"><i class="fas fa-chess-board"></i> 五子棋</a>
-                <a href="keepsakes/"><i class="fas fa-book-open"></i> 拾光手账</a>
-                <a href="reading.html"><i class="fas fa-book-reader"></i> 文间 · 文学馆</a>
-                <!-- TODO: 暂不公开 <a data-panel="leetcode"><i class="fas fa-code"></i> 力扣题解</a> -->
+                <a class="active" data-panel="about"><i class="fas fa-user" aria-hidden="true"></i> 关于我</a>
+                <a data-panel="papers"><i class="fas fa-file-alt" aria-hidden="true"></i> 公开论文</a>
+                <a data-panel="projects"><i class="fas fa-code-branch" aria-hidden="true"></i> MATLAB 项目</a>
+                <a data-panel="madevolve"><i class="fas fa-dna" aria-hidden="true"></i> MadEvolve 复现</a>
+                <a href="complex-lab.html"><i class="fas fa-project-diagram" aria-hidden="true"></i> Complex Lab</a>
+                <a href="keepsakes/"><i class="fas fa-book-open" aria-hidden="true"></i> 拾光手账</a>
+                <a href="reading.html"><i class="fas fa-book-reader" aria-hidden="true"></i> 文间 · 文学馆</a>
+                <button type="button" id="open-private-nav" class="sidebar-private-button"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg><span>私人空间</span></button>
             </div>
             <div class="sidebar-footer">© 2026 arce-star</div>
         </nav>
@@ -671,7 +675,7 @@ color:#857261;font-size:.82rem;box-shadow:0 7px 20px rgba(89,69,48,.11);cursor:p
                 <div class="cv-header">
                     <div class="cv-name">严亦乐</div>
                     <div class="cv-contact">
-                        <span><i class="fas fa-phone"></i> 153-4917-9230</span>
+                        
                         <span><i class="fas fa-envelope"></i> yan040217@mail.ustc.edu.cn</span>
                     </div>
                 </div>
@@ -781,17 +785,17 @@ color:#857261;font-size:.82rem;box-shadow:0 7px 20px rgba(89,69,48,.11);cursor:p
                 <div class="cv-section">
                     <div class="cv-section-title">竞赛奖项 <span style="font-weight:400;font-size:0.75rem;color:#999;">(鼠标悬停查看证书)</span></div>
                     <ul class="cv-list">
-                        <li class="award-item has-cert" data-cert="certificates/非数A省一.jpg">第十七届全国大学生数学竞赛 (非数学A类) <strong>一等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
-                        <li class="award-item has-cert" data-cert="certificates/挑战杯国家级三等奖.jpg">第十九届"挑战杯"全国大学生课外学术科技作品竞赛 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
-                        <li class="award-item has-cert" data-cert="certificates/挑战杯省二等奖.jpg">第十一届"挑战杯·华安证券"安徽省大学生课外学术科技作品竞赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
+                        <li class="award-item">第十七届全国大学生数学竞赛 (非数学A类) <strong>一等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                        <li class="award-item">第十九届"挑战杯"全国大学生课外学术科技作品竞赛 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2025.11</span></li>
+                        <li class="award-item">第十一届"挑战杯·华安证券"安徽省大学生课外学术科技作品竞赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2025</span></li>
                         <li class="award-item">第七届"中国科大庆峰杯"挑战杯自然科学类学术论文组 <strong>第二名</strong> <span style="color:#c0392b;font-size:0.7rem;">缺证书</span> <span style="float:right;color:var(--text-light);">2025</span></li>
-                        <li class="award-item has-cert" data-cert="certificates/创新赛三等奖.jpg">第九届全国大学生物理实验竞赛 (创新) 命题类 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2023.12</span></li>
-                        <li class="award-item has-cert" data-cert="certificates/CUPT一等奖.jpg">第五届安徽省大学生物理学术竞赛 (CUPT) <strong>省级一等奖</strong> <span style="float:right;color:var(--text-light);">2023.04</span></li>
-                        <li class="award-item has-cert" data-cert="certificates/22年奖学金.jpg">2022 年优秀学生奖学金 <strong>银奖</strong></li>
-                        <li class="award-item has-cert" data-cert="certificates/23年奖学金.jpg">2023 年优秀学生奖学金 <strong>银奖</strong></li>
-                        <li class="award-item has-cert" data-cert="certificates/物理省一.jpg">第 38 届全国中学生物理竞赛 <strong>省级一等奖（第 25 名）</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
-                        <li class="award-item has-cert" data-cert="certificates/数学省二.jpg">全国中学生数学奥林匹克竞赛预赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
-                        <li class="award-item has-cert" data-cert="certificates/物理省二.jpg">第 37 届全国中学生物理竞赛 <strong>省级二等奖（第 7 名）</strong> <span style="float:right;color:var(--text-light);">2020</span></li>
+                        <li class="award-item">第九届全国大学生物理实验竞赛 (创新) 命题类 <strong>国家级三等奖</strong> <span style="float:right;color:var(--text-light);">2023.12</span></li>
+                        <li class="award-item">第五届安徽省大学生物理学术竞赛 (CUPT) <strong>省级一等奖</strong> <span style="float:right;color:var(--text-light);">2023.04</span></li>
+                        <li class="award-item">2022 年优秀学生奖学金 <strong>银奖</strong></li>
+                        <li class="award-item">2023 年优秀学生奖学金 <strong>银奖</strong></li>
+                        <li class="award-item">第 38 届全国中学生物理竞赛 <strong>省级一等奖（第 25 名）</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
+                        <li class="award-item">全国中学生数学奥林匹克竞赛预赛 <strong>省级二等奖</strong> <span style="float:right;color:var(--text-light);">2021</span></li>
+                        <li class="award-item">第 37 届全国中学生物理竞赛 <strong>省级二等奖（第 7 名）</strong> <span style="float:right;color:var(--text-light);">2020</span></li>
                     </ul>
                 </div>
 
@@ -829,174 +833,10 @@ color:#857261;font-size:.82rem;box-shadow:0 7px 20px rgba(89,69,48,.11);cursor:p
             </div>
 
             <!-- TODO: 暂不公开 课程笔记 -->
-            <div class="content-panel" id="panel-courses">
-                <div class="cv-header" style="margin-bottom:16px;">
-                    <div class="cv-name">课程笔记</div>
-                    <div class="cv-contact">点击标签查看笔记</div>
-                </div>
-                <div class="cv-section">
-                    <div class="cv-section-title">量化金融</div>
-                    <div class="skills-row" id="cat-quant">
-                        <span class="cv-tag note-tag has-note" data-note="常见因子类型">常见因子类型</span>
-                        <span class="cv-tag note-tag has-note" data-note="回测框架设计">回测框架设计</span>
-                        <span class="cv-tag note-tag has-note" data-note="宏观框架">宏观框架</span>
-                        <span class="cv-tag note-tag">微观结构理论</span>
-                        <span class="cv-tag note-tag">套利定价理论</span>
-                        <span class="cv-tag note-tag">财务建模</span>
-                        <span class="cv-tag note-tag has-note" data-note="时间序列分析">时间序列分析</span>
-                        <span class="cv-tag note-tag has-note" data-note="组合优化">组合优化</span>
-                        <span class="cv-tag note-tag">实盘追踪</span>
-                        <span class="cv-tag note-tag">个人量化项目</span>
-                    </div>
-                </div>
-                <div class="cv-section">
-                    <div class="cv-section-title">AI / 机器学习</div>
-                    <div class="skills-row">
-                        <span class="cv-tag note-tag">机器学习</span><span class="cv-tag note-tag">深度学习模型开发</span>
-                        <span class="cv-tag note-tag">PyTorch</span><span class="cv-tag note-tag">TensorFlow</span>
-                        <span class="cv-tag note-tag">大模型微调</span><span class="cv-tag note-tag has-note" data-note="PINNs">PINNs</span>
-                        <span class="cv-tag note-tag">模式识别</span><span class="cv-tag note-tag">自然语言处理</span>
-                        <span class="cv-tag note-tag">决策树</span><span class="cv-tag note-tag">GBDT</span>
-                        <span class="cv-tag note-tag">强化学习</span><span class="cv-tag note-tag">推荐系统</span>
-                        <span class="cv-tag note-tag">图像识别</span><span class="cv-tag note-tag">Kaggle</span>
-                        <span class="cv-tag note-tag">数据清洗</span><span class="cv-tag note-tag">过拟合控制</span>
-                    </div>
-                </div>
-                <div class="cv-section">
-                    <div class="cv-section-title">量化项目</div>
-                    <div class="skills-row">
-                        <span class="cv-tag note-tag">因子挖掘</span><span class="cv-tag note-tag">量化策略</span><span class="cv-tag note-tag has-note" data-note="期权与期货">期权策略</span><span class="cv-tag note-tag has-note" data-note="Quantone策略" id="quantone-tag" style="display:none;">Quantone策略</span>
-                    </div>
-                </div>
-                <div class="cv-section">
-                    <div class="cv-section-title">数学</div>
-                    <div class="skills-row">
-                        <span class="cv-tag note-tag has-note" data-note="概率统计">概率统计</span><span class="cv-tag note-tag has-note" data-note="时间序列分析">时间序列分析</span>
-                    </div>
-                </div>
-                <div class="cv-section">
-                    <div class="cv-section-title">CS</div>
-                    <div class="skills-row">
-                        <span class="cv-tag note-tag">Python</span><span class="cv-tag note-tag">C++</span><span class="cv-tag note-tag has-note" data-note="Linux">Linux</span><span class="cv-tag note-tag">SQL</span>
-                    </div>
-                </div>
-
-                <!-- 笔记查看器 -->
-                <div id="note-viewer" style="display:none;margin-top:20px;padding:24px;border:1px solid rgba(0,0,0,0.08);border-radius:8px;background:transparent;">
-                    <button id="note-close" style="float:right;background:none;border:none;font-size:1.2rem;cursor:pointer;color:#999;">&times;</button>
-                    <div id="note-content" class="md-preview"></div>
-                </div>
-
-                <button id="edit-toggle-btn">⚙️ 编辑可见课程</button>
-                <div id="course-editor">
-                    <h4>勾选在公开页显示的课程（需先登录私人区）</h4>
-                    <div class="edit-grid" id="edit-grid"></div>
-                    <button id="save-courses-btn">保存</button>
-                </div>
-            </div>
+            
 
             <!-- 项目笔记 -->
-            <div class="content-panel" id="panel-proj-notes">
-                <div class="cv-header">
-                    <div class="cv-name">项目笔记</div>
-                    <div class="cv-contact">研究记录 · 实验日志 · 技术总结</div>
-                </div>
-
-                <div class="cv-section">
-                    <div class="cv-section-title">LLM 伦理决策倾向性研究</div>
-                    <div class="cv-entry-sub">2024.10 — 2025.11 · 大研计划 [A-] · 大创计划 [A] · ICWSM 2026</div>
-                    <ul class="cv-list">
-                        <li><strong>研究构思</strong>: 提出核心 Idea，在导师把关后自主设计并开展实验</li>
-                        <li><strong>子方向① — 模型基本伦理倾向性测试</strong>: 系统评估主流开源与闭源模型的伦理决策偏好，论文发表于 CCF-B 会议 ICWSM 2026（共同第一作者）</li>
-                        <li><strong>子方向② — 大五人格测试</strong>: 对模型进行大五人格测试及人格赋予检测</li>
-                        <li><strong>子方向③ — 人格赋予后伦理测试</strong>: 研究人格赋予对模型伦理倾向性的影响</li>
-                        <li><strong>竞赛成果</strong>: 校赛庆峰杯第二名 → 挑战杯省二等奖 → 挑战杯国三等奖</li>
-                    </ul>
-                </div>
-
-                <div class="cv-section">
-                    <div class="cv-section-title">CCL2026-Eval 古诗词赏析</div>
-                    <div class="cv-entry-sub">2026.06 至今 · 天池AI大模型系列赛 · 364 队 Top 10%</div>
-                    <ul class="cv-list">
-                        <li>基于 Qwen2.5-7B-instruct，设计两阶段 LoRA 微调架构（领域粗调 + Task精调）</li>
-                        <li>独立完成数据收集与清洗：23,000 条粗调数据 + 1,800 条精调数据</li>
-                        <li>覆盖字词释义、典故识别、情感推理、意境分析、修辞鉴赏、文化背景六大任务</li>
-                    </ul>
-                </div>
-
-                <div class="cv-section">
-                    <div class="cv-section-title">MadEvolve 复现 — LLM 驱动量化交易进化优化</div>
-                    <div class="cv-entry-sub">2026.06 至今 · 独立复现顶会架构 · arXiv:2605.23007</div>
-                    <ul class="cv-list">
-                        <li><strong>回测引擎</strong>: 从零实现 BTCUSDT 逐分钟回测引擎，严格按论文实现被动限价单填充、PnL 分解与 6 参数平方根市场冲击模型</li>
-                        <li><strong>性能优化</strong>: numpy 向量化 + 预计算查表 + 滑动窗口，单次回测 42→7 分钟；连续数组替代逐条 dict，内存 200MB→4MB</li>
-                        <li><strong>进化算法</strong>: DeepSeek v4 驱动代码变异，MAP-Elites + 岛屿模型管理策略种群，LLM 代码自动检测修复</li>
-                        <li><strong>实验进展</strong>: 快速 demo 将基线从 $−\$44K$ 优化至 $ +\$5.3K $</li>
-                        <li><strong>因子工程</strong>: LLM 自动发现 22 个有效因子（动量/波动率/成交量/价格形态），Ridge 回归评估预测质量</li>
-                        <li>详见「MadEvolve 复现」面板（实验报告 + 思考笔记 + 代码浏览）</li>
-                    </ul>
-                </div>
-
-                <!-- <div class="cv-section">
-                    <div class="cv-section-title">傅里叶变换光谱 · 维恩位移定律</div>
-                    <div class="cv-entry-sub">2023.07 — 2023.12 · 全国大学生物理实验竞赛 国三</div>
-                    <ul class="cv-list">
-                        <li>负责光路搭建、数据处理、算法创新及代码实现</li>
-                        <li>成果发表于《物理实验》期刊第44卷第8期（第二作者）</li>
-                    </ul>
-                </div> -->
-                <div class="cv-section">
-                    <div class="cv-section-title">傅里叶变换光谱 · 维恩位移定律</div>
-                    <div class="cv-entry-sub">2023.07 — 2023.12 · 全国大学生物理实验竞赛 国三 · 第二作者（已发表）</div>
-                    <ul class="cv-list">
-                        <li><strong>红外干涉光路设计</strong>: 自主搭建基于迈克耳孙干涉仪的红外光谱仪，选用镀保护 Ag 膜平面反射镜、$CaF_2$ 分束镜与热释电探测器，覆盖 $1\sim 20\,\mu\text{m}$ 红外波段；共路引入 $632.8\,\text{nm}$ He-Ne 激光速度校准系统，利用 $ZnS$ 分束镜和 Si 探测器实现动镜实际平移速度的实时定量校准（$v = 0.5\lambda f$）</li>
-                        <li><strong>微弱信号锁相解调</strong>: 针对黑体辐射出射能量微弱且环境噪声干扰明显的问题，引入斩波器对红外热辐射进行高频调制；采用锁相放大器（基于 LabOne）实现相干解调与相乘滤波，有效降低随机噪声并稳定完成时域干涉信号的非接触采集</li>
-                        <li><strong>算法实现与频响标定</strong>: 负责算法及代码实现，编写 MATLAB 脚本滤除干涉信号强度上漂，精确提取最大光强对应的零光程差（ZPD）位置并执行离散傅里叶变换（DFT）获取粗光谱；以 $1100\,{^\circ}\text{C}$ 黑体理论普朗克谱为标准，定量标定并修正了系统的频率响应曲线</li>
-                        <li><strong>非线性拟合与成果发表</strong>: 测量 $700\sim 1050\,{^\circ}\text{C}$ 范围内的热辐射光谱，利用 Origin 进行非线性曲线拟合与快速寻峰，测得维恩位移常数 $C' = (2.812 \pm 0.030) \times 10^{-3}\,\text{m}\cdot\text{K}$（与标准值偏差为 $3.0\%$）；学术成果发表于《物理实验》期刊（第44卷第8期，第二作者）</li>
-                    </ul>
-                </div>
-
-                <!-- <div class="cv-section">
-                    <div class="cv-section-title">法拉第波研究</div>
-                    <div class="cv-entry-sub">2022.12 — 2023.04 · CUPT 省级一等奖</div>
-                    <ul class="cv-list">
-                        <li>独立完成题目分解、实验设计、装置搭建、数据处理、理论分析全过程</li>
-                    </ul>
-                </div> -->
-                <div class="cv-section">
-                    <div class="cv-section-title">漂浮液滴在垂直振荡下的法拉第驻波与不稳定性研究</div>
-                    <div class="cv-entry-sub">2022.12 — 2023.04 · CUPT 省级一等奖（第四名） · 独立负责人</div>
-                    <ul class="cv-list">
-                        <li><strong>流体建模与解析求解</strong>: 运用润滑近似将三维自由边界流体问题简化为二维无旋流，通过驻波平均辐射压力与表面张力的竞争分析，导出决定状态突变的核心控制参数 $\alpha = \frac{\rho R \omega^2 A^2}{\sigma}$ ；解析边界压力平衡方程，推导出液滴边缘剖面函数 $y(x)$ 的精确解及长宽比定量演化曲线</li>
-                        <li><strong>声-振耦合实验创新</strong>: 自主设计实验装置，实验筛选出最佳的“光敏树脂-水”多相粘度匹配组合；创新利用空气声阻抗原理，通过非接触声压测量实现了高频振动速度（$v = \omega A$）的无扰定量表征，解决了微弱物理量采集难题</li>
-                        <li><strong>数据拟合与理论修正</strong>: 测定不同体积与频率下的临界突变点，实验表明突变临界响度与滴数呈高度对数线性相关（相关系数 $r \approx -0.9958$） ；引入边缘非零曲率修正后，理论拟合斜率（$a = -9.704$）与实验观测一致，定量证实了不稳定性转变的物理机制</li>
-                    </ul>
-                </div>
-
-                <!-- <div class="cv-section">
-                    <div class="cv-section-title">量子信息实验室 · 光纤传输模拟</div>
-                    <div class="cv-entry-sub">2023.09 — 2024.03 · 王双老师课题组</div>
-                    <ul class="cv-list">
-                        <li>独立完成光纤中光传播受色散和非线性效应影响的 MATLAB 模拟工作</li>
-                        <li>成果总结为光学小论文</li>
-                    </ul>
-                </div> -->
-                <div class="cv-section">
-                    <div class="cv-section-title">量子信息实验室 · 光纤传输模拟</div>
-                    <div class="cv-entry-sub">2023.09 — 2024.03 · 量子信息课题组 · 独立负责人</div>
-                    <ul class="cv-list">
-                        <li><strong>物理推导与 NLSE 理论建模</strong>: 从麦克斯韦方程组出发，引入介质三阶非线性极化（克尔效应）并采用慢变包络近似（SVEA）简化电磁场波动方程；通过时延参考坐标系（以群速度移动的坐标系 $T = t - z/v_g$），严格推导不含增益的非线性薛定谔方程（NLSE）：
-                        <span class="math-block">$$i \frac{\partial A}{\partial z} - \frac{\beta_2}{2}\frac{\partial^2 A}{\partial T^2} + \gamma |A|^2 A = 0$$</span>
-                        奠定了描述群速度色散（GVD，$\beta_2$）和自相位调制（SPM，$\gamma$）协同作用的经典理论框架。</li>
-                        
-                        <li><strong>分步傅里叶方法（SSFM）计算引擎</strong>: 基于 MATLAB 独立编写分步傅里叶仿真算法。将 NLSE 的线性色散项（在频域通过 FFT 求解）与非线性项（在时域直接相乘计算）进行解耦与交互迭代运算，采用 $2^{10}$ 点加速离散傅里叶变换，实现超短光脉冲在色散光纤中高速、高稳定性的数值求解。</li>
-                        
-                        <li><strong>啁啾高斯脉冲演化动力学模拟</strong>: 定量探究不同二阶色散系数（$\beta_2$）与初始啁啾（$C$）组合下高斯光脉冲的演化轨迹。定量复现了在反常色散与正啁啾组合下，脉冲因色散补偿在时域先缩窄至傅里叶变换极限（啁啾降为 0，时域波形达到最窄，频域展宽极大），随后反向展宽的脉冲压缩动力学物理图景。</li>
-                        
-                        <li><strong>双光孤子相干干涉与参数控制分析</strong>: 模拟双孤子（Double Soliton）的共轴传输与相遇过程。深入分析了等幅同相传输下的周期性相干干涉条纹特征；并定量探究了极小相对相位（如 $\theta = \pi/20$）与非对称相对大小（如 $r=2$）扰动对时-频域干涉条纹移动、以及脉冲包络对称性破缺（吸引/排斥力）的调控机制。</li>
-                    </ul>
-                </div>
-            </div>
+            
 
             <!-- 论文 -->
             <div class="content-panel" id="panel-papers">
@@ -1275,77 +1115,14 @@ def default_calcset(ohlcv):
             </div>
 
             <!-- AI 酒馆 -->
-            <div class="content-panel" id="panel-tavern">
-                <div class="cv-header" style="margin-bottom:12px;">
-                    <div class="cv-name">AI 酒馆</div>
-                    <div class="cv-contact">选一位角色，开始对话</div>
-                </div>
-                <div class="tavern-settings">
-                    <div class="tavern-settings-title">连接 DeepSeek</div>
-                    <p class="tavern-settings-note">API Key 只保存在当前浏览器的本地存储中，不会写入 GitHub。不要把 Key 发到聊天里。</p>
-                    <div class="tavern-key-row">
-                        <input id="tavern-key-input" type="password" placeholder="粘贴 DeepSeek API Key" autocomplete="off" spellcheck="false" aria-label="DeepSeek API Key">
-                        <button id="tavern-key-save" type="button">保存 Key</button>
-                        <button id="tavern-key-clear" class="secondary" type="button">清除</button>
-                    </div>
-                    <p id="tavern-key-status" role="status" aria-live="polite">尚未配置 API Key。</p>
-                </div>
-                <div id="tavern-chars" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"></div>
-                <div style="display:none;" id="tavern-chat-area">
-                    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">
-                        <span id="tavern-char-name" style="font-weight:600;color:var(--blue);"></span>
-                        <button onclick="document.getElementById('tavern-chars').style.display='';document.getElementById('tavern-chat-area').style.display='none';" style="font-size:0.75rem;padding:2px 8px;border:1px solid #ddd;border-radius:8px;background:#fff;cursor:pointer;">← 换角色</button>
-                    </div>
-                    <div id="tavern-chat-body" style="max-height:400px;overflow-y:auto;margin-bottom:10px;display:flex;flex-direction:column;gap:8px;"></div>
-                    <div style="display:flex;gap:8px;">
-                        <input id="tavern-input" placeholder="输入消息..." style="flex:1;padding:10px;border:1px solid #ddd;border-radius:8px;font-size:0.85rem;outline:none;">
-                        <button onclick="Tavern.sendMsg()" style="padding:10px 16px;background:var(--blue);color:#fff;border:none;border-radius:8px;cursor:pointer;">发送</button>
-                    </div>
-                </div>
-            </div>
+            
 
             <!-- TODO: 暂不公开
-            <div class="content-panel" id="panel-leetcode">
-                <div class="cv-header" style="margin-bottom:12px;">
-                    <div class="cv-name">力扣题解</div>
-                    <div class="cv-contact">字节高频 · Hot 100 交叉 · 30 题精刷</div>
-                </div>
-                <div id="lc-nav" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;">
-                </div>
-                <div id="lc-content"></div>
-            </div>
+            
             -->
 
             <!-- 证明材料 -->
-            <div class="content-panel" id="panel-docs">
-                <div class="cv-header">
-                    <div class="cv-name">证明材料</div>
-                    <div class="cv-contact">在读证明 · 成绩单 · 排名证明</div>
-                </div>
-                <div class="cv-section">
-                    <div class="cv-section-title">学籍材料</div>
-                    <ul class="cv-list">
-                        <li><i class="fas fa-file-pdf" style="color:#c0392b;margin-right:6px;"></i> <a href="files/在读证明中文_国内用_严亦乐(PB22071448).pdf" target="_blank">在读证明</a> — 中国科学技术大学学籍在读证明</li>
-                        <li><i class="fas fa-file-pdf" style="color:#c0392b;margin-right:6px;"></i> <a href="files/普通成绩单中文_国内用_严亦乐(PB22071448).pdf" target="_blank">成绩单</a> — 本科阶段普通成绩单</li>
-                        <li><i class="fas fa-file-pdf" style="color:#c0392b;margin-right:6px;"></i> <a href="files/绩点排名证明_国内用_严亦乐(PB22071448).pdf" target="_blank">绩点排名证明</a> — GPA 排名证明</li>
-                    </ul>
-                </div>
-                <div class="cv-section">
-                    <div class="cv-section-title">竞赛获奖</div>
-                    <ul class="cv-list">
-                        <li><a href="certificates/非数A省一.jpg" target="_blank">第十七届全国大学生数学竞赛 (非数学A类) 一等奖</a> <span style="color:var(--text-light);font-size:0.78rem;">2025.11</span></li>
-                        <li><a href="certificates/挑战杯国家级三等奖.jpg" target="_blank">第十九届"挑战杯"全国大学生课外学术科技作品竞赛 国家级三等奖</a> <span style="color:var(--text-light);font-size:0.78rem;">2025.11</span></li>
-                        <li><a href="certificates/挑战杯省二等奖.jpg" target="_blank">第十一届"挑战杯·华安证券"安徽省大学生课外学术科技作品竞赛 省级二等奖</a> <span style="color:var(--text-light);font-size:0.78rem;">2025</span></li>
-                        <li><a href="certificates/创新赛三等奖.jpg" target="_blank">第九届全国大学生物理实验竞赛 (创新) 国家级三等奖</a> <span style="color:var(--text-light);font-size:0.78rem;">2023.12</span></li>
-                        <li><a href="certificates/CUPT一等奖.jpg" target="_blank">第五届安徽省大学生物理学术竞赛 (CUPT) 省级一等奖</a> <span style="color:var(--text-light);font-size:0.78rem;">2023.04</span></li>
-                        <li><a href="certificates/22年奖学金.jpg" target="_blank">2022 年优秀学生奖学金 银奖</a></li>
-                        <li><a href="certificates/23年奖学金.jpg" target="_blank">2023 年优秀学生奖学金 银奖</a></li>
-                        <li><a href="certificates/物理省一.jpg" target="_blank">第 38 届全国中学生物理竞赛 省级一等奖（第 25 名）</a> <span style="color:var(--text-light);font-size:0.78rem;">2021</span></li>
-                        <li><a href="certificates/数学省二.jpg" target="_blank">全国中学生数学奥林匹克竞赛预赛 省级二等奖</a> <span style="color:var(--text-light);font-size:0.78rem;">2021</span></li>
-                        <li><a href="certificates/物理省二.jpg" target="_blank">第 37 届全国中学生物理竞赛 省级二等奖（第 7 名）</a> <span style="color:var(--text-light);font-size:0.78rem;">2020</span></li>
-                    </ul>
-                </div>
-            </div>
+            
 
             <!-- Footer -->
             <div style="text-align:center;margin-top:48px;color:#ccc;font-size:0.8rem;">
@@ -1415,103 +1192,8 @@ def default_calcset(ohlcv):
         if (requestedPanel) showPublicPanel(requestedPanel[1], false);
         else showPublicPanel('about', false);
 
-        // ===== 课程可见性编辑 =====
-        const STORAGE_KEY = '_arce_course_visibility';
-        const allCourses = [
-            { id:'macro-frame', label:'宏观框架', cat:'量化金融' },
-            { id:'micro-struct', label:'微观结构理论', cat:'量化金融' },
-            { id:'apt', label:'套利定价理论', cat:'量化金融' },
-            { id:'fin-model', label:'财务建模', cat:'量化金融' },
-            { id:'time-series', label:'时间序列分析', cat:'量化金融' },
-            { id:'backtest', label:'回测框架设计', cat:'量化金融' },
-            { id:'portfolio', label:'组合优化', cat:'量化金融' },
-            { id:'live-track', label:'实盘追踪', cat:'量化金融' },
-            { id:'factors', label:'常见因子类型', cat:'量化金融' },
-            { id:'quant-project', label:'个人量化项目', cat:'量化金融' },
-            { id:'factor-mining', label:'因子挖掘', cat:'量化项目' },
-            { id:'quant-strategy', label:'量化策略', cat:'量化项目' },
-            { id:'option-strategy', label:'期权策略', cat:'量化项目' },
-{ id:'quantone-strategy', label:'Quantone策略', cat:'量化项目' },
-            { id:'ml', label:'机器学习', cat:'AI' },
-            { id:'dl-dev', label:'深度学习模型开发', cat:'AI' },
-            { id:'pytorch', label:'PyTorch', cat:'AI' },
-            { id:'tensorflow', label:'TensorFlow', cat:'AI' },
-            { id:'llm-finetune', label:'大模型微调', cat:'AI' },
-            { id:'pinns', label:'PINNs', cat:'AI' },
-            { id:'pattern-recog', label:'模式识别', cat:'AI' },
-            { id:'nlp', label:'自然语言处理', cat:'AI' },
-            { id:'decision-tree', label:'决策树', cat:'AI' },
-            { id:'gbdt', label:'GBDT', cat:'AI' },
-            { id:'rl', label:'强化学习', cat:'AI' },
-            { id:'recommender', label:'推荐系统', cat:'AI' },
-            { id:'img-recog', label:'图像识别', cat:'AI' },
-            { id:'data-clean', label:'数据清洗', cat:'AI' },
-            { id:'overfit', label:'过拟合控制', cat:'AI' },
-            { id:'kaggle', label:'Kaggle', cat:'AI' },
-            { id:'prob-stat', label:'概率统计', cat:'数学' },
-            { id:'python', label:'Python', cat:'CS' },
-            { id:'cpp', label:'C++', cat:'CS' },
-            { id:'linux', label:'Linux', cat:'CS' },
-            { id:'sql', label:'SQL', cat:'CS' }
-        ];
-
-        function getVisibility() {
-            try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
-            catch(_) { return {}; }
-        }
-        function saveVisibility(map) { localStorage.setItem(STORAGE_KEY, JSON.stringify(map)); }
-
-        function buildEditor() {
-            const grid = document.getElementById('edit-grid');
-            grid.innerHTML = '';
-            const vis = getVisibility();
-            allCourses.forEach(d => {
-                const div = document.createElement('div');
-                div.className = 'edit-item';
-                const cb = document.createElement('input');
-                cb.type = 'checkbox'; cb.checked = vis[d.id] !== false; cb.dataset.id = d.id;
-                const label = document.createElement('label');
-                label.textContent = d.label;
-                div.appendChild(cb); div.appendChild(label);
-                grid.appendChild(div);
-            });
-        }
-
-        document.getElementById('save-courses-btn').addEventListener('click', () => {
-            const map = {};
-            document.querySelectorAll('#edit-grid input[type=checkbox]').forEach(cb => {
-                map[cb.dataset.id] = cb.checked;
-            });
-            saveVisibility(map);
-            document.getElementById('course-editor').classList.remove('show');
-        });
-
-        document.getElementById('edit-toggle-btn').addEventListener('click', () => {
-            if (!Auth.isLoggedIn()) {
-                alert('请先点击右上角 🔒 登录私人区后，才能编辑课程可见性。');
-                return;
-            }
-            const editor = document.getElementById('course-editor');
-            if (editor.classList.contains('show')) {
-                editor.classList.remove('show');
-            } else {
-                buildEditor();
-                editor.classList.add('show');
-            }
-        });
-
-        function updateEditButton() {
-            const btn = document.getElementById('edit-toggle-btn');
-            const qt = document.getElementById('quantone-tag');
-            if (Auth.isLoggedIn()) {
-                btn.classList.add('show');
-                if (qt) qt.style.display = '';
-            } else {
-                btn.classList.remove('show');
-                if (qt) qt.style.display = 'none';
-            }
-        }
-        updateEditButton();
+        // Public pages do not initialize private course editing.
+        function updateEditButton() {}
 
         // ===== 私人区登录 / 退出 =====
         const lockBtn = document.getElementById('lock-btn');
@@ -1584,6 +1266,8 @@ def default_calcset(ohlcv):
             authOverlay.classList.add('show');
             window.setTimeout(() => pwdInput.focus(), 30);
         }
+        const privateNavButton = document.getElementById('open-private-nav');
+        if (privateNavButton) privateNavButton.addEventListener('click', () => lockBtn.click());
         lockBtn.addEventListener('click', () => {
             if (privateView.classList.contains('show')) resetPrivateView();
             else if (privateUnlocked) enterPrivateMode();
@@ -2014,65 +1698,16 @@ def default_calcset(ohlcv):
 
     <!-- AI 助手按钮与面板 -->
     <!-- 番茄钟 -->
-    <div id="pomodoro">
-        <div id="pomodoro-bar" style="height:3px;background:var(--blue);width:0%;border-radius:3px;transition:width 1s linear;"></div>
-        <div style="display:flex;align-items:center;gap:8px;padding:4px 8px;">
-            <span id="pomodoro-time" style="font-size:0.85rem;font-weight:600;color:#444;min-width:40px;">30:00</span>
-            <button id="pomodoro-start" style="font-size:0.7rem;padding:2px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">▶</button>
-            <button id="pomodoro-reset" style="font-size:0.7rem;padding:2px 8px;border:1px solid #ddd;border-radius:4px;background:#fff;cursor:pointer;">↺</button>
-            <button id="pomodoro-popout" style="font-size:0.7rem;padding:2px 6px;border:none;background:none;cursor:pointer;color:#aaa;" title="弹出独立窗口">⬈</button>
-            <button id="pomodoro-mini" style="font-size:0.7rem;padding:2px 6px;border:none;background:none;cursor:pointer;color:#aaa;">−</button>
-        </div>
-        <audio id="pomodoro-alarm" preload="auto" src="data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACAf39/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4B/f3+Af39/gH9/f4AA="></audio>
-    </div>
+    
 
     <!-- AI 助手按钮 -->
-    <button id="ai-chat-btn" title="AI 代码助手" onclick="document.getElementById('ai-panel').classList.toggle('show')">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-            <circle cx="6" cy="18" r="1.5" fill="currentColor" stroke="none"/>
-            <circle cx="18" cy="6" r="1.5" fill="currentColor" stroke="none"/>
-        </svg>
-    </button>
-    <div id="ai-panel">
-        <div class="ai-panel-header">
-            <span>
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:-2px;margin-right:4px;">
-                    <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
-                </svg>AI 代码助手
-            </span>
-            <select id="ai-model-select" style="font-size:0.75rem;padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;margin:0 8px;min-width:145px;max-width:160px;"></select>
-            <button id="ai-key-change" type="button" title="设置 USTC API Key">API</button>
-            <button id="ai-panel-close" type="button" aria-label="关闭 AI 助手">&times;</button>
-        </div>
-        <!-- 上下文信息栏 -->
-        <div id="ai-context-bar" style="padding:6px 12px;font-size:0.75rem;color:#999;background:transparent;backdrop-filter:blur(3px);border-bottom:1px solid rgba(0,0,0,0.06);display:none;">
-            <span id="ai-context-text"></span>
-        </div>
-        <div id="ai-key-section">
-            <p style="font-size:0.85rem;color:#756b60;margin-bottom:8px;">输入 USTC LLM API Key（仅保存在当前浏览器，不会提交到 GitHub）</p>
-            <input type="password" id="ai-key-input" placeholder="粘贴 USTC LLM API Key" autocomplete="off" spellcheck="false" style="width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:10px;font-size:0.85rem;">
-            <button id="ai-key-save" style="margin-top:8px;padding:6px 16px;background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;">保存</button>
-            <button id="ai-key-clear" style="margin-top:8px;padding:6px 12px;background:none;border:1px solid #ddd;border-radius:6px;cursor:pointer;color:#aaa;font-size:0.8rem;">清除</button>
-        </div>
-        <div id="ai-chat-section" style="display:none;">
-            <div id="ai-chat-body">
-                <div class="chat-bubble chat-assistant">你好！我是 AI 代码助手，可以帮你理解项目代码。直接输入你的问题即可。</div>
-            </div>
-            <div id="ai-input-row">
-                <input type="text" id="ai-msg-input" placeholder="输入问题...">
-                <button id="ai-msg-send"><i class="fas fa-paper-plane"></i></button>
-            </div>
-        </div>
-    </div>
+
+    
 
     <script src="js/quantum-sea.js?v=10"></script>
     <script>document.addEventListener('DOMContentLoaded', () => { if (typeof QuantumSea !== 'undefined') new QuantumSea('quantum-bg'); });</script>
     <script src="js/project-browser.js?v=11"></script>
     <script src="js/madevolve-browser.js?v=9"></script>
-    <script src="js/ai-assistant.js?v=6"></script>
-    <script src="js/leetcode-ui.js"></script>
-    <script src="js/tavern.js"></script>
     <script>
         // 奖项证书悬浮预览
         document.querySelectorAll('.award-item.has-cert').forEach(item => {
@@ -2091,84 +1726,9 @@ def default_calcset(ohlcv):
             item.addEventListener('mouseleave', () => { popup.style.display = 'none'; });
         });
 
-        // ===== 番茄钟 =====
-        (function() {
-            const TOTAL = 30 * 60; // 30分钟
-            let remaining = TOTAL;
-            let timer = null;
-            let running = false;
-            const timeEl = document.getElementById('pomodoro-time');
-            const barEl = document.getElementById('pomodoro-bar');
-            const startBtn = document.getElementById('pomodoro-start');
-            const resetBtn = document.getElementById('pomodoro-reset');
-            const miniBtn = document.getElementById('pomodoro-mini');
-            const widget = document.getElementById('pomodoro');
-            const alarm = document.getElementById('pomodoro-alarm');
-
-            function updateDisplay() {
-                const m = Math.floor(remaining / 60);
-                const s = remaining % 60;
-                timeEl.textContent = m + ':' + String(s).padStart(2, '0');
-                barEl.style.width = ((TOTAL - remaining) / TOTAL * 100) + '%';
-                if (remaining < 300) timeEl.style.color = '#e74c3c';
-                else timeEl.style.color = '#444';
-            }
-
-            function tick() {
-                if (remaining <= 0) {
-                    clearInterval(timer);
-                    running = false;
-                    startBtn.textContent = '▶';
-                    widget.classList.add('alert');
-                    alarm.play().catch(() => {});
-                    if (Notification.permission === 'granted') {
-                        new Notification('🍅 番茄钟', { body: '30分钟到了，起来休息一下吧！' });
-                    }
-                    return;
-                }
-                remaining--;
-                updateDisplay();
-            }
-
-            startBtn.addEventListener('click', () => {
-                if (running) {
-                    clearInterval(timer); running = false;
-                    startBtn.textContent = '▶';
-                } else {
-                    if (remaining <= 0) { remaining = TOTAL; widget.classList.remove('alert'); }
-                    timer = setInterval(tick, 1000);
-                    running = true;
-                    startBtn.textContent = '⏸';
-                    if (Notification.permission === 'default') {
-                        Notification.requestPermission();
-                    }
-                }
-            });
-
-            resetBtn.addEventListener('click', () => {
-                clearInterval(timer); running = false;
-                remaining = TOTAL;
-                startBtn.textContent = '▶';
-                widget.classList.remove('alert');
-                updateDisplay();
-            });
-
-            document.getElementById('pomodoro-popout').addEventListener('click', () => {
-                window.open('pomodoro.html', 'pomodoro', 'width=320,height=420,left='+(screen.width-340)+',top=80');
-            });
-
-            miniBtn.addEventListener('click', () => {
-                widget.classList.toggle('mini');
-                miniBtn.textContent = widget.classList.contains('mini') ? '+' : '−';
-            });
-
-            updateDisplay();
-        })();
 
         // document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.addEventListener('DOMContentLoaded', () => {
-            if (typeof AiAssistant !== 'undefined' && typeof AiAssistant.init === 'function') AiAssistant.init();
-            if (typeof Tavern !== 'undefined' && typeof Tavern.init === 'function') Tavern.init();
             
             // 页面加载完成后，自动渲染全页的静态 LaTeX 数学公式
             if (typeof renderMathInElement !== 'undefined') {
@@ -2197,94 +1757,6 @@ def default_calcset(ohlcv):
                 setTimeout(() => MadEvolveBrowser.loadRoot(), 100);
             }
         });
-        const leetcodeLink = document.querySelector('[data-panel="leetcode"]');
-        if (leetcodeLink && typeof LeetCodeUI !== 'undefined') leetcodeLink.addEventListener('click', () => {
-            LeetCodeUI.init();
-        });
-        // 课程笔记: 点击标签加载 markdown
-        document.querySelectorAll('.note-tag').forEach(tag => {
-            tag.addEventListener('click', async function() {
-                const noteName = this.dataset.note || this.textContent.trim();
-                const viewer = document.getElementById('note-viewer');
-                const content = document.getElementById('note-content');
-                // 关闭
-                if (viewer.style.display !== 'none' && this.classList.contains('active-tag')) {
-                    viewer.style.display = 'none';
-                    this.classList.remove('active-tag');
-                    return;
-                }
-                // 加载
-                document.querySelectorAll('.note-tag').forEach(t => t.classList.remove('active-tag'));
-                this.classList.add('active-tag');
-                viewer.style.display = '';
-                content.innerHTML = '<div class="tree-loading">加载中...</div>';
-                try {
-                    const resp = await fetch('notes/' + encodeURIComponent(noteName) + '.md');
-                    if (!resp.ok) {
-                        content.innerHTML = '<p style="color:#999;">笔记尚未撰写，敬请期待。</p>';
-                        return;
-                    }
-                    const text = await resp.text();
-                    // 渲染 markdown
-                    let html = typeof ProjectBrowser !== 'undefined' && typeof ProjectBrowser.renderMD === 'function' ? ProjectBrowser.renderMD(text) : text.replace(/\n/g,'<br>');
-                    content.innerHTML = html;
-
-                    // KaTeX 渲染数学公式
-                    if (typeof renderMathInElement !== 'undefined') {
-                        try { renderMathInElement(content, { delimiters: [{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}], throwOnError: false }); } catch(_) {}
-                    }
-
-                    // 构建大纲
-                    buildTOC(content);
-                    document.getElementById('note-viewer').scrollIntoView({ behavior: 'smooth' });
-                } catch(e) {
-                    content.innerHTML = '<p style="color:#999;">笔记尚未撰写，敬请期待。</p>';
-                }
-            });
-        });
-        document.getElementById('note-close').addEventListener('click', () => {
-            document.getElementById('note-viewer').style.display = 'none';
-            document.getElementById('note-toc').style.display = 'none';
-            document.querySelectorAll('.note-tag').forEach(t => t.classList.remove('active-tag'));
-        });
-
-        function buildTOC(container) {
-            const toc = document.getElementById('note-toc');
-            const inner = toc.querySelector('.toc-inner');
-            // 保留 title, 清除旧条目
-            inner.querySelectorAll('.toc-row').forEach(el => el.remove());
-            const headings = container.querySelectorAll('h2, h3, h4, h5, h6');
-            if (headings.length === 0) { toc.style.display = 'none'; return; }
-            toc.style.display = '';
-
-            headings.forEach((h, i) => {
-                const id = 'note-h-' + i;
-                h.id = id;
-
-                const row = document.createElement('div');
-                const tag = h.tagName;
-                const cls = tag === 'H2' ? 'toc-h2' : tag === 'H3' ? 'toc-h3' : 'toc-h4';
-                row.className = 'toc-row ' + cls;
-                row.innerHTML = '<div class="toc-dash"></div><span class="toc-label">' + h.textContent + '</span>';
-                row.title = h.textContent;
-                row.addEventListener('click', () => {
-                    h.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                });
-                inner.appendChild(row);
-            });
-
-            // 滚动高亮
-            const onScroll = () => {
-                let currentIdx = -1;
-                headings.forEach((h, i) => {
-                    if (h.getBoundingClientRect().top < 100) currentIdx = i;
-                });
-                inner.querySelectorAll('.toc-row').forEach((row, i) => {
-                    row.classList.toggle('toc-active', i === currentIdx);
-                });
-            };
-            window.addEventListener('scroll', onScroll, { once: false });
-        }
 
         // 标签页切换
         document.querySelectorAll('.tab-btn').forEach(btn => {

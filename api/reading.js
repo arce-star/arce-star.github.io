@@ -83,6 +83,44 @@ async function publish(req,res,body){
     return json(res,200,{ok:true,work,count:catalog.count});
   }catch(err){return json(res,502,{error:'提交到 GitHub 失败，请检查仓库权限与网络连接'})}
 }
+async function saveFullText(req,res,body){
+  const token=String(req.headers['x-reading-admin-token']||'');
+  const admin=process.env.READING_ADMIN_TOKEN||'';
+  const gh=process.env.READING_GITHUB_TOKEN||'';
+  if(!admin||!gh)return json(res,503,{error:'尚未配置 GitHub 发布服务'});
+  if(!token||token!==admin)return json(res,403,{error:'管理员口令错误'});
+  const id=String(body.id||'').trim();
+  const title=String(body.title||'').trim();
+  const author=String(body.author||'').trim();
+  const content=String(body.content||'').trim();
+  const sourceUrl=String(body.sourceUrl||'').trim();
+  if(!/^W\\d{3}$/.test(id)||title.length<1||author.length<1||content.length<500||content.length>60000)return json(res,400,{error:'作品编号、标题、作者或正文长度无效'});
+  let safeUrl;
+  try{const u=new URL(sourceUrl);if(u.protocol!=='https:'||u.hostname!=='zh.wikisource.org')throw Error();safeUrl=u.href}catch{return json(res,400,{error:'仅接受维基文库 HTTPS 来源'})}
+  const headers={Authorization:'Bearer '+gh,Accept:'application/vnd.github+json','X-GitHub-Api-Version':'2022-11-28'};
+  const fullPath='https://api.github.com/repos/'+GITHUB_REPO+'/contents/assets/data/reading/fulltext.json';
+  const catalogPath='https://api.github.com/repos/'+GITHUB_REPO+'/contents/'+GITHUB_PATH;
+  try{
+    const [fr,cr]=await Promise.all([upstream(fullPath,{headers},20000),upstream(catalogPath,{headers},20000)]);
+    if(!fr.ok||!cr.ok)return json(res,502,{error:'无法读取 GitHub 题库文件'});
+    const [ff,cf]=await Promise.all([fr.json(),cr.json()]);
+    const full=JSON.parse(Buffer.from(ff.content.replace(/\\s/g,''),'base64').toString('utf8'));
+    const catalog=JSON.parse(Buffer.from(cf.content.replace(/\\s/g,''),'base64').toString('utf8'));
+    const work=catalog.works.find(w=>w.id===id);
+    if(!work||work.title!==title||work.author!==author)return json(res,409,{error:'书目与下载正文的作品信息不一致'});
+    const entry={id,title,author,year:String(work.year||''),genre:work.genre,sourceUrl:safeUrl,content,attribution:'作者：'+author+'；作品：'+title+'；来源：维基文库。',license:'维基文库页面文本采用 CC BY-SA 4.0；来源页面标注底层作品属于公有领域。',downloadedAt:new Date().toISOString()};
+    const index=full.works.findIndex(w=>w.id===id);
+    if(index>=0)full.works[index]=entry;else full.works.push(entry);
+    full.count=full.works.length;full.updatedAt=new Date().toISOString().slice(0,10);
+    const fullWrite=await upstream(fullPath,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({message:'Download full text: '+title,content:Buffer.from(JSON.stringify(full,null,2)).toString('base64'),sha:ff.sha,branch:'main'})},25000);
+    if(!fullWrite.ok)return json(res,502,{error:'正文已整理但 GitHub 全文文件写入失败'});
+    work.textMode='local';work.source='维基文库';work.sourcePage=work.sourcePage||title;work.sourceUrl=safeUrl;work.rightsStatus='本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享';
+    catalog.count=catalog.works.length;catalog.updatedAt=new Date().toISOString().slice(0,10);
+    const catWrite=await upstream(catalogPath,{method:'PUT',headers:{...headers,'Content-Type':'application/json'},body:JSON.stringify({message:'Mark downloaded full text: '+title,content:Buffer.from(JSON.stringify(catalog,null,2)).toString('base64'),sha:cf.sha,branch:'main'})},25000);
+    if(!catWrite.ok)return json(res,502,{error:'正文已上传，但书目索引更新失败；请重试同步索引'});
+    return json(res,200,{ok:true,id,title,characters:content.length,count:full.count});
+  }catch(err){return json(res,502,{error:'保存下载正文失败：'+String(err.message||err).slice(0,160)})}
+}
 export default async function handler(req,res){
   cors(req,res);
   if(req.method==='OPTIONS')return res.status(204).end();
@@ -92,5 +130,6 @@ export default async function handler(req,res){
   const body=req.body||{};
   if(body.action==='chat')return chat(req,res,body);
   if(body.action==='publish')return publish(req,res,body);
+  if(body.action==='save_fulltext')return saveFullText(req,res,body);
   return json(res,400,{error:'Unknown action'});
 }

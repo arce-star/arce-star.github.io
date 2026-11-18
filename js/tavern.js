@@ -2,9 +2,10 @@
 const Tavern = (() => {
   const API = 'https://api.deepseek.com/v1/chat/completions';
   const MODEL = 'deepseek-chat';
-  const API_KEY = 'sk-e328d4254e524fef968fcedf78130577';
+  const KEY_STORAGE = '_tavern_api_key';
   let currentChar = '';
-  let chats = {}; // { charKey: [{role,content}] }
+  let chats = {};
+  let initialized = false;
 
   const chars = [
     { id:'professor', name:'📚 学术导师', avatar:'👨‍🏫', prompt:'你是一位严厉但关心学生的物理学教授。说话严谨，喜欢用数学公式和物理直觉解释问题。偶尔会感叹"这个推导我在20年前教过"。' },
@@ -37,96 +38,129 @@ const Tavern = (() => {
   }
   function saveChats() { localStorage.setItem('_tavern_chats', JSON.stringify(chats)); }
 
-  function decrypt(enc) {
-    const seed = 'arce-star-quantum-2025';
-    return [...atob(enc)].map((c,i)=>String.fromCharCode(c.charCodeAt(0)^seed.charCodeAt(i%seed.length))).join('');
+  function getApiKey() {
+    try { return localStorage.getItem(KEY_STORAGE) || ''; }
+    catch(_) { return ''; }
   }
-  function getKey_() { try { return decrypt('EhlOH344OxIReQIYBgwREQZPVmBWejY4FA=='); } catch(_) { return ''; } }
+  function setKeyStatus(message, isError) {
+    const status = document.getElementById('tavern-key-status');
+    if (!status) return;
+    status.textContent = message;
+    status.classList.toggle('error', !!isError);
+  }
+  function initKeySettings() {
+    const input = document.getElementById('tavern-key-input');
+    const save = document.getElementById('tavern-key-save');
+    const clear = document.getElementById('tavern-key-clear');
+    if (!input || !save || !clear) return;
+    setKeyStatus(getApiKey() ? 'API Key 已保存在当前浏览器。' : '尚未配置 API Key。');
+    save.addEventListener('click', () => {
+      const key = input.value.trim();
+      if (!key) { setKeyStatus('请先输入 DeepSeek API Key。', true); input.focus(); return; }
+      try { localStorage.setItem(KEY_STORAGE, key); input.value = ''; setKeyStatus('保存成功。Key 只保存在当前浏览器。'); }
+      catch (_) { setKeyStatus('浏览器无法保存 Key，请检查本地存储设置。', true); }
+    });
+    clear.addEventListener('click', () => {
+      try { localStorage.removeItem(KEY_STORAGE); } catch (_) {}
+      input.value = ''; setKeyStatus('API Key 已从当前浏览器清除。');
+    });
+  }
 
   function render() {
     loadChats();
     const grid = document.getElementById('tavern-chars');
-    grid.innerHTML = chars.map(c => `
-      <div class="tchar-card ${currentChar===c.id?'active':''}" data-id="${c.id}">
-        <div class="tchar-avatar">${c.avatar}</div>
-        <div class="tchar-name">${c.name}</div>
-      </div>
-    `).join('');
-    document.querySelectorAll('.tchar-card').forEach(card => {
-      card.addEventListener('click', () => selectChar(card.dataset.id));
-    });
+    const area = document.getElementById('tavern-chat-area');
+    if (!grid || !area) return;
+    grid.innerHTML = chars.map(c => `<button type="button" class="tchar-card ${currentChar===c.id?'active':''}" data-id="${c.id}"><span class="tchar-avatar">${c.avatar}</span><span class="tchar-name">${c.name}</span></button>`).join('');
+    grid.querySelectorAll('.tchar-card').forEach(card => card.addEventListener('click', () => selectChar(card.dataset.id)));
     if (currentChar) selectChar(currentChar);
-    else document.getElementById('tavern-chat').innerHTML = '<div style="text-align:center;padding:40px;color:#ccc;"><p style="font-size:2rem;">🍻</p><p>选择一位角色开始对话</p></div>';
+    else { grid.style.display = 'flex'; area.style.display = 'none'; }
   }
 
   function selectChar(id) {
+    const character = chars.find(x => x.id === id);
+    if (!character) return;
     currentChar = id;
-    document.querySelectorAll('.tchar-card').forEach(c => c.classList.remove('active'));
-    document.querySelector('[data-id="'+id+'"]').classList.add('active');
-    const c = chars.find(x => x.id === id);
-    document.getElementById('tavern-char-name').textContent = c.name;
+    document.querySelectorAll('.tchar-card').forEach(card => card.classList.toggle('active', card.dataset.id === id));
+    const grid = document.getElementById('tavern-chars');
+    const area = document.getElementById('tavern-chat-area');
+    const name = document.getElementById('tavern-char-name');
+    if (grid) grid.style.display = 'none';
+    if (area) area.style.display = 'block';
+    if (name) name.textContent = character.name;
     if (!chats[id]) chats[id] = [];
     renderChat(id);
   }
 
   function renderChat(id) {
-    const msgs = chats[id] || [];
     const body = document.getElementById('tavern-chat-body');
-    if (msgs.length === 0) {
-      body.innerHTML = '<div class="tmsg tmsg-bot">' + chars.find(c=>c.id===id).prompt.substring(0,60) + '...</div>';
+    if (!body) return;
+    body.replaceChildren();
+    const msgs = chats[id] || [];
+    if (!msgs.length) {
+      const welcome = document.createElement('div');
+      welcome.className = 'tmsg tmsg-bot';
+      welcome.textContent = (chars.find(c => c.id === id)?.prompt || '你好，欢迎来聊天。').substring(0, 100) + '…';
+      body.appendChild(welcome);
     } else {
-      body.innerHTML = msgs.map(m => `
-        <div class="tmsg ${m.role==='user'?'tmsg-user':'tmsg-bot'}">
-          ${m.content.replace(/\n/g,'<br>')}
-        </div>
-      `).join('');
+      msgs.forEach(message => {
+        const bubble = document.createElement('div');
+        bubble.className = message.role === 'user' ? 'tmsg tmsg-user' : 'tmsg tmsg-bot';
+        bubble.textContent = message.content || '';
+        body.appendChild(bubble);
+      });
     }
     body.scrollTop = body.scrollHeight;
   }
 
   async function sendMsg() {
     const input = document.getElementById('tavern-input');
+    if (!input) return;
     const text = input.value.trim();
     if (!text || !currentChar) return;
+    const apiKey = getApiKey();
+    if (!apiKey) { setKeyStatus('请先配置 DeepSeek API Key，再开始对话。', true); document.getElementById('tavern-key-input')?.focus(); return; }
     input.value = '';
-
-    const c = chars.find(x => x.id === currentChar);
-    chats[currentChar].push({ role:'user', content: text });
+    const character = chars.find(x => x.id === currentChar);
+    chats[currentChar].push({ role: 'user', content: text });
     renderChat(currentChar);
     saveChats();
-
-    // Add typing indicator
     const body = document.getElementById('tavern-chat-body');
     const typing = document.createElement('div');
-    typing.className = 'tmsg tmsg-bot'; typing.textContent = '...';
+    typing.className = 'tmsg tmsg-bot';
+    typing.textContent = '正在整理思路…';
     body.appendChild(typing);
     body.scrollTop = body.scrollHeight;
-
-    const msgs = [{ role:'system', content: c.prompt }, ...chats[currentChar].slice(-15)];
-
+    const messages = [{ role: 'system', content: character.prompt }, ...chats[currentChar].slice(-15)];
     try {
-      const resp = await fetch(API, {
-        method:'POST',
-        headers: { 'Content-Type':'application/json', 'Authorization':'Bearer '+API_KEY },
-        body: JSON.stringify({ model:MODEL, messages:msgs, temperature:0.9, max_tokens:2048 })
+      const response = await fetch(API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+        body: JSON.stringify({ model: MODEL, messages, temperature: 0.9, max_tokens: 2048 })
       });
-      const data = await resp.json();
-      const reply = data.choices?.[0]?.message?.content || '';
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error?.message || ('HTTP ' + response.status));
+      const reply = data.choices?.[0]?.message?.content;
+      if (!reply) throw new Error('API 没有返回有效内容。');
       typing.textContent = reply;
-      chats[currentChar].push({ role:'assistant', content: reply });
+      chats[currentChar].push({ role: 'assistant', content: reply });
       saveChats();
       body.scrollTop = body.scrollHeight;
-    } catch(e) {
-      typing.textContent = '网络错误: ' + e.message;
+    } catch (error) {
+      typing.textContent = '请求失败：' + (error && error.message ? error.message : '未知错误');
     }
   }
 
   function init() {
+    if (initialized) return;
+    initialized = true;
+    initKeySettings();
     render();
-    document.getElementById('tavern-input').addEventListener('keydown', e => {
+    const input = document.getElementById('tavern-input');
+    if (input) input.addEventListener('keydown', e => {
       if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
     });
   }
 
-  return { init };
+  return { init, sendMsg };
 })();

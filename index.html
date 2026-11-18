@@ -530,6 +530,65 @@
             .cv-name { font-size: 1.6rem; }
             .cv-contact { gap: 8px; font-size: 0.8rem; }
         }
+/* Warm homepage theme */
+:root{--blue:#718675;--blue-light:#8da18e;--text:#51483f;--text-dim:#756b60;--text-light:#a99b8b;--bg:#f5efe5;--card-bg:#fffaf2;--border:#e8ddce;--sidebar-w:216px}
+html,body{background:#f5efe5}
+body{color:#51483f;background:radial-gradient(ellipse at 12% 8%,rgba(255,252,245,.96),transparent 32%),radial-gradient(ellipse at 88% 62%,rgba(228,216,196,.38),transparent 36%),#f5efe5}
+#quantum-bg{opacity:.26}
+#sidebar{background:rgba(250,246,238,.91);border-right:1px solid #e8ddce;box-shadow:4px 0 24px rgba(92,72,51,.055);backdrop-filter:blur(12px);padding-top:34px}
+.sidebar-brand{border-bottom-color:#e8ddce}.sidebar-brand .name{color:#637d69}.sidebar-brand .sub{color:#a18f7e}
+.sidebar-nav a{border-radius:12px;color:#74695e;padding:10px 13px;margin-bottom:4px}.sidebar-nav a:hover{background:#f0e9dd;color:#647d69}.sidebar-nav a.active{background:#e5ecdf;color:#58735e;font-weight:650}.sidebar-nav a i{color:inherit}
+.sidebar-footer{border-top-color:#e8ddce;color:#b3a493}
+#main-content{padding:42px 44px 76px}
+.content-panel{background:rgba(255,251,244,.86);border:1px solid rgba(224,211,193,.78);border-radius:22px;padding:30px 34px;box-shadow:0 14px 38px rgba(92,72,51,.055)}
+.cv-header{border-bottom-color:#c5d0bd}.cv-name{color:#627c68}.cv-contact{color:#817568}.cv-contact i{color:#829681}
+.cv-section-title{color:#6d846f;border-bottom-color:#e8ddce}.cv-entry-title{color:#4f493f}.cv-list li{color:#655c51}.cv-list li::before{color:#b68d76}.cv-highlight{color:#68816d}.cv-tag{background:#edf1e8;color:#667f68;border-radius:999px}
+.note-tag:hover{background:#e9efe4}.note-tag.has-note{border-bottom-color:#829681}
+a{color:#6b846e}a:hover{color:#a77966}
+#edit-toggle-btn,#save-courses-btn{border-radius:999px}#edit-toggle-btn{background:#fffaf2;border-color:#e5d8c8;color:#6d806e}#edit-toggle-btn:hover{background:#f0eee4}#save-courses-btn{background:#718675}
+#lock-btn{width:43px;height:43px;top:16px;right:18px;border-color:#e3d6c7;background:rgba(255,250,242,.94);color:#6d846f;box-shadow:0 5px 16px rgba(89,69,48,.11);backdrop-filter:blur(10px)}
+#lock-btn:hover{background:#fffdf8;transform:translateY(-1px)}#lock-btn.logged-in{background:#718675;color:#fff;border-color:#718675}
+#auth-overlay{padding:18px;background:rgba(67,57,47,.30);backdrop-filter:blur(9px)}
+.auth-dialog{width:min(420px,92vw);padding:32px 30px 26px;border-radius:24px;border:1px solid #eadfce;background:linear-gradient(145deg,#fffdf8,#f8f1e6);box-shadow:0 24px 70px rgba(64,49,35,.20)}
+.auth-mark{width:62px;height:62px;margin:0 auto 15px;display:grid;place-items:center;border-radius:20px;color:#728a75;background:#edf1e7;border:1px solid #dce5d7}
+.auth-dialog h2{color:#5e765f;font-size:1.45rem}.auth-dialog .auth-sub{color:#988878;line-height:1.7;margin:7px 0 20px}
+.auth-dialog input{background:#fffdf8;border-color:#e4d8c9;color:#51483f;border-radius:12px;padding:13px 15px;letter-spacing:.04em}.auth-dialog input:focus{border-color:#8ca18b;box-shadow:0 0 0 3px rgba(140,161,139,.15)}
+.auth-dialog .auth-btn{background:linear-gradient(135deg,#849982,#657f6b);border-radius:12px;box-shadow:0 5px 12px rgba(92,119,96,.18)}.auth-dialog .auth-btn:hover{opacity:1;filter:brightness(1.04)}
+.auth-dialog .auth-hint{color:#b2a18e}.auth-dialog .auth-close{color:#9a8878}.auth-error{color:#b65f50}
+#private-view{background:#f5efe5}#private-frame{background:#fffaf2}
+#exit-private-btn{background:rgba(255,250,242,.96);border-color:#e5d8c8;color:#647d68;border-radius:999px;padding:10px 20px;box-shadow:0 7px 20px rgba(89,69,48,.12)}#exit-private-btn:hover{background:#fffdf8}
+#project-layout{border-color:#e7dccd;border-radius:18px;background:#fffaf3;box-shadow:0 8px 24px rgba(92,72,51,.045)}
+#project-sidebar{background:#f7f1e7;border-right-color:#e7dccd}.proj-sidebar-header{background:#f2ebdf;color:#6d806e;border-bottom-color:#e7dccd}
+.tree-item{color:#6c6257}.tree-item:hover{background:#eee9dd}.tree-item i,.tree-back{color:#718675}
+#project-header{background:#f8f2e8;border-bottom-color:#e7dccd}#file-name-display{color:#5e765f}#code-viewer{background:#fffdf8}
+.md-preview{background:#fffaf2;color:#5b5147}.md-preview h2{color:#6b826c;border-bottom-color:#e9dece}.md-preview a{color:#718675}.fold-block{border-color:#e6dacb;border-radius:10px}.fold-block summary{background:#f4eee4;color:#6d806e}
+#note-toc:hover{background:rgba(255,250,242,.97);box-shadow:-3px 0 22px rgba(92,72,51,.09)}#note-toc .toc-title{color:#6b826c}#note-toc .toc-dash{background:#c9b9a6}#note-toc .toc-label{color:#74685c}#note-toc .toc-active .toc-dash{background:#819681}
+#ai-chat-btn{background:linear-gradient(135deg,#91a184,#6d856f);box-shadow:0 5px 20px rgba(99,127,99,.28)}#ai-chat-btn:hover{box-shadow:0 7px 25px rgba(99,127,99,.35)}
+#ai-panel{background:#fffaf2;border:1px solid #e8ddce;border-radius:20px;box-shadow:0 16px 42px rgba(73,57,41,.17)}.ai-panel-header{background:linear-gradient(135deg,#879a81,#667f6b)}
+#ai-key-section{background:#fffaf2}#ai-key-section input{background:#fffdf8;border-color:#e5d9ca}#ai-key-save{background:#718675!important;border-radius:999px!important}#ai-key-clear{border-radius:999px!important;color:#8e7d6d!important}
+#ai-key-change{font-size:11px;padding:5px 9px;border:1px solid rgba(255,255,255,.38);border-radius:999px;background:rgba(255,255,255,.12);color:#fff}
+.chat-user{background:#829681}.chat-assistant{background:#f2ece2;color:#5b5148}#ai-input-row{border-top-color:#e9dece}#ai-input-row input{background:#fffdf8;border-color:#e5d9ca}#ai-input-row button{background:#718675;border-radius:999px}
+#panel-tavern .tavern-settings{padding:16px 18px;margin:0 0 18px;border:1px solid #e7dccd;border-radius:16px;background:linear-gradient(135deg,#f7f1e7,#fffaf2)}
+.tavern-settings-title{font-size:13px;font-weight:650;color:#637b66;margin-bottom:5px}.tavern-settings-note{font-size:12px;color:#9a8979;line-height:1.6;margin-bottom:10px}
+.tavern-key-row{display:flex;gap:8px;flex-wrap:wrap}.tavern-key-row input{flex:1 1 220px;min-width:0;padding:9px 12px;border:1px solid #e2d6c7;border-radius:10px;background:#fffdf8}
+.tavern-key-row button{border:1px solid #d9dfd2;border-radius:999px;padding:8px 14px;background:#718675;color:#fff}.tavern-key-row button.secondary{background:#fffaf2;color:#857667;border-color:#e3d8c9}
+#tavern-key-status{font-size:11px;color:#8b9a80;margin-top:8px}#tavern-key-status.error{color:#b65f50}
+.tchar-card{background:#fffaf2!important;border:1px solid #e7dccd!important;border-radius:15px!important;box-shadow:0 5px 14px rgba(92,72,51,.055);color:#63584c!important;transition:transform .18s,box-shadow .18s}
+.tchar-card:hover{transform:translateY(-3px);box-shadow:0 9px 20px rgba(92,72,51,.10)}.tchar-card.active{border-color:#91a48c!important;background:#eef2e9!important}
+.tmsg{padding:10px 13px;border-radius:13px;line-height:1.65;max-width:88%;white-space:pre-wrap;overflow-wrap:anywhere}.tmsg-user{background:#e8eee2;color:#526a57}.tmsg-bot{background:#f5eee4;color:#665a4d}
+#tavern-input{background:#fffdf8;border-color:#e5d9ca}
+@media(max-width:720px){
+#sidebar{position:sticky;top:0;bottom:auto;width:100%;flex-direction:column;align-items:stretch;padding:11px 12px 8px;gap:8px;background:rgba(250,246,238,.96);border-right:0;border-bottom:1px solid #e7dccd;box-shadow:0 5px 18px rgba(92,72,51,.07)}
+.sidebar-brand{display:block;text-align:left;padding:0 7px 4px;border:0;margin:0}.sidebar-brand .name{font-size:1rem}.sidebar-brand .sub{font-size:.68rem}
+.sidebar-nav{display:flex;flex-wrap:nowrap;gap:4px;padding:0 0 3px;width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:none}.sidebar-nav::-webkit-scrollbar{display:none}
+.sidebar-nav a{flex:0 0 auto;white-space:nowrap;padding:8px 11px;font-size:.78rem}
+#main-content{margin-left:0;padding:18px 12px 52px}.content-panel{padding:20px 16px;border-radius:17px}.cv-name{font-size:1.65rem}.cv-contact{font-size:.78rem;gap:8px}
+#project-layout{flex-direction:column}#project-sidebar{width:100%;max-height:220px;border-right:0;border-bottom:1px solid #e7dccd}#code-viewer{max-height:420px}
+#ai-panel{right:12px;bottom:78px;width:calc(100vw - 24px);max-width:480px}#ai-chat-btn{right:16px;bottom:16px;width:48px;height:48px}
+#lock-btn{top:12px;right:12px;width:40px;height:40px}.auth-dialog{padding:27px 22px 22px}#exit-private-btn{bottom:12px}
+}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{transition:none!important;animation:none!important;scroll-behavior:auto!important}}
+
     </style>
 </head>
 <body>
@@ -555,6 +614,7 @@
                 <a data-panel="projects"><i class="fas fa-code-branch"></i> MATLAB 项目</a>
                 <a data-panel="madevolve"><i class="fas fa-dna"></i> MadEvolve 复现</a>
                 <a data-panel="docs"><i class="fas fa-file-alt"></i> 证明材料</a>
+                <a data-panel="tavern"><i class="fas fa-comments"></i> AI 酒馆</a>
                 <a href="complex-lab.html"><i class="fas fa-project-diagram"></i> Complex Lab</a>
                 <a href="investment-study.html"><i class="fas fa-chart-line"></i> 投资学习</a>
                 <a href="gomoku.html"><i class="fas fa-chess-board"></i> 五子棋</a>
@@ -1181,6 +1241,16 @@ def default_calcset(ohlcv):
                     <div class="cv-name">AI 酒馆</div>
                     <div class="cv-contact">选一位角色，开始对话</div>
                 </div>
+                <div class="tavern-settings">
+                    <div class="tavern-settings-title">连接 DeepSeek</div>
+                    <p class="tavern-settings-note">API Key 只保存在当前浏览器的本地存储中，不会写入 GitHub。不要把 Key 发到聊天里。</p>
+                    <div class="tavern-key-row">
+                        <input id="tavern-key-input" type="password" placeholder="粘贴 DeepSeek API Key" autocomplete="off" spellcheck="false" aria-label="DeepSeek API Key">
+                        <button id="tavern-key-save" type="button">保存 Key</button>
+                        <button id="tavern-key-clear" class="secondary" type="button">清除</button>
+                    </div>
+                    <p id="tavern-key-status" role="status" aria-live="polite">尚未配置 API Key。</p>
+                </div>
                 <div id="tavern-chars" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;"></div>
                 <div style="display:none;" id="tavern-chat-area">
                     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee;">
@@ -1247,18 +1317,19 @@ def default_calcset(ohlcv):
     </div>
 
     <!-- 锁按钮 -->
-    <button id="lock-btn" title="私人区">🔒</button>
-
-    <!-- 密码弹窗 -->
-    <div id="auth-overlay">
-        <div class="auth-dialog">
-            <h2>私人区</h2>
-            <p class="auth-sub">输入密码进入</p>
-            <input type="password" id="pwd-input" placeholder="密码" autocomplete="off">
-            <p class="auth-error" id="auth-error">密码错误，重试一下</p>
-            <button class="auth-btn" id="login-btn">进入</button>
-            <span class="auth-hint">提示: 🍃</span>
-            <button class="auth-close" id="auth-close">取消</button>
+    <button id="lock-btn" type="button" title="进入私人区" aria-label="进入私人区">
+        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="15.5" r="1.15" fill="currentColor"/></svg>
+    </button>
+    <div id="auth-overlay" role="presentation">
+        <div class="auth-dialog" role="dialog" aria-modal="true" aria-labelledby="auth-title" aria-describedby="auth-sub">
+            <div class="auth-mark" aria-hidden="true"><svg viewBox="0 0 48 48" width="34" height="34" fill="none"><path d="M24 39V20m0 10c-8 0-13-5-13-12 8-.5 13 4 13 12Zm0-7c1-7 6-11 13-11-.3 7-5 11-13 11Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M17 40h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></div>
+            <h2 id="auth-title">欢迎回来</h2>
+            <p class="auth-sub" id="auth-sub">输入私人区密码，继续你的个人空间。</p>
+            <input type="password" id="pwd-input" placeholder="请输入密码" autocomplete="current-password" aria-label="私人区密码">
+            <p class="auth-error" id="auth-error" role="alert">密码不正确，请再试一次。</p>
+            <button class="auth-btn" id="login-btn" type="button">进入私人空间</button>
+            <span class="auth-hint">只在当前浏览器会话中解锁</span>
+            <button class="auth-close" id="auth-close" type="button">暂时返回</button>
         </div>
     </div>
 
@@ -1383,7 +1454,7 @@ def default_calcset(ohlcv):
         }
         updateEditButton();
 
-        // ===== 登录系统 =====
+        // ===== 私人区登录 / 退出 =====
         const lockBtn = document.getElementById('lock-btn');
         const authOverlay = document.getElementById('auth-overlay');
         const pwdInput = document.getElementById('pwd-input');
@@ -1394,84 +1465,84 @@ def default_calcset(ohlcv):
         const privateView = document.getElementById('private-view');
         const privateFrame = document.getElementById('private-frame');
         const exitPrivateBtn = document.getElementById('exit-private-btn');
+        let privateBlobUrl = null;
 
-        if (Auth.isLoggedIn()) { enterPrivateMode(); }
+        if (Auth.isLoggedIn()) Auth.clearSession();
+        updateEditButton();
 
-        lockBtn.addEventListener('click', () => {
-            if (Auth.isLoggedIn()) { enterPrivateMode(); }
-            else { authOverlay.classList.add('show'); pwdInput.focus(); }
-        });
-        authClose.addEventListener('click', () => {
-            authOverlay.classList.remove('show');
-            pwdInput.value = ''; authError.style.display = 'none';
-        });
-        authOverlay.addEventListener('click', (e) => {
-            if (e.target === authOverlay) {
-                authOverlay.classList.remove('show');
-                pwdInput.value = ''; authError.style.display = 'none';
-            }
-        });
-
-        loginBtn.addEventListener('click', () => attemptLogin());
-        pwdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
-
-        async function attemptLogin() {
-            const pwd = pwdInput.value.trim();
-            if (!pwd) return;
-            loginBtn.textContent = '验证中...'; loginBtn.disabled = true;
-            authError.style.display = 'none';
-            try {
-                const html = await Auth.decryptContent(ENCRYPTED_CONTENT, pwd);
-                if (html) {
-                    Auth.setSession();
-                    authOverlay.classList.remove('show'); pwdInput.value = '';
-                    revealPrivateContent(html);
-                } else {
-                    authError.style.display = 'block'; pwdInput.value = ''; pwdInput.focus();
-                }
-            } catch (_) { authError.style.display = 'block'; }
-            loginBtn.textContent = '进入'; loginBtn.disabled = false;
-        }
-
-        function revealPrivateContent(html) {
-            const blob = new Blob([html], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            if (privateFrame.src.startsWith('blob:')) URL.revokeObjectURL(privateFrame.src);
-            privateFrame.src = url;
-            publicView.style.display = 'none';
-            privateView.classList.add('show');
-            exitPrivateBtn.classList.add('show');
-            lockBtn.classList.add('logged-in');
-            lockBtn.innerHTML = '🔓'; lockBtn.title = '已解锁';
-            updateEditButton();
-        }
-
-        function enterPrivateMode() {
-            if (!privateFrame.src || privateFrame.src === 'about:blank') {
-                Auth.clearSession();
-                lockBtn.classList.remove('logged-in');
-                lockBtn.innerHTML = '🔒'; lockBtn.title = '私人区';
-                authOverlay.classList.add('show');
-                pwdInput.focus();
-                updateEditButton();
-                return;
-            }
-            publicView.style.display = 'none';
-            privateView.classList.add('show');
-            exitPrivateBtn.classList.add('show');
-            lockBtn.classList.add('logged-in');
-            lockBtn.innerHTML = '🔓'; lockBtn.title = '已解锁';
-            updateEditButton();
-        }
-
-        exitPrivateBtn.addEventListener('click', () => {
+        function resetPrivateView() {
+            Auth.clearSession();
+            privateFrame.src = 'about:blank';
+            if (privateBlobUrl) { URL.revokeObjectURL(privateBlobUrl); privateBlobUrl = null; }
             publicView.style.display = '';
             privateView.classList.remove('show');
             exitPrivateBtn.classList.remove('show');
             lockBtn.classList.remove('logged-in');
-            lockBtn.innerHTML = '🔒'; lockBtn.title = '私人区';
+            lockBtn.title = '进入私人区';
+            lockBtn.setAttribute('aria-label', '进入私人区');
+            lockBtn.innerHTML = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0v3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="12" cy="15.5" r="1.15" fill="currentColor"/></svg>';
             updateEditButton();
+        }
+        function openAuthDialog() {
+            authError.style.display = 'none';
+            authOverlay.classList.add('show');
+            window.setTimeout(() => pwdInput.focus(), 30);
+        }
+        lockBtn.addEventListener('click', () => {
+            if (Auth.isLoggedIn() && privateBlobUrl) enterPrivateMode();
+            else { Auth.clearSession(); openAuthDialog(); }
         });
+        authClose.addEventListener('click', () => {
+            authOverlay.classList.remove('show'); pwdInput.value = ''; authError.style.display = 'none';
+        });
+        authOverlay.addEventListener('click', (e) => {
+            if (e.target === authOverlay) { authOverlay.classList.remove('show'); pwdInput.value = ''; authError.style.display = 'none'; }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && authOverlay.classList.contains('show')) {
+                authOverlay.classList.remove('show'); pwdInput.value = ''; authError.style.display = 'none';
+            }
+        });
+        loginBtn.addEventListener('click', attemptLogin);
+        pwdInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') attemptLogin(); });
+
+        async function attemptLogin() {
+            const pwd = pwdInput.value;
+            if (!pwd) return;
+            loginBtn.textContent = '正在验证…'; loginBtn.disabled = true; authError.style.display = 'none';
+            try {
+                const decryptedHtml = await Auth.decryptContent(ENCRYPTED_CONTENT, pwd);
+                if (!decryptedHtml) {
+                    authError.textContent = '密码不正确，请再试一次。'; authError.style.display = 'block';
+                    pwdInput.value = ''; pwdInput.focus(); return;
+                }
+                if (!Auth.setSession()) throw new Error('浏览器无法建立私人区会话，请检查存储设置。');
+                authOverlay.classList.remove('show'); pwdInput.value = '';
+                revealPrivateContent(decryptedHtml);
+            } catch (err) {
+                authError.textContent = err && err.message ? err.message : '暂时无法解锁，请稍后重试。';
+                authError.style.display = 'block';
+            } finally {
+                loginBtn.textContent = '进入私人空间'; loginBtn.disabled = false;
+            }
+        }
+        function revealPrivateContent(decryptedHtml) {
+            if (privateBlobUrl) URL.revokeObjectURL(privateBlobUrl);
+            privateBlobUrl = URL.createObjectURL(new Blob([decryptedHtml], { type: 'text/html' }));
+            privateFrame.src = privateBlobUrl;
+            publicView.style.display = 'none'; privateView.classList.add('show'); exitPrivateBtn.classList.add('show');
+            lockBtn.classList.add('logged-in'); lockBtn.title = '私人区已解锁'; lockBtn.setAttribute('aria-label', '私人区已解锁');
+            lockBtn.innerHTML = '<svg width="19" height="19" viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="5" y="10" width="14" height="11" rx="3" stroke="currentColor" stroke-width="1.7"/><path d="M8 10V7a4 4 0 1 1 8 0" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><path d="m9.5 15 1.8 1.8 3.5-3.8" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+            updateEditButton();
+        }
+        function enterPrivateMode() {
+            if (!Auth.isLoggedIn() || !privateBlobUrl) {
+                Auth.clearSession(); openAuthDialog(); updateEditButton(); return;
+            }
+            publicView.style.display = 'none'; privateView.classList.add('show'); exitPrivateBtn.classList.add('show');
+            updateEditButton();
+        }
+        exitPrivateBtn.addEventListener('click', () => { authOverlay.classList.remove('show'); resetPrivateView(); });
     </script>
 
     <script>
@@ -1873,15 +1944,16 @@ def default_calcset(ohlcv):
                 </svg>AI 代码助手
             </span>
             <select id="ai-model-select" style="font-size:0.75rem;padding:3px 8px;border-radius:4px;border:1px solid rgba(255,255,255,0.3);background:rgba(255,255,255,0.15);color:#fff;margin:0 8px;min-width:145px;max-width:160px;"></select>
-            <button id="ai-panel-close">&times;</button>
+            <button id="ai-key-change" type="button" title="设置 USTC API Key">API</button>
+            <button id="ai-panel-close" type="button" aria-label="关闭 AI 助手">&times;</button>
         </div>
         <!-- 上下文信息栏 -->
         <div id="ai-context-bar" style="padding:6px 12px;font-size:0.75rem;color:#999;background:transparent;backdrop-filter:blur(3px);border-bottom:1px solid rgba(0,0,0,0.06);display:none;">
             <span id="ai-context-text"></span>
         </div>
         <div id="ai-key-section">
-            <p style="font-size:0.85rem;color:#888;margin-bottom:8px;">输入你的 Anthropic API Key（仅保存在本地浏览器）</p>
-            <input type="password" id="ai-key-input" placeholder="sk-ant-..." style="width:100%;padding:8px;border:1px solid #ddd;border-radius:6px;font-size:0.85rem;">
+            <p style="font-size:0.85rem;color:#756b60;margin-bottom:8px;">输入 USTC LLM API Key（仅保存在当前浏览器，不会提交到 GitHub）</p>
+            <input type="password" id="ai-key-input" placeholder="粘贴 USTC LLM API Key" autocomplete="off" spellcheck="false" style="width:100%;padding:9px 11px;border:1px solid #ddd;border-radius:10px;font-size:0.85rem;">
             <button id="ai-key-save" style="margin-top:8px;padding:6px 16px;background:var(--blue);color:#fff;border:none;border-radius:6px;cursor:pointer;">保存</button>
             <button id="ai-key-clear" style="margin-top:8px;padding:6px 12px;background:none;border:1px solid #ddd;border-radius:6px;cursor:pointer;color:#aaa;font-size:0.8rem;">清除</button>
         </div>
@@ -1998,6 +2070,7 @@ def default_calcset(ohlcv):
         // document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.addEventListener('DOMContentLoaded', () => {
             AiAssistant.init();
+            if (window.Tavern) Tavern.init();
             
             // 页面加载完成后，自动渲染全页的静态 LaTeX 数学公式
             if (typeof renderMathInElement !== 'undefined') {

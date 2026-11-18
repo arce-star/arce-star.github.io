@@ -6,9 +6,9 @@ class QuantumSea {
         this.ctx = this.canvas.getContext('2d');
         this.particles = [];
         this.mouse = { x: null, y: null, radius: 160 };
-        this.particleCount = 70;
-        this.connectionDistance = 150;
-        this.color = [15, 75, 145]; // theme blue
+        this.particleCount = 48;
+        this.connectionDistance = 132;
+        this.color = [139, 153, 130]; // muted sage
 
         this.init();
         this.animate();

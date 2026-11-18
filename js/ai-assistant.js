@@ -27,19 +27,19 @@ const AiAssistant = (() => {
     localStorage.setItem('_ai_model', id);
   }
 
-  function decrypt(encB64) {
-    const seed = 'arce-star-quantum-2025';
-    const bytes = atob(encB64);
-    let out = '';
-    for (let i = 0; i < bytes.length; i++) {
-      out += String.fromCharCode(bytes.charCodeAt(i) ^ seed.charCodeAt(i % seed.length));
-    }
-    return out;
-  }
-
+  const API_KEY_STORAGE = '_ai_ustc_api_key';
   function getApiKey() {
-    try { return decrypt('EhlOH344OxIReQIYBgwREQZPVmBWejY4FA=='); }
+    try { return localStorage.getItem(API_KEY_STORAGE) || ''; }
     catch(_) { return ''; }
+  }
+  function showKeySettings() {
+    if ($('ai-key-section')) $('ai-key-section').style.display = '';
+    if ($('ai-chat-section')) $('ai-chat-section').style.display = 'none';
+    if ($('ai-key-input')) $('ai-key-input').focus();
+  }
+  function showChat() {
+    if ($('ai-key-section')) $('ai-key-section').style.display = 'none';
+    if ($('ai-chat-section')) $('ai-chat-section').style.display = '';
   }
 
   function setContext(path, name, code, isDir, fileList) {
@@ -68,6 +68,7 @@ const AiAssistant = (() => {
     const input = document.getElementById('ai-msg-input');
     const text = overrideText || input.value.trim();
     if (!text) return;
+    if (!getApiKey()) { showKeySettings(); return; }
     input.value = '';
 
     // 构建增强的用户消息——直接把上下文注入进去
@@ -89,7 +90,7 @@ const AiAssistant = (() => {
 
     let system = '你是编程助手，帮助用户理解 MATLAB/Python 项目和代码。用中文回答，简明扼要。直接回答用户问题，不要说"请提供代码"之类的话——代码已经包含在用户消息中了。';
 
-    const typing = addBubble('assistant', '<em>思考中...</em>');
+    const typing = addBubble('assistant', '正在思考…');
 
     const msgs = [{ role: 'system', content: system }];
     const recent = messages.slice(-8);
@@ -116,14 +117,14 @@ const AiAssistant = (() => {
 
       if (!resp.ok) {
         const err = await resp.text();
-        typing.innerHTML = '<span style="color:#c0392b;">HTTP ' + resp.status + ': ' + err.substring(0, 400) + '</span>';
+        typing.textContent = 'HTTP ' + resp.status + ': ' + err.substring(0, 400);
         return;
       }
 
       const data = await resp.json();
       const reply = data.choices?.[0]?.message?.content || '';
       if (!reply) {
-        typing.innerHTML = '<span style="color:#c0392b;">API返回异常<br><small>' + JSON.stringify(data).substring(0, 300) + '</small></span>';
+        typing.textContent = 'API 返回异常：' + JSON.stringify(data).substring(0, 300);
         return;
       }
 
@@ -131,16 +132,16 @@ const AiAssistant = (() => {
       messages.push({ role: 'user', content: enhancedText });
       messages.push({ role: 'assistant', content: reply });
     } catch(e) {
-      typing.innerHTML = '<span style="color:#c0392b;">' + e.message + '<br><small>可能是网络或CORS问题</small></span>';
+      typing.textContent = e.message + '（可能是网络或 CORS 问题）';
     }
     document.getElementById('ai-chat-body').scrollTop = 99999;
   }
 
-  function addBubble(role, html) {
+  function addBubble(role, content) {
     const body = document.getElementById('ai-chat-body');
     const div = document.createElement('div');
     div.className = 'chat-bubble chat-' + role;
-    div.innerHTML = html;
+    div.textContent = content;
     body.appendChild(div);
     body.scrollTop = 99999;
     return div;
@@ -160,26 +161,25 @@ const AiAssistant = (() => {
 
   function init() {
     if (!$('ai-chat-btn')) return;
-    // 初始化模型选择器
     const sel = $('ai-model-select');
-    MODELS.forEach(m => {
-      const opt = document.createElement('option');
-      opt.value = m.id; opt.textContent = m.label;
-      sel.appendChild(opt);
-    });
+    MODELS.forEach(m => { const opt = document.createElement('option'); opt.value = m.id; opt.textContent = m.label; sel.appendChild(opt); });
     sel.value = getModel();
-    sel.addEventListener('change', () => {
-      setModel(sel.value);
-      messages = []; // 切换模型清空上下文
-    });
-
-    $('ai-panel-close').addEventListener('click', () => {
-      $('ai-panel').classList.remove('show');
-    });
+    sel.addEventListener('change', () => { setModel(sel.value); messages = []; });
+    $('ai-panel-close').addEventListener('click', () => $('ai-panel').classList.remove('show'));
     $('ai-msg-send').addEventListener('click', sendMessage);
     $('ai-msg-input').addEventListener('keydown', (e) => { if (e.key === 'Enter') sendMessage(); });
-    $('ai-key-section').style.display = 'none';
-    $('ai-chat-section').style.display = '';
+    $('ai-key-change').addEventListener('click', showKeySettings);
+    $('ai-key-save').addEventListener('click', () => {
+      const key = $('ai-key-input').value.trim();
+      if (!key) { $('ai-key-input').focus(); return; }
+      try { localStorage.setItem(API_KEY_STORAGE, key); $('ai-key-input').value = ''; showChat(); }
+      catch (_) { $('ai-key-input').setCustomValidity('浏览器无法保存 Key，请检查本地存储设置。'); $('ai-key-input').reportValidity(); }
+    });
+    $('ai-key-clear').addEventListener('click', () => {
+      try { localStorage.removeItem(API_KEY_STORAGE); } catch (_) {}
+      $('ai-key-input').value = ''; showKeySettings();
+    });
+    if (getApiKey()) showChat(); else showKeySettings();
   }
 
   return { init, setContext };

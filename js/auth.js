@@ -53,17 +53,21 @@ const Auth = (() => {
   }
 
   function setSession() {
-    const token = [...crypto.getRandomValues(new Uint8Array(16))]
-      .map(b => b.toString(16).padStart(2, '0')).join('');
-    sessionStorage.setItem(SESSION_KEY, token);
+    try {
+      const token = [...crypto.getRandomValues(new Uint8Array(16))]
+        .map(b => b.toString(16).padStart(2, '0')).join('');
+      sessionStorage.setItem(SESSION_KEY, token);
+      return true;
+    } catch (_) { return false; }
   }
 
   function clearSession() {
-    sessionStorage.removeItem(SESSION_KEY);
+    try { sessionStorage.removeItem(SESSION_KEY); } catch (_) {}
   }
 
   function isLoggedIn() {
-    return !!sessionStorage.getItem(SESSION_KEY);
+    try { return !!sessionStorage.getItem(SESSION_KEY); }
+    catch (_) { return false; }
   }
 
   return { decryptContent, setSession, clearSession, isLoggedIn };

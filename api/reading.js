@@ -28,12 +28,16 @@ async function chat(req,res,body){
   if (!['ustc','deepseek'].includes(provider)) return json(res,400,{error:'仅支持 USTC LLM 和 DeepSeek'});
   const key=String(body.apiKey||'').trim();
   if (!key||key.length>600) return json(res,400,{error:'请提供有效的 API Key'});
-  const model=String(body.model||(provider==='ustc'?'deepseek-v4-flash':'deepseek-chat')).trim();
+  const model=String(body.model||(provider==='ustc'?'deepseek-v4-flash':'deepseek-flash')).trim();
   if (!/^[\w.\-:/]{2,128}$/.test(model)) return json(res,400,{error:'模型名称无效'});
   const messages=Array.isArray(body.messages)?body.messages:[];
   if (!messages.length||messages.length>8||messages.some(m=>!['system','user','assistant'].includes(m?.role)||typeof m?.content!=='string'||m.content.length>24000)) return json(res,400,{error:'请求内容无效或过长'});
   const endpoint=provider==='ustc'?USTC_ENDPOINT:DEEPSEEK_ENDPOINT;
   const payload={model,messages:messages.map(x=>({role:x.role,content:x.content})),stream:false,max_tokens:Math.min(3500,Math.max(200,Number(body.max_tokens)||1800)),temperature:.6};
+  if(provider==='deepseek'){
+    payload.thinking={type:'disabled'};
+    if(body.enableWebSearch===true)payload.tools=[{type:'deepseek_web_search'}];
+  }
   try {
     const response=await upstream(endpoint,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+key},body:JSON.stringify(payload)});
     const raw=await response.text();

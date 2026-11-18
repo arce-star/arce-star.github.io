@@ -2166,8 +2166,8 @@ def default_calcset(ohlcv):
 
         // document.addEventListener('DOMContentLoaded', () => { AiAssistant.init(); });
         document.addEventListener('DOMContentLoaded', () => {
-            if (window.AiAssistant && typeof AiAssistant.init === 'function') AiAssistant.init();
-            if (window.Tavern && typeof Tavern.init === 'function') Tavern.init();
+            if (typeof AiAssistant !== 'undefined' && typeof AiAssistant.init === 'function') AiAssistant.init();
+            if (typeof Tavern !== 'undefined' && typeof Tavern.init === 'function') Tavern.init();
             
             // 页面加载完成后，自动渲染全页的静态 LaTeX 数学公式
             if (typeof renderMathInElement !== 'undefined') {
@@ -2186,18 +2186,18 @@ def default_calcset(ohlcv):
         });
         const projectLink = document.querySelector('[data-panel="projects"]');
         if (projectLink) projectLink.addEventListener('click', () => {
-            if (window.ProjectBrowser && typeof ProjectBrowser.loadRoot === 'function') {
+            if (typeof ProjectBrowser !== 'undefined' && typeof ProjectBrowser.loadRoot === 'function') {
                 setTimeout(() => ProjectBrowser.loadRoot(), 100);
             }
         });
         const madevolveLink = document.querySelector('[data-panel="madevolve"]');
         if (madevolveLink) madevolveLink.addEventListener('click', () => {
-            if (window.MadEvolveBrowser && typeof MadEvolveBrowser.loadRoot === 'function') {
+            if (typeof MadEvolveBrowser !== 'undefined' && typeof MadEvolveBrowser.loadRoot === 'function') {
                 setTimeout(() => MadEvolveBrowser.loadRoot(), 100);
             }
         });
         const leetcodeLink = document.querySelector('[data-panel="leetcode"]');
-        if (leetcodeLink && window.LeetCodeUI) leetcodeLink.addEventListener('click', () => {
+        if (leetcodeLink && typeof LeetCodeUI !== 'undefined') leetcodeLink.addEventListener('click', () => {
             LeetCodeUI.init();
         });
         // 课程笔记: 点击标签加载 markdown
@@ -2225,7 +2225,7 @@ def default_calcset(ohlcv):
                     }
                     const text = await resp.text();
                     // 渲染 markdown
-                    let html = window.ProjectBrowser && typeof ProjectBrowser.renderMD === 'function' ? ProjectBrowser.renderMD(text) : text.replace(/\n/g,'<br>');
+                    let html = typeof ProjectBrowser !== 'undefined' && typeof ProjectBrowser.renderMD === 'function' ? ProjectBrowser.renderMD(text) : text.replace(/\n/g,'<br>');
                     content.innerHTML = html;
 
                     // KaTeX 渲染数学公式

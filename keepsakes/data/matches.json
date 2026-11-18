@@ -1,0 +1,42 @@
+[
+  {
+    "id": "match-demo-01",
+    "date": "2026-10-18",
+    "title": "记得那次逆风翻盘",
+    "hero": "示例英雄 A",
+    "mode": "排位赛",
+    "result": "WIN",
+    "kills": 16,
+    "deaths": 2,
+    "assists": 10,
+    "rating": 12.8,
+    "achievements": [
+      "MVP",
+      "翻盘"
+    ],
+    "image": "assets/honor-mvp.svg",
+    "note": "这是虚构的示例记录：那场惊险的团战，最后成了最值得记住的瞬间。",
+    "visibility": "public",
+    "source": "demo"
+  },
+  {
+    "id": "match-demo-02",
+    "date": "2026-08-09",
+    "title": "一场完美配合",
+    "hero": "示例英雄 B",
+    "mode": "排位赛",
+    "result": "WIN",
+    "kills": 10,
+    "deaths": 1,
+    "assists": 17,
+    "rating": 11.9,
+    "achievements": [
+      "MVP",
+      "团队配合"
+    ],
+    "image": "assets/honor-team.svg",
+    "note": "这是虚构的示例记录：不是一个人的精彩，而是大家都刚好在场。",
+    "visibility": "public",
+    "source": "demo"
+  }
+]

@@ -1,0 +1,131 @@
+[
+  {
+    "id": "sample-01",
+    "date": "2026-11-12",
+    "title": "抵达城市的那一晚",
+    "place": "杭州",
+    "category": "房卡",
+    "image": "assets/room-key.svg",
+    "note": "把行李放下，窗外的灯光刚好亮起。一张小小的房卡，替这段旅程记住了落脚的地方。",
+    "tags": [
+      "出差",
+      "旅途"
+    ],
+    "visibility": "public",
+    "sections": [
+      "book",
+      "collection"
+    ],
+    "source": "demo"
+  },
+  {
+    "id": "sample-02",
+    "date": "2026-10-25",
+    "title": "活动结束以后",
+    "place": "上海",
+    "category": "胸牌",
+    "image": "assets/badge.svg",
+    "note": "和新朋友说了再见，把胸牌收进了包里。原本普通的一天，突然多了许多值得想起的名字。",
+    "tags": [
+      "活动",
+      "相遇"
+    ],
+    "visibility": "public",
+    "sections": [
+      "book",
+      "collection"
+    ],
+    "source": "demo"
+  },
+  {
+    "id": "sample-03",
+    "date": "2026-09-15",
+    "title": "午后的一张小票",
+    "place": "合肥",
+    "category": "票据",
+    "image": "assets/receipt.svg",
+    "note": "偶尔也想把没有大事发生的日子留下来。比如一杯咖啡、一点阳光和一张逐渐褪色的小票。",
+    "tags": [
+      "日常",
+      "咖啡"
+    ],
+    "visibility": "public",
+    "sections": [
+      "collage"
+    ],
+    "source": "demo"
+  },
+  {
+    "id": "sample-04",
+    "date": "2026-07-08",
+    "title": "会场角落的传单",
+    "place": "北京",
+    "category": "传单",
+    "image": "assets/flyer.svg",
+    "note": "当时只是顺手拿了一张纸，后来才发现它把那天的色彩和空气都一起带回来了。",
+    "tags": [
+      "展览",
+      "活动"
+    ],
+    "visibility": "public",
+    "sections": [
+      "collage"
+    ],
+    "source": "demo"
+  },
+  {
+    "id": "sample-05",
+    "date": "2026-06-16",
+    "title": "窗边的那张车票",
+    "place": "南京",
+    "category": "票券",
+    "image": "assets/ticket.svg",
+    "note": "车窗外的景色一段段后退。票根轻得像纸，却能装下一整段路。",
+    "tags": [
+      "旅行",
+      "途中"
+    ],
+    "visibility": "public",
+    "sections": [
+      "book"
+    ],
+    "source": "demo"
+  },
+  {
+    "id": "sample-06",
+    "date": "2026-05-20",
+    "title": "从街角寄来的下午",
+    "place": "苏州",
+    "category": "其他",
+    "image": "assets/postcard.svg",
+    "note": "那天走得很慢，顺手带走了一张明信片。收藏的可能不是地点，而是那个悠闲的下午。",
+    "tags": [
+      "旅行",
+      "明信片"
+    ],
+    "visibility": "public",
+    "sections": [
+      "book",
+      "collection"
+    ],
+    "source": "demo"
+  },
+  {
+    "id": "sample-07",
+    "date": "2026-11-06",
+    "title": "傍晚路过的天空",
+    "place": "旅途",
+    "category": "风景",
+    "image": "assets/evening.svg",
+    "note": "随手拍下的天空，也值得在时间里留一个位置。",
+    "tags": [
+      "风景",
+      "随手拍"
+    ],
+    "sections": [
+      "timeline"
+    ],
+    "visibility": "public",
+    "source": "demo"
+  }
+]

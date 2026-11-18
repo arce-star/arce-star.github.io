@@ -1266,22 +1266,22 @@
     },
     {
       "id": "W064",
-      "title": "藤野先生",
+      "title": "头发的故事",
       "author": "鲁迅",
-      "year": "1926",
+      "year": "1920",
       "genre": "散文",
       "region": "中国",
       "tags": [
-        "师生",
-        "记忆",
+        "社会观察",
+        "历史记忆",
         "身份"
       ],
-      "focus": "关注人物细节、叙事节奏与情感转折",
-      "source": "Wikisource",
-      "sourcePage": "藤野先生",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%97%A4%E9%87%8E%E5%85%88%E7%94%9F%20%E9%B2%81%E8%BF%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "focus": "从辫子这一身体符号切入，观察社会变革中的群体压力、身份规训与个人选择",
+      "source": "维基文库",
+      "sourcePage": "頭髮的故事",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/頭髮的故事",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

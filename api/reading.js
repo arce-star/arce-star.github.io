@@ -3,10 +3,14 @@ const DEEPSEEK_ENDPOINT = 'https://api.deepseek.com/chat/completions';
 const GITHUB_REPO = 'arce-star/arce-star.github.io';
 const GITHUB_PATH = 'assets/data/reading/catalog.json';
 const ALLOWED_ORIGINS = new Set(['https://arce-star.github.io','https://arce-star.vercel.app','http://localhost:3000','http://localhost:8000','http://127.0.0.1:3000','http://127.0.0.1:8000']);
+function allowedOrigin(req,origin) {
+  const extra=String(process.env.READING_ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean);
+  const host=String(req.headers['x-forwarded-host']||req.headers.host||'').split(',')[0].trim();
+  return ALLOWED_ORIGINS.has(origin)||extra.includes(origin)||(host&&origin==='https://'+host);
+}
 function cors(req,res) {
   const origin = String(req.headers.origin||'');
-  const extra = String(process.env.READING_ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).filter(Boolean);
-  if (ALLOWED_ORIGINS.has(origin)||extra.includes(origin)) res.setHeader('Access-Control-Allow-Origin',origin);
+  if (allowedOrigin(req,origin)) res.setHeader('Access-Control-Allow-Origin',origin);
   res.setHeader('Vary','Origin');
   res.setHeader('Access-Control-Allow-Headers','Content-Type, X-Reading-Admin-Token');
   res.setHeader('Access-Control-Allow-Methods','POST, OPTIONS');
@@ -80,7 +84,7 @@ export default async function handler(req,res){
   if(req.method==='OPTIONS')return res.status(204).end();
   if(req.method!=='POST')return json(res,405,{error:'Only POST supported'});
   const origin=String(req.headers.origin||'');
-  if(origin&&!ALLOWED_ORIGINS.has(origin)&&!String(process.env.READING_ALLOWED_ORIGINS||'').split(',').map(x=>x.trim()).includes(origin))return json(res,403,{error:'Origin not allowed'});
+  if(origin&&!allowedOrigin(req,origin))return json(res,403,{error:'Origin not allowed'});
   const body=req.body||{};
   if(body.action==='chat')return chat(req,res,body);
   if(body.action==='publish')return publish(req,res,body);

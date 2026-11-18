@@ -4,7 +4,7 @@ const $ = id => document.getElementById(id);
 const keys={favs:'wenjian:favs',notes:'wenjian:notes',progress:'wenjian:progress',theme:'wenjian:theme',fontsize:'wenjian:fontsize'};
 const getJSON=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const saveJSON=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
-const state={works:[],filtered:[],visible:24,genre:'全部',topic:'',region:'',search:'',active:null,provider:'ustc',apiKey:'',model:'deepseek-v4-flash',proxy:'',remember:false,analysis:'',favs:new Set(getJSON(keys.favs,[])),notes:getJSON(keys.notes,{}),progress:getJSON(keys.progress,{}),manualText:'',fullText:'',candidates:[],activeSection:'library'};
+const state={works:[],fulltexts:{},filtered:[],visible:24,genre:'全部',topic:'',region:'',search:'',active:null,provider:'ustc',apiKey:'',model:'deepseek-v4-flash',proxy:'',remember:false,analysis:'',favs:new Set(getJSON(keys.favs,[])),notes:getJSON(keys.notes,{}),progress:getJSON(keys.progress,{}),manualText:'',fullText:'',candidates:[],activeSection:'library'};
 const providers={
  ustc:{label:'USTC LLM',endpoint:'https://api.llm.ustc.edu.cn/v1/chat/completions',model:'deepseek-v4-flash',help:'学校平台：OpenAI 兼容的 /v1/chat/completions；请根据学校模型列表选择有权限调用的模型。'},
  deepseek:{label:'DeepSeek 官方',endpoint:'https://api.deepseek.com/chat/completions',model:'deepseek-flash',help:'DeepSeek 官方：/chat/completions，当前模型 deepseek-flash、deepseek-v4-pro；发现文章时支持官方联网搜索工具。'}
@@ -21,8 +21,23 @@ function localSettings(){
  }
 function setStatus(text){safeSet($('catalogStatus'),text)}
 async function loadCatalog(){
- try{const res=await fetch('assets/data/reading/catalog.json?v=1',{cache:'no-cache'});if(!res.ok)throw Error('HTTP '+res.status);const data=await res.json();if(!Array.isArray(data.works))throw Error('书目数据格式不正确');state.works=data.works;safeSet($('catalogCount'),state.works.length);renderTopics();renderCards()}
- catch(err){setStatus('无法加载书目：'+err.message+'。请检查网络连接或刷新页面。')}
+ try{
+ const [res,textRes]=await Promise.all([
+  fetch('assets/data/reading/catalog.json?v=2',{cache:'no-cache'}),
+  fetch('assets/data/reading/fulltext.json?v=1',{cache:'no-cache'})
+ ]);
+ if(!res.ok)throw Error('HTTP '+res.status);
+ const data=await res.json();
+ if(!Array.isArray(data.works))throw Error('书目数据格式不正确');
+ state.works=data.works;
+ state.fulltexts={};
+ if(textRes.ok){
+  const full=await textRes.json();
+  if(Array.isArray(full.works))full.works.forEach(w=>{if(w.id&&w.content)state.fulltexts[w.id]=w});
+ }
+ safeSet($('catalogCount'),state.works.length);
+ renderTopics();renderCards();
+ }catch(err){setStatus('无法加载书目：'+err.message+'。请检查网络连接或刷新页面。')}
 }
 function renderTopics(){
  const counts={};state.works.forEach(w=>(w.tags||[]).forEach(t=>counts[t]=(counts[t]||0)+1));
@@ -47,7 +62,7 @@ function renderCards(){
  const card=document.createElement('article');card.className='workcard';card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label','阅读 '+w.title);
  const genre=textEl('div',w.genre+' · '+w.region,'genre');const title=textEl('h3',w.title);const byline=textEl('div',w.author+' · '+w.year,'byline');
  const focus=textEl('p',w.focus,'focus');const bottom=document.createElement('div');bottom.className='bottom';
- bottom.append(textEl('span',w.textMode==='local'?'馆藏原文':'来源阅读 / 赏析参考'));
+ bottom.append(textEl('span',state.fulltexts[w.id]?'全文已收录':'来源阅读 / 赏析参考'));
  const fav=createBtn(state.favs.has(w.id)?'♥':'♡','favbtn',e=>{e.stopPropagation();toggleFavorite(w.id);renderCards()});fav.title='收藏';fav.setAttribute('aria-label','收藏 '+w.title);bottom.append(fav);
  card.append(genre,title,byline,focus,bottom);
  card.addEventListener('click',()=>openWork(w));card.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openWork(w)}});area.append(card);
@@ -82,7 +97,16 @@ async function openWork(w){
  const body=$('readerContent');body.replaceChildren();body.append(textEl('p','正在核验公开文本来源……','muted'));
  safeSet($('analysisBody'),'赏析方向：\n\n'+w.focus+'\n\n可从原文细节出发，结合叙事视角、语言、人物关系与时代语境进行多种解读。');
  $('readerScroll').scrollTop=0;
- await loadWorkText(w);
+ const localText=state.fulltexts[w.id];
+ if(localText){
+  body.replaceChildren();
+  localText.content.split(/\\n\\s*\\n/).map(p=>p.trim()).filter(Boolean).forEach(p=>body.append(textEl('p',p)));
+  state.fullText=localText.content;
+  source.append(textEl('p','全文已随网站数据保存在 GitHub 仓库中，可离线于来源站点独立阅读。原文归属：'+localText.author+'《'+localText.title+'》；来源：维基文库。'));
+  source.append(textEl('p',localText.license||'页面文本按来源页许可与作品公有领域标注使用。'));
+ }else{
+  await loadWorkText(w);
+ }
  if(state.active?.id!==w.id)return;
  if(state.progress[w.id]){const s=$('readerScroll');requestAnimationFrame(()=>{s.scrollTop=Math.max(0,(s.scrollHeight-s.clientHeight)*Math.min(1,state.progress[w.id]))})}
 }
@@ -101,7 +125,7 @@ function externalReader(w,reason){
  d.append(paste,btn);node.append(d)
 }
 async function loadWorkText(w){
- if(!eligibleAuthor.has(w.author)||w.title.includes('节选')){externalReader(w,'这部作品尚未通过完整的在线原文验证，或可能涉及版权和译本差异，因此暂不内嵌全文。');return}
+ if(w.textMode!=='remote'||!eligibleAuthor.has(w.author)||w.title.includes('节选')){externalReader(w,'这篇作品目前尚未收录经过核验的本地全文。这里保留作品来源和赏析方向；后续确认文本版本及展示权利后再加入馆藏。');return}
  try{
  const wikiTitle=w.sourcePage||w.title;const url='https://zh.wikisource.org/w/api.php?action=parse&format=json&formatversion=2&prop=text&page='+encodeURIComponent(wikiTitle)+'&origin=*';
  const response=await fetch(url,{mode:'cors',signal:AbortSignal.timeout(12000)});

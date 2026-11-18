@@ -946,22 +946,22 @@
     },
     {
       "id": "W048",
-      "title": "百万英镑",
-      "author": "马克·吐温",
-      "year": "1893",
+      "title": "明天",
+      "author": "鲁迅",
+      "year": "1920",
       "genre": "小说",
-      "region": "美国",
+      "region": "中国",
       "tags": [
-        "金钱",
-        "阶层",
-        "社会"
+        "母亲",
+        "孤独",
+        "冷漠"
       ],
-      "focus": "关注金钱如何改变他人对主人公的判断",
-      "source": "Wikisource",
-      "sourcePage": "百万英镑",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%99%BE%E4%B8%87%E8%8B%B1%E9%95%91%20%E9%A9%AC%E5%85%8B%C2%B7%E5%90%90%E6%B8%A9",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "focus": "观察单四嫂子从等待、求医到丧子后的心理变化，留意“明天”意象与鲁镇旁观者群像的冷漠",
+      "source": "维基文库",
+      "sourcePage": "明天",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/明天",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

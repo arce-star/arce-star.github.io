@@ -2,6 +2,9 @@
   "functions": {
     "api/video.js": {
       "maxDuration": 30
+    },
+    "api/reading.js": {
+      "maxDuration": 60
     }
   }
 }

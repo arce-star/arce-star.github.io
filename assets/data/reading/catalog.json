@@ -1096,32 +1096,32 @@
         "色彩",
         "感官"
       ],
-      "focus": "体会色彩描写、比喻和观察视角的细腻变化",
-      "source": "Wikisource",
-      "sourcePage": "绿",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%BB%BF%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "focus": "分析梅雨潭的色彩、质感与通感描写，观察作者如何把自然景物转化为身体经验",
+      "source": "维基文库",
+      "sourcePage": "温州的踪迹",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/溫州的蹤跡",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
       "id": "W056",
-      "title": "桨声灯影里的秦淮河",
+      "title": "月朦胧，鸟朦胧，帘卷海棠红",
       "author": "朱自清",
-      "year": "1923",
+      "year": "1924",
       "genre": "散文",
       "region": "中国",
       "tags": [
-        "城市",
-        "夜景",
-        "文化"
+        "绘画",
+        "意象",
+        "朦胧之美"
       ],
-      "focus": "关注声音、光线和空间如何共同营造氛围",
-      "source": "Wikisource",
-      "sourcePage": "桨声灯影里的秦淮河",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%A1%A8%E5%A3%B0%E7%81%AF%E5%BD%B1%E9%87%8C%E7%9A%84%E7%A7%A6%E6%B7%AE%E6%B2%B3%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "focus": "从画面构图、月色、花鸟与卷帘人的留白，理解视觉艺术如何触发散文联想",
+      "source": "维基文库",
+      "sourcePage": "温州的踪迹",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/溫州的蹤跡",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
@@ -1186,42 +1186,42 @@
     },
     {
       "id": "W060",
-      "title": "江南的冬景",
-      "author": "郁达夫",
-      "year": "1935",
-      "genre": "散文",
-      "region": "中国",
-      "tags": [
-        "冬景",
-        "地域",
-        "审美"
-      ],
-      "focus": "比较不同地域景物的选择与审美取向",
-      "source": "Wikisource",
-      "sourcePage": "江南的冬景",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%B1%9F%E5%8D%97%E7%9A%84%E5%86%AC%E6%99%AF%20%E9%83%81%E8%BE%BE%E5%A4%AB",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
-      "analysisStatus": "not_generated"
-    },
-    {
-      "id": "W061",
-      "title": "秋夜",
-      "author": "鲁迅",
+      "title": "白水漈",
+      "author": "朱自清",
       "year": "1924",
       "genre": "散文",
       "region": "中国",
       "tags": [
-        "象征",
-        "孤独",
-        "抗争"
+        "自然",
+        "瀑布",
+        "意象"
       ],
-      "focus": "关注枣树、天空和小飞虫等意象的关系",
-      "source": "Wikisource",
-      "sourcePage": "秋夜",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A7%8B%E5%A4%9C%20%E9%B2%81%E8%BF%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "focus": "关注瀑布由水化为烟的视觉变化，以及“幻网”意象如何表现观察者的依恋",
+      "source": "维基文库",
+      "sourcePage": "温州的踪迹",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/溫州的蹤跡",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W061",
+      "title": "生命的价格——七毛钱",
+      "author": "朱自清",
+      "year": "1924",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "社会观察",
+        "生命",
+        "批判"
+      ],
+      "focus": "关注价格与生命价值的反差，分析作者如何由亲眼所见展开社会批判",
+      "source": "维基文库",
+      "sourcePage": "温州的踪迹",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/溫州的蹤跡",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

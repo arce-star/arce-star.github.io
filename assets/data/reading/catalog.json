@@ -77,11 +77,11 @@
         "记忆"
       ],
       "focus": "关注儿童视角、乡村人情与成年后的回望",
-      "source": "Wikisource",
-      "sourcePage": "社戏",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A4%BE%E6%88%8F%20%E9%B2%81%E8%BF%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "source": "维基文库",
+      "sourcePage": "社戲",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/社戲",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

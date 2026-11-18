@@ -10,7 +10,7 @@
 - **阅读体验**：响应式阅读界面、夜间模式、字体大小、阅读进度、收藏和本地私人笔记。
 - **AI 赏析**：按作品主题、文本证据、另一种解读和开放问题进行文学细读；支持用户粘贴合法取得的文本片段，不默认把它们发布到 GitHub。
 - **AI 发现**：在网页上推荐真实作品候选；DeepSeek 官方接口可使用原生联网搜索工具（若模型/API 权限支持），USTC LLM 不假定具有联网能力。候选仅供验证，不直接变成正式全文。
-- **批量下载**：页面的“批量下载公版全文”按钮会从维基文库逐篇抓取原文；每轮最多处理 10 篇，只导入来源页面标注公有领域且作者、标题可核验的作品，随后直接写入 GitHub 的 `fulltext.json` 和 `catalog.json`。需要先部署 Vercel 后端并配置 `READING_ADMIN_TOKEN`、`READING_GITHUB_TOKEN`。
+- **批量下载**：GitHub Actions 会从维基文库逐篇抓取目录中的候选作品，只导入来源页面标注公有领域、作者和标题可核验、正文完整的作品，随后自动提交到 `fulltext.json` 和 `catalog.json`。可在 [Actions 运行记录](https://github.com/arce-star/arce-star.github.io/actions/workflows/import-wikisource.yml) 查看进度；无需 Vercel，也不需要在网页输入密钥。
 - **GitHub 入库**：管理员完成书目和来源核验后，凭服务端设置的发布口令，将新书目信息写回 `assets/data/reading/catalog.json`。发布流程**不上传未经授权的全文**。
 
 ## API 提供方

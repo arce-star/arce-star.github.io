@@ -28,19 +28,19 @@ API = "https://zh.wikisource.org/w/api.php"
 USER_AGENT = "WenjianLiteraryArchive/1.0 (public-domain text importer)"
 MIN_CHARS = 500
 MAX_CHARS = 60000
-DELAY_SECONDS = 0.35
+DELAY_SECONDS = 0.15
 
 
 def request_json(url: str) -> dict:
     req = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
     last_error = None
-    for attempt in range(3):
+    for attempt in range(2):
         try:
-            with urllib.request.urlopen(req, timeout=25) as response:
+            with urllib.request.urlopen(req, timeout=8) as response:
                 return json.loads(response.read().decode("utf-8"))
         except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as exc:
             last_error = exc
-            time.sleep(1.5 * (attempt + 1))
+            time.sleep(0.5 * (attempt + 1))
     raise RuntimeError(f"source request failed: {last_error}")
 
 

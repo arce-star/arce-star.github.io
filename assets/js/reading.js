@@ -232,53 +232,6 @@ function renderCandidates(){
  d.append(btn);area.append(d)
  }
 }
-async function downloadPublicTexts(){
- const button=$('downloadPublicTexts');
- const status=$('downloadStatus');
- if(!button||button.disabled)return;
- const adminToken=prompt('输入 Vercel 环境变量 READING_ADMIN_TOKEN 对应的管理员发布口令。口令只用于本次下载，不会保存。');
- if(!adminToken)return;
- let endpoint;
- try{endpoint=proxyEndpoint()}catch(err){safeSet(status,'无法开始：'+err.message);return}
- const candidates=state.works.filter(w=>!state.fulltexts[w.id]&&w.sourcePage&&!String(w.title).includes('节选'));
- if(!candidates.length){safeSet(status,'没有待下载的候选作品。当前本地全文 '+Object.keys(state.fulltexts).length+' 篇。');return}
- const batch=candidates.slice(0,10);
- let imported=0,skipped=0,failed=0;
- button.disabled=true;
- for(let i=0;i<batch.length;i++){
-  const w=batch[i];
-  safeSet(status,'正在下载 '+(i+1)+' / '+batch.length+'：'+w.title+' · 已入库 '+imported+' 篇');
-  try{
-   const api='https://zh.wikisource.org/w/api.php?action=parse&format=json&formatversion=2&prop=text&page='+encodeURIComponent(w.sourcePage)+'&origin=*';
-   const response=await fetch(api,{mode:'cors',signal:AbortSignal.timeout(15000)});
-   if(!response.ok)throw Error('来源请求 HTTP '+response.status);
-   const data=await response.json();
-   if(!data.parse?.text||!data.parse?.title)throw Error('来源页面不存在');
-   const normalizedTitle=String(data.parse.title).replace(/[\s_]/g,'');
-   const normalizedExpected=String(w.sourcePage||w.title).replace(/[\s_]/g,'');
-   if(!normalizedTitle.includes(normalizedExpected)&&!normalizedExpected.includes(normalizedTitle))throw Error('页面标题不匹配');
-   if(!data.parse.text.includes('公有领域')&&!data.parse.text.toLowerCase().includes('public domain')){skipped++;continue}
-   const parsed=new DOMParser().parseFromString(data.parse.text,'text/html');
-   const pageMeta=(parsed.body?.textContent||'').slice(0,3500);
-   if(!pageMeta.includes(w.author))throw Error('页面作者信息无法核对');
-   parsed.querySelectorAll('script,style,nav,aside,table,.mw-editsection,.reference,.noprint,.metadata,.catlinks,.ws-noexport,.mw-cite-backlink,.mw-references-wrap').forEach(n=>n.remove());
-   const container=parsed.querySelector('.mw-parser-output')||parsed.body;
-   const paras=[...container.querySelectorAll('p')].map(p=>p.textContent.replace(/\s+/g,' ').trim()).filter(p=>p.length>14&&!/^(本页|此页|本作品|作者|分类|Public domain|维基文库)/i.test(p)&&!p.includes('公有领域')&&!p.includes('使用条款'));
-   const content=paras.join('\n\n');
-   if(content.length<500)throw Error('正文不足 500 字，可能是目录或残页');
-   const sourceUrl='https://zh.wikisource.org/wiki/'+encodeURIComponent(data.parse.title);
-   const save=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json','X-Reading-Admin-Token':adminToken},body:JSON.stringify({action:'save_fulltext',id:w.id,title:w.title,author:w.author,content,sourceUrl})});
-   const result=await save.json().catch(()=>({error:'保存接口未返回 JSON'}));
-   if(!save.ok)throw Error(result.error||'GitHub 写入失败');
-   state.fulltexts[w.id]={id:w.id,title:w.title,author:w.author,content,sourceUrl,attribution:'作者：'+w.author+'；作品：'+w.title+'；来源：维基文库。',license:'维基文库页面标注底层作品属于公有领域，页面文本采用 CC BY-SA 4.0。'};
-   w.textMode='local';w.sourceUrl=sourceUrl;w.rightsStatus='本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享';
-   imported++;
-  }catch(err){failed++;console.warn('Wenjian import failed:',w.id,err)}
- }
- renderCards();
- safeSet(status,'本轮结束：新增 '+imported+' 篇；版权标记或来源不符合条件而跳过 '+skipped+' 篇；获取或写入失败 '+failed+' 篇。剩余候选 '+Math.max(0,candidates.length-batch.length)+' 篇。可再次点击继续下一批。当前本地全文 '+Object.keys(state.fulltexts).length+' 篇。');
- button.disabled=false;
-}
 function init(){
  localSettings();loadCatalog();
  $('search').addEventListener('input',e=>{state.search=e.target.value;state.visible=24;renderCards()});
@@ -304,7 +257,6 @@ function init(){
  $('saveNote').addEventListener('click',()=>{if(!state.active)return;const id=state.active.id;state.notes[id]=$('noteText').value.slice(0,20000);saveJSON(keys.notes,state.notes);safeSet($('noteStatus'),'已保存至此浏览器')});
  let lastProgress=0;$('readerScroll').addEventListener('scroll',()=>{if(!state.active||Date.now()-lastProgress<1500)return;lastProgress=Date.now();const el=$('readerScroll');state.progress[state.active.id]=el.scrollTop/Math.max(1,el.scrollHeight-el.clientHeight);saveJSON(keys.progress,state.progress)});
  $('discoverBtn').addEventListener('click',discover);
- $('downloadPublicTexts').addEventListener('click',downloadPublicTexts);
  document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(!$('settingsOverlay').classList.contains('hidden'))$('settingsOverlay').classList.add('hidden');else if(!$('readerOverlay').classList.contains('hidden'))closeReader()}});
 }
 function adjustFont(delta){let n=Number(localStorage.getItem(keys.fontsize)||19)+delta;n=Math.max(15,Math.min(29,n));localStorage.setItem(keys.fontsize,String(n));document.documentElement.style.setProperty('--reader-size',n+'px')}

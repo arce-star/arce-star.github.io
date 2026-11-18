@@ -56,12 +56,12 @@
         "革命",
         "象征"
       ],
-      "focus": "从祥林嫂的三次人生转折、鲁镇的年终祝福仪式和叙述者的回乡视角，理解礼教秩序与集体冷漠如何共同塑造悲剧",
+      "focus": "从华老栓买人血馒头与夏瑜就义两条线索，分析象征、冷漠群像和悲剧结构",
       "source": "维基文库",
-      "sourcePage": "祝福",
-      "sourceUrl": "https://zh.wikisource.org/zh-hans/祝福",
-      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
-      "textMode": "local",
+      "sourcePage": "药",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/药",
+      "rightsStatus": "公版候选；维基文库页面标注底层作品为公有领域",
+      "textMode": "external",
       "analysisStatus": "not_generated"
     },
     {
@@ -96,12 +96,12 @@
         "礼教",
         "叙事"
       ],
-      "focus": "留意倒叙结构、祥林嫂的语言变化和“祝福”场景的反讽",
-      "source": "Wikisource",
+      "focus": "从祥林嫂的三次人生转折、鲁镇的年终祝福仪式和叙述者的回乡视角，理解礼教秩序与集体冷漠如何共同塑造悲剧",
+      "source": "维基文库",
       "sourcePage": "祝福",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A5%9D%E7%A6%8F%20%E9%B2%81%E8%BF%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/祝福",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
@@ -176,12 +176,12 @@
         "执念",
         "幻觉"
       ],
-      "focus": "关注陈士成的心理变化与“白光”意象",
-      "source": "Wikisource",
+      "focus": "观察落榜后的陈士成如何被记忆、幻觉和对财富的执念牵引，分析“白光”意象与叙事视角",
+      "source": "维基文库",
       "sourcePage": "白光",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%99%BD%E5%85%89%20%E9%B2%81%E8%BF%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/白光",
+      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
@@ -1226,22 +1226,22 @@
     },
     {
       "id": "W062",
-      "title": "白光",
+      "title": "雪",
       "author": "鲁迅",
-      "year": "1922",
-      "genre": "小说",
+      "year": "1925",
+      "genre": "散文",
       "region": "中国",
       "tags": [
-        "科举",
-        "执念",
-        "幻觉"
+        "自然",
+        "象征",
+        "精神"
       ],
-      "focus": "观察落榜后的陈士成如何被记忆、幻觉和对财富的执念牵引，分析“白光”意象与叙事视角",
-      "source": "维基文库",
-      "sourcePage": "白光",
-      "sourceUrl": "https://zh.wikisource.org/zh-hans/白光",
-      "rightsStatus": "本地已收录全文；维基文库页面标注底层作品为公有领域，页面文本按 CC BY-SA 4.0 署名与相同方式共享",
-      "textMode": "local",
+      "focus": "比较江南雪与朔方雪的差异及其象征意味",
+      "source": "Wikisource",
+      "sourcePage": "雪",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%9B%AA%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本与地区",
+      "textMode": "external",
       "analysisStatus": "not_generated"
     },
     {

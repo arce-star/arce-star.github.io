@@ -1137,11 +1137,11 @@
         "温暖"
       ],
       "focus": "从围炉、吃食等生活细节体会情感表达",
-      "source": "Wikisource",
+      "source": "维基文库",
       "sourcePage": "冬天",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%86%AC%E5%A4%A9%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/冬天",
+      "rightsStatus": "本地已收录全文；维基文库页面文本采用 CC BY-SA 4.0；作者作品版权状态需按发布地区核验",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

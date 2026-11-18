@@ -24,7 +24,7 @@ async function loadCatalog(){
  try{
  const [res,textRes]=await Promise.all([
   fetch('assets/data/reading/catalog.json?v=2',{cache:'no-cache'}),
-  fetch('assets/data/reading/fulltext.json?v=4',{cache:'no-cache'})
+  fetch('assets/data/reading/fulltext.json?v=5',{cache:'no-cache'})
  ]);
  if(!res.ok)throw Error('HTTP '+res.status);
  const data=await res.json();

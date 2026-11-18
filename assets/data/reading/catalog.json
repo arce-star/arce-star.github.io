@@ -1906,21 +1906,21 @@
     },
     {
       "id": "W096",
-      "title": "花园茶会",
-      "author": "曼斯菲尔德",
-      "year": "1922",
+      "title": "论美",
+      "author": "培根",
+      "year": "1612",
       "genre": "散文",
-      "region": "新西兰",
+      "region": "英国",
       "tags": [
-        "阶层",
-        "成长",
-        "同情"
+        "审美",
+        "价值",
+        "修养"
       ],
-      "focus": "从日常场景中观察阶层意识与情感变化",
+      "focus": "关注培根对外在之美与内在德性的辨析，以及格言式论述的结构",
       "source": "Wikisource",
-      "sourcePage": "花园茶会",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%8A%B1%E5%9B%AD%E8%8C%B6%E4%BC%9A%20%E6%9B%BC%E6%96%AF%E8%8F%B2%E5%B0%94%E5%BE%B7",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "sourcePage": "论美",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%AE%BA%E7%BE%8E%20%E5%9F%B9%E6%A0%B9",
+      "rightsStatus": "公版原作候选；中文译本版权与来源需另行核验",
       "textMode": "external",
       "analysisStatus": "not_generated"
     },

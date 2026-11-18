@@ -1,0 +1,2008 @@
+{
+  "version": 1,
+  "updatedAt": "2026-11-18",
+  "count": 100,
+  "description": "100部真实文学作品精选书目。全文仅在可从维基文库等来源核验并符合展示条件时在线加载；其余作品提供书目信息和合法来源检索入口。",
+  "works": [
+    {
+      "id": "W001",
+      "title": "故乡",
+      "author": "鲁迅",
+      "year": "1921",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "乡土",
+        "记忆",
+        "变迁"
+      ],
+      "focus": "比较记忆中的故乡与现实故乡，留意叙述者和闰土关系的变化",
+      "source": "Wikisource",
+      "sourcePage": "故乡",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%95%85%E4%B9%A1%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W002",
+      "title": "孔乙己",
+      "author": "鲁迅",
+      "year": "1919",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "科举",
+        "尊严",
+        "冷漠"
+      ],
+      "focus": "从酒店空间、旁观者叙述和反复出现的笑声理解人物悲剧",
+      "source": "Wikisource",
+      "sourcePage": "孔乙己",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%AD%94%E4%B9%99%E5%B7%B1%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W003",
+      "title": "药",
+      "author": "鲁迅",
+      "year": "1919",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "愚昧",
+        "革命",
+        "象征"
+      ],
+      "focus": "关注茶馆与坟场的双线交织，以及“人血馒头”的象征意义",
+      "source": "Wikisource",
+      "sourcePage": "药",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%8D%AF%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W004",
+      "title": "社戏",
+      "author": "鲁迅",
+      "year": "1922",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "童年",
+        "乡土",
+        "记忆"
+      ],
+      "focus": "关注儿童视角、乡村人情与成年后的回望",
+      "source": "Wikisource",
+      "sourcePage": "社戏",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A4%BE%E6%88%8F%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W005",
+      "title": "祝福",
+      "author": "鲁迅",
+      "year": "1924",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "命运",
+        "礼教",
+        "叙事"
+      ],
+      "focus": "留意倒叙结构、祥林嫂的语言变化和“祝福”场景的反讽",
+      "source": "Wikisource",
+      "sourcePage": "祝福",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A5%9D%E7%A6%8F%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W006",
+      "title": "阿Q正传（节选）",
+      "author": "鲁迅",
+      "year": "1921-1922",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "国民性",
+        "讽刺",
+        "心理"
+      ],
+      "focus": "观察精神胜利法如何在具体冲突中表现出来",
+      "source": "Wikisource",
+      "sourcePage": "阿Q正传（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%98%BFQ%E6%AD%A3%E4%BC%A0%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W007",
+      "title": "一件小事",
+      "author": "鲁迅",
+      "year": "1919",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "自省",
+        "道德",
+        "视角"
+      ],
+      "focus": "关注叙述者态度的转变，以及小事件如何改变价值判断",
+      "source": "Wikisource",
+      "sourcePage": "一件小事",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%B8%80%E4%BB%B6%E5%B0%8F%E4%BA%8B%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W008",
+      "title": "风波",
+      "author": "鲁迅",
+      "year": "1920",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "乡村",
+        "时代",
+        "讽刺"
+      ],
+      "focus": "观察宏大政治变化如何进入普通人的日常生活",
+      "source": "Wikisource",
+      "sourcePage": "风波",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%A3%8E%E6%B3%A2%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W009",
+      "title": "白光",
+      "author": "鲁迅",
+      "year": "1922",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "科举",
+        "执念",
+        "幻觉"
+      ],
+      "focus": "关注陈士成的心理变化与“白光”意象",
+      "source": "Wikisource",
+      "sourcePage": "白光",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%99%BD%E5%85%89%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W010",
+      "title": "伤逝",
+      "author": "鲁迅",
+      "year": "1925",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "爱情",
+        "个体",
+        "现实"
+      ],
+      "focus": "从涓生的回忆与自我辩护中辨析叙述可靠性",
+      "source": "Wikisource",
+      "sourcePage": "伤逝",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%BC%A4%E9%80%9D%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W011",
+      "title": "断魂枪",
+      "author": "老舍",
+      "year": "1935",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "传统",
+        "现代",
+        "尊严"
+      ],
+      "focus": "围绕枪与镖局的变化，理解时代转型中的个人失落",
+      "source": "Wikisource",
+      "sourcePage": "断魂枪",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%96%AD%E9%AD%82%E6%9E%AA%20%E8%80%81%E8%88%8D",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W012",
+      "title": "月牙儿",
+      "author": "老舍",
+      "year": "1935",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "女性",
+        "生存",
+        "社会"
+      ],
+      "focus": "关注第一人称叙述、母女命运与月亮意象",
+      "source": "Wikisource",
+      "sourcePage": "月牙儿",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%9C%88%E7%89%99%E5%84%BF%20%E8%80%81%E8%88%8D",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W013",
+      "title": "微神",
+      "author": "老舍",
+      "year": "1933",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "爱情",
+        "记忆",
+        "遗憾"
+      ],
+      "focus": "体会节制叙述、时间跳跃和情感留白",
+      "source": "Wikisource",
+      "sourcePage": "微神",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%BE%AE%E7%A5%9E%20%E8%80%81%E8%88%8D",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W014",
+      "title": "老字号",
+      "author": "老舍",
+      "year": "1936",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "商业",
+        "城市",
+        "变迁"
+      ],
+      "focus": "关注店铺空间与人物命运之间的关系",
+      "source": "Wikisource",
+      "sourcePage": "老字号",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%80%81%E5%AD%97%E5%8F%B7%20%E8%80%81%E8%88%8D",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W015",
+      "title": "骆驼祥子（节选）",
+      "author": "老舍",
+      "year": "1936",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "城市",
+        "命运",
+        "尊严"
+      ],
+      "focus": "观察环境、人物选择与性格变化如何共同推动悲剧",
+      "source": "Wikisource",
+      "sourcePage": "骆驼祥子（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%AA%86%E9%A9%BC%E7%A5%A5%E5%AD%90%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E8%80%81%E8%88%8D",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W016",
+      "title": "春风沉醉的晚上",
+      "author": "郁达夫",
+      "year": "1923",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "孤独",
+        "阶层",
+        "都市"
+      ],
+      "focus": "关注第一人称感受、城市空间与人物之间的距离",
+      "source": "Wikisource",
+      "sourcePage": "春风沉醉的晚上",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%98%A5%E9%A3%8E%E6%B2%89%E9%86%89%E7%9A%84%E6%99%9A%E4%B8%8A%20%E9%83%81%E8%BE%BE%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W017",
+      "title": "沉沦（节选）",
+      "author": "郁达夫",
+      "year": "1921",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "自我",
+        "孤独",
+        "时代"
+      ],
+      "focus": "辨析人物内心独白与时代处境之间的关系",
+      "source": "Wikisource",
+      "sourcePage": "沉沦（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%B2%89%E6%B2%A6%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E9%83%81%E8%BE%BE%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W018",
+      "title": "迟桂花",
+      "author": "郁达夫",
+      "year": "1932",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "乡村",
+        "情感",
+        "自然"
+      ],
+      "focus": "留意桂花意象、人物关系和叙事中的情绪变化",
+      "source": "Wikisource",
+      "sourcePage": "迟桂花",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%BF%9F%E6%A1%82%E8%8A%B1%20%E9%83%81%E8%BE%BE%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W019",
+      "title": "小城三月",
+      "author": "萧红",
+      "year": "1941",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "成长",
+        "女性",
+        "季节"
+      ],
+      "focus": "关注季节结构、翠姨的沉默与未完成的愿望",
+      "source": "Wikisource",
+      "sourcePage": "小城三月",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%B0%8F%E5%9F%8E%E4%B8%89%E6%9C%88%20%E8%90%A7%E7%BA%A2",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W020",
+      "title": "呼兰河传（节选）",
+      "author": "萧红",
+      "year": "1940",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "童年",
+        "乡土",
+        "记忆"
+      ],
+      "focus": "体会儿童视角、民俗细节和散文化叙事",
+      "source": "Wikisource",
+      "sourcePage": "呼兰河传（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%91%BC%E5%85%B0%E6%B2%B3%E4%BC%A0%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E8%90%A7%E7%BA%A2",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W021",
+      "title": "生死场（节选）",
+      "author": "萧红",
+      "year": "1935",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "乡土",
+        "苦难",
+        "群像"
+      ],
+      "focus": "关注动物与人的生存状态如何形成映照",
+      "source": "Wikisource",
+      "sourcePage": "生死场（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%94%9F%E6%AD%BB%E5%9C%BA%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E8%90%A7%E7%BA%A2",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W022",
+      "title": "手",
+      "author": "萧红",
+      "year": "1936",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "尊严",
+        "偏见",
+        "身份"
+      ],
+      "focus": "从“手”的细节理解人物身份和社会歧视",
+      "source": "Wikisource",
+      "sourcePage": "手",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%89%8B%20%E8%90%A7%E7%BA%A2",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W023",
+      "title": "命命鸟",
+      "author": "许地山",
+      "year": "1921",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "爱情",
+        "宗教",
+        "命运"
+      ],
+      "focus": "关注鸟的象征与人物选择之间的关系",
+      "source": "Wikisource",
+      "sourcePage": "命命鸟",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%91%BD%E5%91%BD%E9%B8%9F%20%E8%AE%B8%E5%9C%B0%E5%B1%B1",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W024",
+      "title": "缀网劳蛛",
+      "author": "许地山",
+      "year": "1922",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "命运",
+        "人生",
+        "象征"
+      ],
+      "focus": "理解题目意象如何组织作品的生命观",
+      "source": "Wikisource",
+      "sourcePage": "缀网劳蛛",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%BC%80%E7%BD%91%E5%8A%B3%E8%9B%9B%20%E8%AE%B8%E5%9C%B0%E5%B1%B1",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W025",
+      "title": "春桃",
+      "author": "许地山",
+      "year": "1935",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "女性",
+        "生存",
+        "选择"
+      ],
+      "focus": "观察人物在困境中的主动性与伦理选择",
+      "source": "Wikisource",
+      "sourcePage": "春桃",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%98%A5%E6%A1%83%20%E8%AE%B8%E5%9C%B0%E5%B1%B1",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W026",
+      "title": "潘先生在难中",
+      "author": "叶圣陶",
+      "year": "1924",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "知识分子",
+        "时局",
+        "讽刺"
+      ],
+      "focus": "关注人物言行之间的反差和讽刺效果",
+      "source": "Wikisource",
+      "sourcePage": "潘先生在难中",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%BD%98%E5%85%88%E7%94%9F%E5%9C%A8%E9%9A%BE%E4%B8%AD%20%E5%8F%B6%E5%9C%A3%E9%99%B6",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W027",
+      "title": "林家铺子",
+      "author": "茅盾",
+      "year": "1932",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "商业",
+        "社会",
+        "时代"
+      ],
+      "focus": "从铺子的经营变化观察社会结构和人物命运",
+      "source": "Wikisource",
+      "sourcePage": "林家铺子",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%9E%97%E5%AE%B6%E9%93%BA%E5%AD%90%20%E8%8C%85%E7%9B%BE",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W028",
+      "title": "子夜（节选）",
+      "author": "茅盾",
+      "year": "1933",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "都市",
+        "资本",
+        "群像"
+      ],
+      "focus": "关注多线叙事如何呈现复杂的社会关系",
+      "source": "Wikisource",
+      "sourcePage": "子夜（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%AD%90%E5%A4%9C%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E8%8C%85%E7%9B%BE",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W029",
+      "title": "小二黑结婚",
+      "author": "赵树理",
+      "year": "1943",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "乡村",
+        "婚恋",
+        "变革"
+      ],
+      "focus": "体会民间语言、人物对话与社会习俗的冲突",
+      "source": "Wikisource",
+      "sourcePage": "小二黑结婚",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%B0%8F%E4%BA%8C%E9%BB%91%E7%BB%93%E5%A9%9A%20%E8%B5%B5%E6%A0%91%E7%90%86",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W030",
+      "title": "登记",
+      "author": "赵树理",
+      "year": "1950",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "婚姻",
+        "乡村",
+        "制度"
+      ],
+      "focus": "观察日常对话如何推动人物关系与制度变化",
+      "source": "Wikisource",
+      "sourcePage": "登记",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%99%BB%E8%AE%B0%20%E8%B5%B5%E6%A0%91%E7%90%86",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W031",
+      "title": "黄金",
+      "author": "鲁彦",
+      "year": "1927",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "欲望",
+        "人性",
+        "讽刺"
+      ],
+      "focus": "留意物质欲望如何改变人物之间的关系",
+      "source": "Wikisource",
+      "sourcePage": "黄金",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%BB%84%E9%87%91%20%E9%B2%81%E5%BD%A6",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W032",
+      "title": "桃园",
+      "author": "鲁彦",
+      "year": "1928",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "乡村",
+        "生活",
+        "命运"
+      ],
+      "focus": "关注乡村环境和普通人的生活选择",
+      "source": "Wikisource",
+      "sourcePage": "桃园",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%A1%83%E5%9B%AD%20%E9%B2%81%E5%BD%A6",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W033",
+      "title": "梅雨之夕",
+      "author": "施蛰存",
+      "year": "1929",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "都市",
+        "心理",
+        "偶遇"
+      ],
+      "focus": "观察心理活动、城市空间与偶然事件的联系",
+      "source": "Wikisource",
+      "sourcePage": "梅雨之夕",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%A2%85%E9%9B%A8%E4%B9%8B%E5%A4%95%20%E6%96%BD%E8%9B%B0%E5%AD%98",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W034",
+      "title": "将军底头",
+      "author": "施蛰存",
+      "year": "1932",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "战争",
+        "心理",
+        "历史"
+      ],
+      "focus": "关注历史叙事与人物心理之间的张力",
+      "source": "Wikisource",
+      "sourcePage": "将军底头",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%B0%86%E5%86%9B%E5%BA%95%E5%A4%B4%20%E6%96%BD%E8%9B%B0%E5%AD%98",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W035",
+      "title": "稻草人",
+      "author": "叶圣陶",
+      "year": "1923",
+      "genre": "小说",
+      "region": "中国",
+      "tags": [
+        "童话",
+        "社会",
+        "同情"
+      ],
+      "focus": "从童话视角观察社会苦难和道德情感",
+      "source": "Wikisource",
+      "sourcePage": "稻草人",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A8%BB%E8%8D%89%E4%BA%BA%20%E5%8F%B6%E5%9C%A3%E9%99%B6",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W036",
+      "title": "项链",
+      "author": "莫泊桑",
+      "year": "1884",
+      "genre": "小说",
+      "region": "法国",
+      "tags": [
+        "欲望",
+        "虚荣",
+        "命运"
+      ],
+      "focus": "分析结尾反转如何重塑前文细节的意义",
+      "source": "Wikisource",
+      "sourcePage": "项链",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%A1%B9%E9%93%BE%20%E8%8E%AB%E6%B3%8A%E6%A1%91",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W037",
+      "title": "我的叔叔于勒",
+      "author": "莫泊桑",
+      "year": "1883",
+      "genre": "小说",
+      "region": "法国",
+      "tags": [
+        "亲情",
+        "金钱",
+        "讽刺"
+      ],
+      "focus": "关注人物称谓和态度变化所呈现的金钱逻辑",
+      "source": "Wikisource",
+      "sourcePage": "我的叔叔于勒",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%88%91%E7%9A%84%E5%8F%94%E5%8F%94%E4%BA%8E%E5%8B%92%20%E8%8E%AB%E6%B3%8A%E6%A1%91",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W038",
+      "title": "最后一片叶子",
+      "author": "欧·亨利",
+      "year": "1907",
+      "genre": "小说",
+      "region": "美国",
+      "tags": [
+        "希望",
+        "牺牲",
+        "艺术"
+      ],
+      "focus": "观察叶子意象、情节伏笔和结尾揭示",
+      "source": "Wikisource",
+      "sourcePage": "最后一片叶子",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%9C%80%E5%90%8E%E4%B8%80%E7%89%87%E5%8F%B6%E5%AD%90%20%E6%AC%A7%C2%B7%E4%BA%A8%E5%88%A9",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W039",
+      "title": "麦琪的礼物",
+      "author": "欧·亨利",
+      "year": "1905",
+      "genre": "小说",
+      "region": "美国",
+      "tags": [
+        "爱情",
+        "牺牲",
+        "反转"
+      ],
+      "focus": "关注双线行动与反转结尾中的情感价值",
+      "source": "Wikisource",
+      "sourcePage": "麦琪的礼物",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%BA%A6%E7%90%AA%E7%9A%84%E7%A4%BC%E7%89%A9%20%E6%AC%A7%C2%B7%E4%BA%A8%E5%88%A9",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W040",
+      "title": "警察与赞美诗",
+      "author": "欧·亨利",
+      "year": "1904",
+      "genre": "小说",
+      "region": "美国",
+      "tags": [
+        "社会",
+        "讽刺",
+        "命运"
+      ],
+      "focus": "理解反复受挫的情节如何构成社会讽刺",
+      "source": "Wikisource",
+      "sourcePage": "警察与赞美诗",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%AD%A6%E5%AF%9F%E4%B8%8E%E8%B5%9E%E7%BE%8E%E8%AF%97%20%E6%AC%A7%C2%B7%E4%BA%A8%E5%88%A9",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W041",
+      "title": "变色龙",
+      "author": "契诃夫",
+      "year": "1884",
+      "genre": "小说",
+      "region": "俄国",
+      "tags": [
+        "权力",
+        "讽刺",
+        "趋炎附势"
+      ],
+      "focus": "观察人物态度随身份判断而变化的语言细节",
+      "source": "Wikisource",
+      "sourcePage": "变色龙",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%8F%98%E8%89%B2%E9%BE%99%20%E5%A5%91%E8%AF%83%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W042",
+      "title": "苦恼",
+      "author": "契诃夫",
+      "year": "1886",
+      "genre": "小说",
+      "region": "俄国",
+      "tags": [
+        "孤独",
+        "倾诉",
+        "冷漠"
+      ],
+      "focus": "关注重复的倾诉尝试与城市冷漠的对照",
+      "source": "Wikisource",
+      "sourcePage": "苦恼",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%8B%A6%E6%81%BC%20%E5%A5%91%E8%AF%83%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W043",
+      "title": "万卡",
+      "author": "契诃夫",
+      "year": "1886",
+      "genre": "小说",
+      "region": "俄国",
+      "tags": [
+        "童年",
+        "苦难",
+        "希望"
+      ],
+      "focus": "从书信体结构和结尾细节理解人物处境",
+      "source": "Wikisource",
+      "sourcePage": "万卡",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%B8%87%E5%8D%A1%20%E5%A5%91%E8%AF%83%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W044",
+      "title": "最后一课",
+      "author": "都德",
+      "year": "1873",
+      "genre": "小说",
+      "region": "法国",
+      "tags": [
+        "语言",
+        "民族",
+        "成长"
+      ],
+      "focus": "关注课堂场景、人物情绪与语言认同",
+      "source": "Wikisource",
+      "sourcePage": "最后一课",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%9C%80%E5%90%8E%E4%B8%80%E8%AF%BE%20%E9%83%BD%E5%BE%B7",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W045",
+      "title": "柏林之围",
+      "author": "都德",
+      "year": "1871",
+      "genre": "小说",
+      "region": "法国",
+      "tags": [
+        "战争",
+        "记忆",
+        "尊严"
+      ],
+      "focus": "从人物的记忆与现实落差理解战争创伤",
+      "source": "Wikisource",
+      "sourcePage": "柏林之围",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%9F%8F%E6%9E%97%E4%B9%8B%E5%9B%B4%20%E9%83%BD%E5%BE%B7",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W046",
+      "title": "热爱生命",
+      "author": "杰克·伦敦",
+      "year": "1905",
+      "genre": "小说",
+      "region": "美国",
+      "tags": [
+        "生存",
+        "意志",
+        "自然"
+      ],
+      "focus": "关注身体细节、环境压力与意志变化",
+      "source": "Wikisource",
+      "sourcePage": "热爱生命",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%83%AD%E7%88%B1%E7%94%9F%E5%91%BD%20%E6%9D%B0%E5%85%8B%C2%B7%E4%BC%A6%E6%95%A6",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W047",
+      "title": "竞选州长",
+      "author": "马克·吐温",
+      "year": "1870",
+      "genre": "小说",
+      "region": "美国",
+      "tags": [
+        "政治",
+        "讽刺",
+        "舆论"
+      ],
+      "focus": "观察夸张叙事和舆论机制形成的讽刺效果",
+      "source": "Wikisource",
+      "sourcePage": "竞选州长",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%AB%9E%E9%80%89%E5%B7%9E%E9%95%BF%20%E9%A9%AC%E5%85%8B%C2%B7%E5%90%90%E6%B8%A9",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W048",
+      "title": "百万英镑",
+      "author": "马克·吐温",
+      "year": "1893",
+      "genre": "小说",
+      "region": "美国",
+      "tags": [
+        "金钱",
+        "阶层",
+        "社会"
+      ],
+      "focus": "关注金钱如何改变他人对主人公的判断",
+      "source": "Wikisource",
+      "sourcePage": "百万英镑",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%99%BE%E4%B8%87%E8%8B%B1%E9%95%91%20%E9%A9%AC%E5%85%8B%C2%B7%E5%90%90%E6%B8%A9",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W049",
+      "title": "一个陌生女人的来信",
+      "author": "茨威格",
+      "year": "1922",
+      "genre": "小说",
+      "region": "奥地利",
+      "tags": [
+        "爱情",
+        "记忆",
+        "叙述"
+      ],
+      "focus": "从书信独白辨析记忆、执念与叙述视角",
+      "source": "Wikisource",
+      "sourcePage": "一个陌生女人的来信",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%B8%80%E4%B8%AA%E9%99%8C%E7%94%9F%E5%A5%B3%E4%BA%BA%E7%9A%84%E6%9D%A5%E4%BF%A1%20%E8%8C%A8%E5%A8%81%E6%A0%BC",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W050",
+      "title": "花园茶会",
+      "author": "曼斯菲尔德",
+      "year": "1922",
+      "genre": "小说",
+      "region": "新西兰",
+      "tags": [
+        "阶层",
+        "成长",
+        "同情"
+      ],
+      "focus": "关注聚会空间与阶层边界，以及人物认知的变化",
+      "source": "Wikisource",
+      "sourcePage": "花园茶会",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%8A%B1%E5%9B%AD%E8%8C%B6%E4%BC%9A%20%E6%9B%BC%E6%96%AF%E8%8F%B2%E5%B0%94%E5%BE%B7",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W051",
+      "title": "背影",
+      "author": "朱自清",
+      "year": "1925",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "亲情",
+        "细节",
+        "记忆"
+      ],
+      "focus": "关注父亲买橘子的动作细节，以及叙述者回望时的情感变化",
+      "source": "Wikisource",
+      "sourcePage": "背影",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%83%8C%E5%BD%B1%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W052",
+      "title": "荷塘月色",
+      "author": "朱自清",
+      "year": "1927",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "月色",
+        "意象",
+        "情绪"
+      ],
+      "focus": "分析景物层次、通感修辞和“热闹/冷静”的情绪张力",
+      "source": "Wikisource",
+      "sourcePage": "荷塘月色",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%8D%B7%E5%A1%98%E6%9C%88%E8%89%B2%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W053",
+      "title": "春",
+      "author": "朱自清",
+      "year": "1933",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "自然",
+        "生命",
+        "语言"
+      ],
+      "focus": "观察比喻、拟人和排比如何形成明快的节奏",
+      "source": "Wikisource",
+      "sourcePage": "春",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%98%A5%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W054",
+      "title": "匆匆",
+      "author": "朱自清",
+      "year": "1922",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "时间",
+        "生命",
+        "自省"
+      ],
+      "focus": "关注时间意象、连续追问与节奏变化",
+      "source": "Wikisource",
+      "sourcePage": "匆匆",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%8C%86%E5%8C%86%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W055",
+      "title": "绿",
+      "author": "朱自清",
+      "year": "1924",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "自然",
+        "色彩",
+        "感官"
+      ],
+      "focus": "体会色彩描写、比喻和观察视角的细腻变化",
+      "source": "Wikisource",
+      "sourcePage": "绿",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%BB%BF%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W056",
+      "title": "桨声灯影里的秦淮河",
+      "author": "朱自清",
+      "year": "1923",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "城市",
+        "夜景",
+        "文化"
+      ],
+      "focus": "关注声音、光线和空间如何共同营造氛围",
+      "source": "Wikisource",
+      "sourcePage": "桨声灯影里的秦淮河",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%A1%A8%E5%A3%B0%E7%81%AF%E5%BD%B1%E9%87%8C%E7%9A%84%E7%A7%A6%E6%B7%AE%E6%B2%B3%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W057",
+      "title": "冬天",
+      "author": "朱自清",
+      "year": "1933",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "日常",
+        "亲情",
+        "温暖"
+      ],
+      "focus": "从围炉、吃食等生活细节体会情感表达",
+      "source": "Wikisource",
+      "sourcePage": "冬天",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%86%AC%E5%A4%A9%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W058",
+      "title": "给亡妇",
+      "author": "朱自清",
+      "year": "1936",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "悼念",
+        "亲情",
+        "回忆"
+      ],
+      "focus": "关注第二人称倾诉和日常记忆的组织方式",
+      "source": "Wikisource",
+      "sourcePage": "给亡妇",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%BB%99%E4%BA%A1%E5%A6%87%20%E6%9C%B1%E8%87%AA%E6%B8%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W059",
+      "title": "故都的秋",
+      "author": "郁达夫",
+      "year": "1934",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "秋景",
+        "故都",
+        "主观情绪"
+      ],
+      "focus": "分析景物选择、色彩和声音如何承载主观情绪",
+      "source": "Wikisource",
+      "sourcePage": "故都的秋",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%95%85%E9%83%BD%E7%9A%84%E7%A7%8B%20%E9%83%81%E8%BE%BE%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W060",
+      "title": "江南的冬景",
+      "author": "郁达夫",
+      "year": "1935",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "冬景",
+        "地域",
+        "审美"
+      ],
+      "focus": "比较不同地域景物的选择与审美取向",
+      "source": "Wikisource",
+      "sourcePage": "江南的冬景",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%B1%9F%E5%8D%97%E7%9A%84%E5%86%AC%E6%99%AF%20%E9%83%81%E8%BE%BE%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W061",
+      "title": "秋夜",
+      "author": "鲁迅",
+      "year": "1924",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "象征",
+        "孤独",
+        "抗争"
+      ],
+      "focus": "关注枣树、天空和小飞虫等意象的关系",
+      "source": "Wikisource",
+      "sourcePage": "秋夜",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A7%8B%E5%A4%9C%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W062",
+      "title": "雪",
+      "author": "鲁迅",
+      "year": "1925",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "自然",
+        "象征",
+        "精神"
+      ],
+      "focus": "比较江南雪与朔方雪的差异及其象征意味",
+      "source": "Wikisource",
+      "sourcePage": "雪",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%9B%AA%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W063",
+      "title": "从百草园到三味书屋",
+      "author": "鲁迅",
+      "year": "1926",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "童年",
+        "记忆",
+        "成长"
+      ],
+      "focus": "观察空间转换、儿童感官经验与成年叙述的距离",
+      "source": "Wikisource",
+      "sourcePage": "从百草园到三味书屋",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%BB%8E%E7%99%BE%E8%8D%89%E5%9B%AD%E5%88%B0%E4%B8%89%E5%91%B3%E4%B9%A6%E5%B1%8B%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W064",
+      "title": "藤野先生",
+      "author": "鲁迅",
+      "year": "1926",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "师生",
+        "记忆",
+        "身份"
+      ],
+      "focus": "关注人物细节、叙事节奏与情感转折",
+      "source": "Wikisource",
+      "sourcePage": "藤野先生",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%97%A4%E9%87%8E%E5%85%88%E7%94%9F%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W065",
+      "title": "阿长与《山海经》",
+      "author": "鲁迅",
+      "year": "1926",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "童年",
+        "人物",
+        "温情"
+      ],
+      "focus": "从称呼、行动和细节变化理解人物形象",
+      "source": "Wikisource",
+      "sourcePage": "阿长与《山海经》",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%98%BF%E9%95%BF%E4%B8%8E%E3%80%8A%E5%B1%B1%E6%B5%B7%E7%BB%8F%E3%80%8B%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W066",
+      "title": "记念刘和珍君",
+      "author": "鲁迅",
+      "year": "1926",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "记忆",
+        "公共事件",
+        "表达"
+      ],
+      "focus": "关注议论与叙事的交替，以及语言的情感强度",
+      "source": "Wikisource",
+      "sourcePage": "记念刘和珍君",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%AE%B0%E5%BF%B5%E5%88%98%E5%92%8C%E7%8F%8D%E5%90%9B%20%E9%B2%81%E8%BF%85",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W067",
+      "title": "想北平",
+      "author": "老舍",
+      "year": "1936",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "城市",
+        "记忆",
+        "日常"
+      ],
+      "focus": "从食物、街巷和生活细节理解城市情感",
+      "source": "Wikisource",
+      "sourcePage": "想北平",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%83%B3%E5%8C%97%E5%B9%B3%20%E8%80%81%E8%88%8D",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W068",
+      "title": "济南的冬天",
+      "author": "老舍",
+      "year": "1931",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "冬景",
+        "城市",
+        "语言"
+      ],
+      "focus": "关注比喻、拟人和空间层次构成的温暖感",
+      "source": "Wikisource",
+      "sourcePage": "济南的冬天",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%B5%8E%E5%8D%97%E7%9A%84%E5%86%AC%E5%A4%A9%20%E8%80%81%E8%88%8D",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W069",
+      "title": "落花生",
+      "author": "许地山",
+      "year": "1922",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "品格",
+        "劳动",
+        "寓意"
+      ],
+      "focus": "思考花生意象与朴素价值观之间的关系",
+      "source": "Wikisource",
+      "sourcePage": "落花生",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%90%BD%E8%8A%B1%E7%94%9F%20%E8%AE%B8%E5%9C%B0%E5%B1%B1",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W070",
+      "title": "乌篷船",
+      "author": "周作人",
+      "year": "1924",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "故乡",
+        "风物",
+        "闲适"
+      ],
+      "focus": "关注物件描写、地方经验与散文节奏",
+      "source": "Wikisource",
+      "sourcePage": "乌篷船",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%B9%8C%E7%AF%B7%E8%88%B9%20%E5%91%A8%E4%BD%9C%E4%BA%BA",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W071",
+      "title": "故乡的野菜",
+      "author": "周作人",
+      "year": "1924",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "乡土",
+        "饮食",
+        "记忆"
+      ],
+      "focus": "从饮食风俗和植物细节理解乡土记忆",
+      "source": "Wikisource",
+      "sourcePage": "故乡的野菜",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%95%85%E4%B9%A1%E7%9A%84%E9%87%8E%E8%8F%9C%20%E5%91%A8%E4%BD%9C%E4%BA%BA",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W072",
+      "title": "喝茶",
+      "author": "周作人",
+      "year": "1930",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "日常",
+        "趣味",
+        "生活"
+      ],
+      "focus": "体会闲谈式结构、知识旁征与个人趣味",
+      "source": "Wikisource",
+      "sourcePage": "喝茶",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%96%9D%E8%8C%B6%20%E5%91%A8%E4%BD%9C%E4%BA%BA",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W073",
+      "title": "窗子以外",
+      "author": "林徽因",
+      "year": "1934",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "空间",
+        "观察",
+        "自我"
+      ],
+      "focus": "思考窗内与窗外的空间关系及观察者位置",
+      "source": "Wikisource",
+      "sourcePage": "窗子以外",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%AA%97%E5%AD%90%E4%BB%A5%E5%A4%96%20%E6%9E%97%E5%BE%BD%E5%9B%A0",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W074",
+      "title": "我所知道的康桥",
+      "author": "徐志摩",
+      "year": "1926",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "旅行",
+        "自然",
+        "记忆"
+      ],
+      "focus": "关注空间移动、感官描写与个人情绪",
+      "source": "Wikisource",
+      "sourcePage": "我所知道的康桥",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%88%91%E6%89%80%E7%9F%A5%E9%81%93%E7%9A%84%E5%BA%B7%E6%A1%A5%20%E5%BE%90%E5%BF%97%E6%91%A9",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W075",
+      "title": "翡冷翠山居闲话",
+      "author": "徐志摩",
+      "year": "1925",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "自然",
+        "闲适",
+        "审美"
+      ],
+      "focus": "观察景物描写如何形成自由舒展的散文节奏",
+      "source": "Wikisource",
+      "sourcePage": "翡冷翠山居闲话",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%BF%A1%E5%86%B7%E7%BF%A0%E5%B1%B1%E5%B1%85%E9%97%B2%E8%AF%9D%20%E5%BE%90%E5%BF%97%E6%91%A9",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W076",
+      "title": "渐",
+      "author": "丰子恺",
+      "year": "1935",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "时间",
+        "人生",
+        "变化"
+      ],
+      "focus": "从日常经验理解“渐变”如何构成人生感受",
+      "source": "Wikisource",
+      "sourcePage": "渐",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%B8%90%20%E4%B8%B0%E5%AD%90%E6%81%BA",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W077",
+      "title": "白鹅",
+      "author": "丰子恺",
+      "year": "1946",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "动物",
+        "观察",
+        "幽默"
+      ],
+      "focus": "关注拟人化观察和语言中的幽默感",
+      "source": "Wikisource",
+      "sourcePage": "白鹅",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%99%BD%E9%B9%85%20%E4%B8%B0%E5%AD%90%E6%81%BA",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W078",
+      "title": "山中避雨",
+      "author": "丰子恺",
+      "year": "1935",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "音乐",
+        "自然",
+        "人情"
+      ],
+      "focus": "观察音乐如何改变陌生人之间的关系",
+      "source": "Wikisource",
+      "sourcePage": "山中避雨",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%B1%B1%E4%B8%AD%E9%81%BF%E9%9B%A8%20%E4%B8%B0%E5%AD%90%E6%81%BA",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W079",
+      "title": "给我的孩子们",
+      "author": "丰子恺",
+      "year": "1927",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "童真",
+        "成长",
+        "亲情"
+      ],
+      "focus": "关注成人视角对童真世界的怀念与反思",
+      "source": "Wikisource",
+      "sourcePage": "给我的孩子们",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%BB%99%E6%88%91%E7%9A%84%E5%AD%A9%E5%AD%90%E4%BB%AC%20%E4%B8%B0%E5%AD%90%E6%81%BA",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W080",
+      "title": "春雨",
+      "author": "梁遇春",
+      "year": "1928",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "自然",
+        "感受",
+        "随笔"
+      ],
+      "focus": "关注比喻、联想和自由跳跃的思维",
+      "source": "Wikisource",
+      "sourcePage": "春雨",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%98%A5%E9%9B%A8%20%E6%A2%81%E9%81%87%E6%98%A5",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W081",
+      "title": "途中",
+      "author": "梁遇春",
+      "year": "1930",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "旅行",
+        "人生",
+        "思考"
+      ],
+      "focus": "观察旅途经验如何引出人生感悟",
+      "source": "Wikisource",
+      "sourcePage": "途中",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%80%94%E4%B8%AD%20%E6%A2%81%E9%81%87%E6%98%A5",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W082",
+      "title": "海上日出",
+      "author": "巴金",
+      "year": "1932",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "自然",
+        "光线",
+        "观察"
+      ],
+      "focus": "关注时间推进、色彩变化与动态描写",
+      "source": "Wikisource",
+      "sourcePage": "海上日出",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%B5%B7%E4%B8%8A%E6%97%A5%E5%87%BA%20%E5%B7%B4%E9%87%91",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W083",
+      "title": "繁星",
+      "author": "巴金",
+      "year": "1927",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "夜空",
+        "童年",
+        "想象"
+      ],
+      "focus": "从不同时间与地点的观星经验理解情感变化",
+      "source": "Wikisource",
+      "sourcePage": "繁星",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%B9%81%E6%98%9F%20%E5%B7%B4%E9%87%91",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W084",
+      "title": "雅舍",
+      "author": "梁实秋",
+      "year": "1940",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "居所",
+        "生活",
+        "幽默"
+      ],
+      "focus": "关注空间细节和自嘲式幽默",
+      "source": "Wikisource",
+      "sourcePage": "雅舍",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%9B%85%E8%88%8D%20%E6%A2%81%E5%AE%9E%E7%A7%8B",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W085",
+      "title": "下棋",
+      "author": "梁实秋",
+      "year": "1940",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "日常",
+        "人性",
+        "观察"
+      ],
+      "focus": "从棋局中的人物行为观察性格与世态",
+      "source": "Wikisource",
+      "sourcePage": "下棋",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%B8%8B%E6%A3%8B%20%E6%A2%81%E5%AE%9E%E7%A7%8B",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W086",
+      "title": "我与地坛",
+      "author": "史铁生",
+      "year": "1991",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "生命",
+        "时间",
+        "母亲"
+      ],
+      "focus": "关注空间反复出现的意义、生命思考与母亲形象",
+      "source": "Wikisource",
+      "sourcePage": "我与地坛",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%88%91%E4%B8%8E%E5%9C%B0%E5%9D%9B%20%E5%8F%B2%E9%93%81%E7%94%9F",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W087",
+      "title": "秋天的怀念",
+      "author": "史铁生",
+      "year": "1981",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "亲情",
+        "疾病",
+        "回忆"
+      ],
+      "focus": "从反复出现的动作和景物理解克制的情感",
+      "source": "Wikisource",
+      "sourcePage": "秋天的怀念",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%A7%8B%E5%A4%A9%E7%9A%84%E6%80%80%E5%BF%B5%20%E5%8F%B2%E9%93%81%E7%94%9F",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W088",
+      "title": "合欢树",
+      "author": "史铁生",
+      "year": "1990",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "母亲",
+        "记忆",
+        "时间"
+      ],
+      "focus": "分析合欢树意象如何承载母亲与成长记忆",
+      "source": "Wikisource",
+      "sourcePage": "合欢树",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%90%88%E6%AC%A2%E6%A0%91%20%E5%8F%B2%E9%93%81%E7%94%9F",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W089",
+      "title": "丑石",
+      "author": "贾平凹",
+      "year": "1980",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "价值",
+        "误解",
+        "发现"
+      ],
+      "focus": "思考评价标准如何改变，以及平凡事物的价值",
+      "source": "Wikisource",
+      "sourcePage": "丑石",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%B8%91%E7%9F%B3%20%E8%B4%BE%E5%B9%B3%E5%87%B9",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W090",
+      "title": "泥泞",
+      "author": "迟子建",
+      "year": "2000",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "自然",
+        "苦难",
+        "生命"
+      ],
+      "focus": "关注自然经验如何转化为对生命韧性的理解",
+      "source": "Wikisource",
+      "sourcePage": "泥泞",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%B3%A5%E6%B3%9E%20%E8%BF%9F%E5%AD%90%E5%BB%BA",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W091",
+      "title": "行道树",
+      "author": "张晓风",
+      "year": "1977",
+      "genre": "散文",
+      "region": "中国",
+      "tags": [
+        "奉献",
+        "象征",
+        "责任"
+      ],
+      "focus": "分析行道树的拟人化形象与象征意义",
+      "source": "Wikisource",
+      "sourcePage": "行道树",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%A1%8C%E9%81%93%E6%A0%91%20%E5%BC%A0%E6%99%93%E9%A3%8E",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W092",
+      "title": "论友谊",
+      "author": "蒙田",
+      "year": "1580",
+      "genre": "散文",
+      "region": "法国",
+      "tags": [
+        "友谊",
+        "个体",
+        "情感"
+      ],
+      "focus": "关注经验叙述如何支撑对友谊的理解",
+      "source": "Wikisource",
+      "sourcePage": "论友谊",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%AE%BA%E5%8F%8B%E8%B0%8A%20%E8%92%99%E7%94%B0",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W093",
+      "title": "瓦尔登湖（节选）",
+      "author": "梭罗",
+      "year": "1854",
+      "genre": "散文",
+      "region": "美国",
+      "tags": [
+        "自然",
+        "独处",
+        "生活"
+      ],
+      "focus": "思考简朴生活、自然观察与精神自由的关系",
+      "source": "Wikisource",
+      "sourcePage": "瓦尔登湖（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E7%93%A6%E5%B0%94%E7%99%BB%E6%B9%96%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E6%A2%AD%E7%BD%97",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W094",
+      "title": "论自然",
+      "author": "爱默生",
+      "year": "1836",
+      "genre": "散文",
+      "region": "美国",
+      "tags": [
+        "自然",
+        "精神",
+        "自我"
+      ],
+      "focus": "关注自然经验与精神世界之间的联系",
+      "source": "Wikisource",
+      "sourcePage": "论自然",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%AE%BA%E8%87%AA%E7%84%B6%20%E7%88%B1%E9%BB%98%E7%94%9F",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W095",
+      "title": "墙上的斑点",
+      "author": "弗吉尼亚·伍尔夫",
+      "year": "1917",
+      "genre": "散文",
+      "region": "英国",
+      "tags": [
+        "意识流",
+        "观察",
+        "联想"
+      ],
+      "focus": "观察一个微小对象如何触发意识流动和联想",
+      "source": "Wikisource",
+      "sourcePage": "墙上的斑点",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%A2%99%E4%B8%8A%E7%9A%84%E6%96%91%E7%82%B9%20%E5%BC%97%E5%90%89%E5%B0%BC%E4%BA%9A%C2%B7%E4%BC%8D%E5%B0%94%E5%A4%AB",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W096",
+      "title": "花园茶会",
+      "author": "曼斯菲尔德",
+      "year": "1922",
+      "genre": "散文",
+      "region": "新西兰",
+      "tags": [
+        "阶层",
+        "成长",
+        "同情"
+      ],
+      "focus": "从日常场景中观察阶层意识与情感变化",
+      "source": "Wikisource",
+      "sourcePage": "花园茶会",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%8A%B1%E5%9B%AD%E8%8C%B6%E4%BC%9A%20%E6%9B%BC%E6%96%AF%E8%8F%B2%E5%B0%94%E5%BE%B7",
+      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W097",
+      "title": "射象",
+      "author": "乔治·奥威尔",
+      "year": "1936",
+      "genre": "散文",
+      "region": "英国",
+      "tags": [
+        "权力",
+        "殖民",
+        "自我"
+      ],
+      "focus": "辨析叙述者的个人选择与制度压力",
+      "source": "Wikisource",
+      "sourcePage": "射象",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%B0%84%E8%B1%A1%20%E4%B9%94%E6%B2%BB%C2%B7%E5%A5%A5%E5%A8%81%E5%B0%94",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W098",
+      "title": "我为何而生",
+      "author": "罗素",
+      "year": "1925",
+      "genre": "散文",
+      "region": "英国",
+      "tags": [
+        "人生",
+        "价值",
+        "思想"
+      ],
+      "focus": "分析并列结构如何组织个人价值观",
+      "source": "Wikisource",
+      "sourcePage": "我为何而生",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%88%91%E4%B8%BA%E4%BD%95%E8%80%8C%E7%94%9F%20%E7%BD%97%E7%B4%A0",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W099",
+      "title": "最后的演讲",
+      "author": "罗曼·罗兰",
+      "year": "1915",
+      "genre": "散文",
+      "region": "法国",
+      "tags": [
+        "勇气",
+        "信念",
+        "责任"
+      ],
+      "focus": "关注演讲语气、论证层次与精神力量",
+      "source": "Wikisource",
+      "sourcePage": "最后的演讲",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%9C%80%E5%90%8E%E7%9A%84%E6%BC%94%E8%AE%B2%20%E7%BD%97%E6%9B%BC%C2%B7%E7%BD%97%E5%85%B0",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    },
+    {
+      "id": "W100",
+      "title": "飞鸟集（节选）",
+      "author": "泰戈尔",
+      "year": "1916",
+      "genre": "散文",
+      "region": "印度",
+      "tags": [
+        "自然",
+        "生命",
+        "哲思"
+      ],
+      "focus": "从短章意象和语言凝练度理解诗性表达",
+      "source": "Wikisource",
+      "sourcePage": "飞鸟集（节选）",
+      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E9%A3%9E%E9%B8%9F%E9%9B%86%EF%BC%88%E8%8A%82%E9%80%89%EF%BC%89%20%E6%B3%B0%E6%88%88%E5%B0%94",
+      "rightsStatus": "版权状态待核验；仅提供书目信息与合法来源入口",
+      "textMode": "external",
+      "analysisStatus": "not_generated"
+    }
+  ]
+}

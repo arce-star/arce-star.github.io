@@ -137,11 +137,11 @@
         "视角"
       ],
       "focus": "关注叙述者态度的转变，以及小事件如何改变价值判断",
-      "source": "Wikisource",
+      "source": "维基文库",
       "sourcePage": "一件小事",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E4%B8%80%E4%BB%B6%E5%B0%8F%E4%BA%8B%20%E9%B2%81%E8%BF%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/一件小事",
+      "rightsStatus": "本地已收录全文；维基文库 CC BY-SA 4.0 页面署名与相同方式共享；底层作品页面标注公有领域",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
@@ -1017,11 +1017,11 @@
         "记忆"
       ],
       "focus": "关注父亲买橘子的动作细节，以及叙述者回望时的情感变化",
-      "source": "Wikisource",
+      "source": "维基文库",
       "sourcePage": "背影",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%83%8C%E5%BD%B1%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/背影",
+      "rightsStatus": "本地已收录全文；维基文库 CC BY-SA 4.0 页面署名与相同方式共享；底层作品页面标注公有领域",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
@@ -1037,11 +1037,11 @@
         "情绪"
       ],
       "focus": "分析景物层次、通感修辞和“热闹/冷静”的情绪张力",
-      "source": "Wikisource",
+      "source": "维基文库",
       "sourcePage": "荷塘月色",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E8%8D%B7%E5%A1%98%E6%9C%88%E8%89%B2%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/荷塘月色",
+      "rightsStatus": "本地已收录全文；维基文库 CC BY-SA 4.0 页面署名与相同方式共享；底层作品页面标注公有领域",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
@@ -1057,11 +1057,11 @@
         "语言"
       ],
       "focus": "观察比喻、拟人和排比如何形成明快的节奏",
-      "source": "Wikisource",
+      "source": "维基文库",
       "sourcePage": "春",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E6%98%A5%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/wiki/春_(朱自清)",
+      "rightsStatus": "本地已收录全文；维基文库 CC BY-SA 4.0 页面署名与相同方式共享；底层作品页面标注公有领域",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {
@@ -1077,11 +1077,11 @@
         "自省"
       ],
       "focus": "关注时间意象、连续追问与节奏变化",
-      "source": "Wikisource",
+      "source": "维基文库",
       "sourcePage": "匆匆",
-      "sourceUrl": "https://zh.wikisource.org/w/index.php?search=%E5%8C%86%E5%8C%86%20%E6%9C%B1%E8%87%AA%E6%B8%85",
-      "rightsStatus": "公版候选；需核对具体版本、译文与地域",
-      "textMode": "external",
+      "sourceUrl": "https://zh.wikisource.org/zh-hans/匆匆",
+      "rightsStatus": "本地已收录全文；维基文库 CC BY-SA 4.0 页面署名与相同方式共享；底层作品页面标注公有领域",
+      "textMode": "local",
       "analysisStatus": "not_generated"
     },
     {

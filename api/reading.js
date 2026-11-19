@@ -33,9 +33,8 @@ async function chat(req,res,body){
   const messages=Array.isArray(body.messages)?body.messages:[];
   if (!messages.length||messages.length>8||messages.some(m=>!['system','user','assistant'].includes(m?.role)||typeof m?.content!=='string'||m.content.length>24000)) return json(res,400,{error:'请求内容无效或过长'});
   const endpoint=provider==='ustc'?USTC_ENDPOINT:DEEPSEEK_ENDPOINT;
-  const payload={model,messages:messages.map(x=>({role:x.role,content:x.content})),stream:false,max_tokens:Math.min(3500,Math.max(32,Number(body.max_tokens)||1800)),temperature:.6};
+  const payload={model,messages:messages.map(x=>({role:x.role,content:x.content})),stream:false,max_tokens:Math.min(3500,Math.max(32,Number(body.max_tokens)||1800))};
   if(provider==='deepseek'){
-    payload.thinking={type:'disabled'};
     if(body.enableWebSearch===true)payload.tools=[{type:'deepseek_web_search'}];
   }
   try {

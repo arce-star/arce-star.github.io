@@ -41,8 +41,8 @@ function setStatus(text){safeSet($('catalogStatus'),text)}
 async function loadCatalog(){
  try{
  const [res,textRes]=await Promise.all([
-  fetch('assets/data/reading/catalog.json?v=3',{cache:'no-cache'}),
-  fetch('assets/data/reading/fulltext.json?v=8',{cache:'no-cache'})
+  fetch('assets/data/reading/catalog.json?v=4',{cache:'no-cache'}),
+  fetch('assets/data/reading/fulltext.json?v=9',{cache:'no-cache'})
  ]);
  if(!res.ok)throw Error('HTTP '+res.status);
  const data=await res.json();
@@ -103,27 +103,30 @@ function renderPersonal(){
 // The scanned books contain physical OCR line wraps, not paragraph markers.
 // Infer likely paragraph ends from a shorter final printed line. Never modify OCR words.
 function parseOcrParagraphs(raw=''){
- const blocks=String(raw).replace(/\r\n?/g,'\n').split(/\n[ \t]*\n/);
+ const blocks=String(raw).replace(/\r\n?/g,'\n').split(/\n[ \t]*\n+/);
  const output=[];
+ const charLength=s=>Array.from(s).length;
+ const sentenceEnd=s=>/[。！？!?][”"'’）】]*$/.test(s);
  for(const block of blocks){
-  const lines=block.split('\n').map(line=>line.trim()).filter(Boolean);
+  const lines=block.split('\n').map(s=>s.trim()).filter(Boolean);
   if(!lines.length)continue;
-  const lengths=lines.map(line=>Array.from(line).length).filter(n=>n>=22).sort((a,b)=>a-b);
-  const width=lengths[Math.floor(lengths.length*0.72)]||52;
-  let paragraph='';
-  const finish=()=>{if(paragraph){output.push(paragraph);paragraph=''}};
+  const wide=lines.map(charLength).filter(n=>n>=18).sort((a,b)=>a-b);
+  const typical=wide[Math.floor(wide.length*.7)]||44;
+  let current='';
+  const flush=()=>{if(current.trim()){output.push(current.trim());current='';}};
   for(let i=0;i<lines.length;i++){
    const line=lines[i];
-   // Do not add whitespace between Chinese characters across a PDF line.
-   if(paragraph&&/[a-zA-Z0-9]$/.test(paragraph)&&/^[a-zA-Z0-9]/.test(line))paragraph+=' ';
-   paragraph+=line;
-   const lineWidth=Array.from(line).length;
-   const endsSentence=/[。！？!?][”"'’）】]*$/.test(line);
-   const shortLastLine=lineWidth<Math.max(24,width*0.78);
-   const longParagraph=paragraph.length>=620;
-   if(endsSentence&&((shortLastLine&&paragraph.length>=55)||longParagraph))finish();
+   const next=lines[i+1]||'';
+   if(current&&/[A-Za-z0-9]$/.test(current)&&/^[A-Za-z0-9]/.test(line))current+=' ';
+   current+=line;
+   // Printed lines wrapping at the margin remain part of the same paragraph.
+   // A short line ending in terminal punctuation, or an indented next
+   // line, is a more reliable paragraph boundary than a single newline.
+   const shortEnd=charLength(line)<Math.max(18,typical*.73);
+   const nextIndented=/^[　 ]{2,}/.test(block.split('\n')[i+1]||'');
+   if((sentenceEnd(line)&&shortEnd&&charLength(current)>40)||nextIndented)flush();
   }
-  finish();
+  flush();
  }
  return output;
 }
@@ -175,7 +178,6 @@ function proxyEndpoint(){
 function providerPayload(messages,max_tokens=1800,enableWebSearch=false){
  const payload={model:state.model,messages,stream:false,max_tokens:max_tokens||1800};
  if(state.provider==='deepseek'){
-  payload.thinking={type:'disabled'};
   if(enableWebSearch)payload.tools=[{type:'deepseek_web_search'}];
  }
  return payload;
@@ -194,7 +196,7 @@ async function fetchWithExplanation(url,options,mode){
  try{return await fetch(url,options)}
  catch(err){
   if(err?.name==='AbortError')throw Error('请求超时，请检查网络或选择更快的模型。');
-  if(mode==='direct')throw Error('无法从浏览器直连官方接口：可能受到 CORS 跨域策略或网络限制。请部署 Vercel 后端，并在「代理地址」填入 https://实际域名/api/reading。');
+  if(mode==='direct')throw Error('浏览器无法直连 '+providers[state.provider].label+'：该接口可能不允许 GitHub Pages 的跨域请求（CORS）。这不代表 API Key 错误。请填写已部署的 Vercel /api/reading 后端地址。');
   throw Error('无法连接代理服务：请检查 Vercel 地址、部署状态和跨域设置。');
  }
 }
@@ -214,12 +216,12 @@ async function requestAI(messages,max_tokens=1800,adminToken='',enableWebSearch=
  const body=providerPayload(messages,max_tokens,enableWebSearch);
  const response=await fetchWithExplanation(providers[state.provider].endpoint,{
   method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
-  body:JSON.stringify(body)
+  body:JSON.stringify(body),signal:AbortSignal.timeout(45000)
  },'direct');
  const data=await decodeResponse(response,'direct');
  const message=data?.choices?.[0]?.message?.content;
  const content=typeof message==='string'?message:Array.isArray(message)?message.map(x=>x.text||'').join('\n'):'';
- if(!content.trim())throw Error('模型没有返回有效文本，请检查模型是否支持 Chat Completions。');
+ if(!content.trim())throw Error('模型没有返回有效文本，请检查当前模型是否支持 Chat Completions。');
  return {provider:state.provider,model:data.model||state.model,text:content,usage:data.usage||null};
 }
 async function requestModelList(){
@@ -267,7 +269,7 @@ function renderModelChoices(models){
 }
 function updateProviderHint(){
  const p=providers[editingProvider];
- safeSet($('providerHint'),p.label+' · OpenAI 兼容 Chat Completions\nPOST '+p.endpoint+'\n'+p.help);
+ safeSet($('providerHint'),p.label+' · OpenAI Chat Completions\nPOST '+p.endpoint+'\nAuthorization: Bearer <API Key>\nContent-Type: application/json\n'+p.help);
 }
 function settingsForm(){
  editingProvider=state.provider;

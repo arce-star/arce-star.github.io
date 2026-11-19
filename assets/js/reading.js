@@ -4,10 +4,10 @@ const $ = id => document.getElementById(id);
 const keys={favs:'wenjian:favs',notes:'wenjian:notes',progress:'wenjian:progress',theme:'wenjian:theme',fontsize:'wenjian:fontsize'};
 const getJSON=(key,fallback)=>{try{return JSON.parse(localStorage.getItem(key))??fallback}catch{return fallback}};
 const saveJSON=(key,value)=>localStorage.setItem(key,JSON.stringify(value));
-const state={works:[],fulltexts:{},filtered:[],visible:24,genre:'全部',topic:'',region:'',search:'',active:null,provider:'ustc',apiKey:'',model:'deepseek-v4-flash',proxy:'',remember:false,analysis:'',favs:new Set(getJSON(keys.favs,[])),notes:getJSON(keys.notes,{}),progress:getJSON(keys.progress,{}),manualText:'',fullText:'',candidates:[],activeSection:'library'};
+const state={works:[],fulltexts:{},filtered:[],visible:24,genre:'全部',topic:'',region:'',search:'',active:null,provider:'ustc',apiKey:'',model:'qwen-chat',proxy:'',remember:false,analysis:'',keysByProvider:{ustc:'',deepseek:''},modelsByProvider:{ustc:'qwen-chat',deepseek:'deepseek-flash'},favs:new Set(getJSON(keys.favs,[])),notes:getJSON(keys.notes,{}),progress:getJSON(keys.progress,{}),manualText:'',fullText:'',candidates:[],activeSection:'library'};
 const providers={
- ustc:{label:'USTC LLM',endpoint:'https://api.llm.ustc.edu.cn/v1/chat/completions',model:'deepseek-v4-flash',help:'学校平台：OpenAI 兼容的 /v1/chat/completions；请根据学校模型列表选择有权限调用的模型。'},
- deepseek:{label:'DeepSeek 官方',endpoint:'https://api.deepseek.com/chat/completions',model:'deepseek-flash',help:'DeepSeek 官方：/chat/completions，当前模型 deepseek-flash、deepseek-v4-pro；发现文章时支持官方联网搜索工具。'}
+ ustc:{label:'USTC LLM',base:'https://api.llm.ustc.edu.cn/v1',endpoint:'https://api.llm.ustc.edu.cn/v1/chat/completions',model:'qwen-chat',models:['qwen-chat','qwen-reasoner','smart/reasoning','smart/default','deepseek-v4-flash-ascend1','qwen3.8-reasoner','qwen3.8-chat','glm-5.3-flash','deepseek-flash','deepseek-flash-2','qwen3.8-flash-next'],help:'学校统一入口 · OpenAI 协议；聊天请求使用 Bearer API Key，选择此 Key 已授权的模型。'},
+ deepseek:{label:'DeepSeek 官方',base:'https://api.deepseek.com',endpoint:'https://api.deepseek.com/chat/completions',model:'deepseek-flash',models:['deepseek-flash','deepseek-v4-pro'],help:'DeepSeek 官方 Chat Completions；密钥与学校 Key 独立保存。'}
 };
 const esc = x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function safeSet(node,value){node.textContent=String(value??'')}
@@ -15,10 +15,28 @@ function safeLink(href){try{const u=new URL(href);return u.protocol==='https:'?u
 function textEl(tag,text,cls){const node=document.createElement(tag);if(cls)node.className=cls;safeSet(node,text);return node}
 function createBtn(text,cls,handler){const btn=document.createElement('button');btn.type='button';btn.className=cls||'';safeSet(btn,text);btn.addEventListener('click',handler);return btn}
 function localSettings(){
- try{const opt=JSON.parse(sessionStorage.getItem('wenjian:provider')||'null');if(opt&&providers[opt.provider]){state.provider=opt.provider;state.model=opt.model||providers[opt.provider].model;state.proxy=opt.proxy||'';state.remember=!!opt.remember;state.apiKey=state.remember?String(opt.apiKey||''):''}}catch{}
- const font=Number(localStorage.getItem(keys.fontsize)||19);document.documentElement.style.setProperty('--reader-size',Math.max(15,Math.min(font,29))+'px');
+ try{
+  const opt=JSON.parse(sessionStorage.getItem('wenjian:provider')||'null');
+  if(opt){
+   if(opt.modelsByProvider)Object.keys(providers).forEach(p=>{
+    if(typeof opt.modelsByProvider[p]==='string')state.modelsByProvider[p]=opt.modelsByProvider[p];
+   });
+   if(opt.provider&&providers[opt.provider])state.provider=opt.provider;
+   if(opt.model&&!opt.modelsByProvider)state.modelsByProvider[state.provider]=opt.model;
+   state.proxy=typeof opt.proxy==='string'?opt.proxy:'';
+   state.remember=opt.remember===true;
+   if(state.remember&&opt.keysByProvider)Object.keys(providers).forEach(p=>{
+    state.keysByProvider[p]=String(opt.keysByProvider[p]||'');
+   });
+   if(state.remember&&opt.apiKey&&!opt.keysByProvider)state.keysByProvider[state.provider]=String(opt.apiKey);
+  }
+ }catch{}
+ state.model=state.modelsByProvider[state.provider];
+ state.apiKey=state.keysByProvider[state.provider];
+ const font=Number(localStorage.getItem(keys.fontsize)||19);
+ document.documentElement.style.setProperty('--reader-size',Math.max(15,Math.min(font,29))+'px');
  if(localStorage.getItem(keys.theme)==='dark')document.body.classList.add('dark');
- }
+}
 function setStatus(text){safeSet($('catalogStatus'),text)}
 async function loadCatalog(){
  try{
@@ -82,6 +100,33 @@ function renderPersonal(){
  saved.forEach(w=>{const d=document.createElement('div');d.className='my-item';const desc=document.createElement('div');desc.append(textEl('strong',w.title),textEl('p',w.author+' · '+(state.notes[w.id]?'有个人笔记':'收藏 / 最近阅读'),'muted'));
  if(state.notes[w.id])desc.append(textEl('p',state.notes[w.id].slice(0,160)+(state.notes[w.id].length>160?'…':''),'muted'));d.append(desc,createBtn('继续阅读 →','',()=>openWork(w)));area.append(d)})
 }
+// The scanned books contain physical OCR line wraps, not paragraph markers.
+// Infer likely paragraph ends from a shorter final printed line. Never modify OCR words.
+function parseOcrParagraphs(raw=''){
+ const blocks=String(raw).replace(/\r\n?/g,'\n').split(/\n[ \t]*\n/);
+ const output=[];
+ for(const block of blocks){
+  const lines=block.split('\n').map(line=>line.trim()).filter(Boolean);
+  if(!lines.length)continue;
+  const lengths=lines.map(line=>Array.from(line).length).filter(n=>n>=22).sort((a,b)=>a-b);
+  const width=lengths[Math.floor(lengths.length*0.72)]||52;
+  let paragraph='';
+  const finish=()=>{if(paragraph){output.push(paragraph);paragraph=''}};
+  for(let i=0;i<lines.length;i++){
+   const line=lines[i];
+   // Do not add whitespace between Chinese characters across a PDF line.
+   if(paragraph&&/[a-zA-Z0-9]$/.test(paragraph)&&/^[a-zA-Z0-9]/.test(line))paragraph+=' ';
+   paragraph+=line;
+   const lineWidth=Array.from(line).length;
+   const endsSentence=/[。！？!?][”"'’）】]*$/.test(line);
+   const shortLastLine=lineWidth<Math.max(24,width*0.78);
+   const longParagraph=paragraph.length>=620;
+   if(endsSentence&&((shortLastLine&&paragraph.length>=55)||longParagraph))finish();
+  }
+  finish();
+ }
+ return output;
+}
 function closeReader(){
  $('readerOverlay').classList.add('hidden');$('analysisPanel').classList.add('hidden');document.body.style.overflow='';document.title='文间 · 文学阅读与赏析馆';state.active=null;state.manualText='';state.fullText='';renderCards();
 }
@@ -94,74 +139,106 @@ async function openWork(w){
  source.append(textEl('p','收录说明：'+(w.rightsStatus||'OCR 文字待人工校对')+'。若发现识别错误，请以原书扫描页为准。'));
  if(w.sourceUrl){const src=document.createElement('a');src.href=safeLink(w.sourceUrl);src.target='_blank';src.rel='noopener noreferrer';safeSet(src,'查阅原始来源 ↗');source.append(src)}
  $('readerOverlay').classList.remove('hidden');$('analysisPanel').classList.add('hidden');document.body.style.overflow='hidden';document.title=w.title+' · 文间';
- const body=$('readerContent');body.replaceChildren();body.append(textEl('p','正在核验公开文本来源……','muted'));
+ const body=$('readerContent');body.replaceChildren();body.append(textEl('p','正在加载扫描文本……','muted'));
  safeSet($('analysisBody'),'赏析方向：\n\n'+w.focus+'\n\n可从原文细节出发，结合叙事视角、语言、人物关系与时代语境进行多种解读。');
  $('readerScroll').scrollTop=0;
  const localText=state.fulltexts[w.id];
  if(localText){
   body.replaceChildren();
-  body.append(textEl('p','本篇为扫描件 OCR 转录稿，字词与标点可能有误。','muted'));
-  localText.content.split(/\n+/).map(p=>p.trim()).filter(Boolean).forEach(p=>body.append(textEl('p',p)));
-  state.fullText=localText.content;
-  source.append(textEl('p','全文已随网站数据保存在 GitHub 仓库中，可直接阅读，不依赖来源网站在线。'));
-  source.append(textEl('p',localText.attribution||('作者：'+localText.author+'；作品：'+localText.title+'；来源：维基文库。')));
-  source.append(textEl('p',localText.license||'页面文本按来源页许可与作品公有领域标注使用。'));
+  body.append(textEl('p','扫描版 OCR 转录 · 字词和标点尚待校对','reader-ocr-note'));
+  const paragraphs=parseOcrParagraphs(localText.content);
+  paragraphs.forEach(p=>body.append(textEl('p',p)));
+  state.fullText=paragraphs.join('\n\n');
+  source.append(textEl('p',localText.attribution||('来源：'+(w.source||'上传的训练册 PDF')+'；原书第'+(w.sourceBookPage||'?')+'页。')));
+  source.append(textEl('p',localText.license||'原文著作权归相应权利人所有；此文本为扫描件 OCR 转录。'));
   if(localText.editionNote)source.append(textEl('p','版本说明：'+localText.editionNote));
  }else{
-  await loadWorkText(w);
+  body.replaceChildren();body.append(textEl('p','这篇文章的 OCR 正文暂时没有加载成功，请刷新页面后重试。','reader-ocr-note'));
  }
  if(state.active?.id!==w.id)return;
  if(state.progress[w.id]){const s=$('readerScroll');requestAnimationFrame(()=>{s.scrollTop=Math.max(0,(s.scrollHeight-s.clientHeight)*Math.min(1,state.progress[w.id]))})}
-}
-const eligibleAuthor=new Set(['鲁迅','朱自清','郁达夫','老舍','萧红','许地山','周作人','徐志摩','林徽因','梁遇春']);
-function externalReader(w,reason){
- const node=$('readerContent');node.replaceChildren();const d=document.createElement('div');d.className='external';
- d.append(textEl('h3','阅读原文 · '+w.title));
- d.append(textEl('p',reason||'这篇作品的在线全文尚未经过版权、版本或来源核验。你可以通过下方链接查找合法阅读版本。'));
- const a=document.createElement('a');a.href=safeLink(w.sourceUrl);a.target='_blank';a.rel='noopener noreferrer';safeSet(a,'前往作品来源 / 检索页面 ↗');d.append(a);
- d.append(textEl('h4','已有的赏析线索'));
- d.append(textEl('p',w.focus));
- d.append(textEl('h4','使用自己的文本进行赏析'));
- d.append(textEl('p','如果你持有合法获取的文本，可粘贴需要讨论的片段，仅用于本次 AI 请求，不会自动发布到网站。'));
- const paste=document.createElement('textarea');paste.rows=8;paste.style.cssText='display:block;width:100%;margin:12px 0;padding:12px;border:1px solid #d5c8b8;line-height:1.8;background:var(--white);color:var(--ink)';paste.placeholder='在这里粘贴文章片段（建议不超过 12000 字）……';
- const btn=createBtn('使用这段文字进行赏析','primary',()=>{state.manualText=paste.value.trim().slice(0,12000);safeSet($('analysisBody'),state.manualText?'已加载本次粘贴的文本片段。可点击「用 AI 深入赏析」。':'请先粘贴文本。');openAnalysis()});
- d.append(paste,btn);node.append(d)
-}
-async function loadWorkText(w){
- if(w.textMode!=='remote'||!eligibleAuthor.has(w.author)||w.title.includes('节选')){externalReader(w,'这篇作品目前尚未收录经过核验的本地全文。这里保留作品来源和赏析方向；后续确认文本版本及展示权利后再加入馆藏。');return}
- try{
- const wikiTitle=w.sourcePage||w.title;const url='https://zh.wikisource.org/w/api.php?action=parse&format=json&formatversion=2&prop=text&page='+encodeURIComponent(wikiTitle)+'&origin=*';
- const response=await fetch(url,{mode:'cors',signal:AbortSignal.timeout(12000)});
- if(!response.ok)throw Error('来源无法访问');const data=await response.json();
- if(!data.parse?.text||!data.parse?.title)throw Error('来源没有返回正文');
- const parsed=new DOMParser().parseFromString(data.parse.text,'text/html');
- const visibleMeta=(parsed.body?.textContent||'').slice(0,2400);
- if(!data.parse.title.includes(w.title.replace(/（节选）/g,''))||!visibleMeta.includes(w.author))throw Error('原文标题或作者无法核对');
- parsed.querySelectorAll('script,style,nav,aside,table,.mw-editsection,.reference,.noprint,.metadata,.catlinks,.ws-noexport,.mw-cite-backlink').forEach(n=>n.remove());
- const container=parsed.querySelector('.mw-parser-output')||parsed.body;
- const paragraphEls=[...container.querySelectorAll('p')];
- const paras=paragraphEls.map(p=>p.textContent.replace(/\s+/g,' ').trim()).filter(s=>s.length>14&&!/^(本页|此文|作品|作者|维基文库)/.test(s));
- const long=paras.join('\n\n');if(long.length<200)throw Error('没有可确认的完整正文');
- if(state.active?.id!==w.id)return;
- const body=$('readerContent');body.replaceChildren();paras.slice(0,500).forEach(p=>body.append(textEl('p',p)));
- state.fullText=long.slice(0,60000);
- const actual='https://zh.wikisource.org/wiki/'+encodeURIComponent(data.parse.title);
- const src=$('sourceFoot').querySelector('a');if(src)src.href=actual;
- $('sourceFoot').append(textEl('p','在线文本来自维基文库《'+data.parse.title+'》。请核对作者与版本；网页自动抓取的内容可能存在目录、注释或缺失。','muted'));
- }catch(err){if(state.active?.id!==w.id)return;externalReader(w,'暂无法可靠加载作品原文（'+err.message+'）。可通过来源链接查找阅读版本，或粘贴你合法取得的片段进行赏析。')}
 }
 function openAnalysis(){$('analysisPanel').classList.remove('hidden')}
 function closeAnalysis(){$('analysisPanel').classList.add('hidden')}
 function proxyEndpoint(){
  const raw=state.proxy.trim();
- if(!raw){if(location.hostname.endsWith('github.io'))throw Error('GitHub Pages 不提供后端接口。请在「API 设置」填写你实际部署的 Vercel /api/reading 完整地址。');return '/api/reading'}
- if(raw==='/api/reading'&&!location.hostname.endsWith('github.io'))return raw;
- const url=new URL(raw,location.href);if(url.protocol!=='https:'&&!['localhost','127.0.0.1'].includes(url.hostname))throw Error('代理地址必须使用 HTTPS');return url.href
+ if(!raw){
+  if(location.hostname.endsWith('github.io'))return null;
+  return '/api/reading';
+ }
+ if(raw==='/api/reading'&&location.hostname.endsWith('github.io'))throw Error('GitHub Pages 上的 /api/reading 不是后端。请填入已部署的 Vercel 完整 HTTPS 地址。');
+ const url=new URL(raw,location.href);
+ if(url.protocol!=='https:'&&!['localhost','127.0.0.1'].includes(url.hostname))throw Error('代理地址必须是 HTTPS');
+ if(!url.pathname.endsWith('/api/reading'))throw Error('代理地址应以 /api/reading 结尾');
+ return url.href;
+}
+function providerPayload(messages,max_tokens=1800,enableWebSearch=false){
+ const payload={model:state.model,messages,stream:false,max_tokens:max_tokens||1800};
+ if(state.provider==='deepseek'){
+  payload.thinking={type:'disabled'};
+  if(enableWebSearch)payload.tools=[{type:'deepseek_web_search'}];
+ }
+ return payload;
+}
+async function decodeResponse(response,mode){
+ let data;
+ try{data=await response.json()}catch{throw Error('接口返回了非 JSON 内容（HTTP '+response.status+'）。'+(mode==='proxy'?'请核对 Vercel 代理地址与部署状态。':'请核对 API 域名和协议。'))}
+ if(!response.ok||data.error){
+  const error=data.error?.message||data.error||data.detail||data.message||'API 请求失败';
+  const hint=response.status===401?'（API Key 无效或过期）':response.status===403?'（Key 没有模型权限）':response.status===404?'（API 路径或模型名错误）':response.status===429?'（已限流或额度不足）':'';
+  throw Error('HTTP '+response.status+' '+String(error).slice(0,220)+' '+hint);
+ }
+ return data;
+}
+async function fetchWithExplanation(url,options,mode){
+ try{return await fetch(url,options)}
+ catch(err){
+  if(err?.name==='AbortError')throw Error('请求超时，请检查网络或选择更快的模型。');
+  if(mode==='direct')throw Error('无法从浏览器直连官方接口：可能受到 CORS 跨域策略或网络限制。请部署 Vercel 后端，并在「代理地址」填入 https://实际域名/api/reading。');
+  throw Error('无法连接代理服务：请检查 Vercel 地址、部署状态和跨域设置。');
+ }
 }
 async function requestAI(messages,max_tokens=1800,adminToken='',enableWebSearch=false){
- const url=proxyEndpoint();if(!state.apiKey&&!adminToken)throw Error('请在 API 设置中填写 Key');
- const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/json',...(adminToken?{'X-Reading-Admin-Token':adminToken}:{})},body:JSON.stringify(adminToken?{action:'publish',work:messages}:{action:'chat',provider:state.provider,apiKey:state.apiKey,model:state.model,max_tokens,messages,enableWebSearch})});
- const data=await res.json().catch(()=>({error:'后端未返回 JSON'}));if(!res.ok)throw Error(data.error||'HTTP '+res.status);return data;
+ const key=state.apiKey;
+ if(!key&&!adminToken)throw Error('请先填写所选平台的 API Key');
+ const proxy=proxyEndpoint();
+ if(adminToken&&!proxy)throw Error('向 GitHub 发布候选需要部署 Vercel 后端代理。');
+ if(proxy){
+  const response=await fetchWithExplanation(proxy,{
+   method:'POST',
+   headers:{'Content-Type':'application/json',...(adminToken?{'X-Reading-Admin-Token':adminToken}:{})},
+   body:JSON.stringify(adminToken?{action:'publish',work:messages}:{action:'chat',provider:state.provider,apiKey:key,model:state.model,max_tokens,messages,enableWebSearch})
+  },'proxy');
+  return decodeResponse(response,'proxy');
+ }
+ const body=providerPayload(messages,max_tokens,enableWebSearch);
+ const response=await fetchWithExplanation(providers[state.provider].endpoint,{
+  method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},
+  body:JSON.stringify(body)
+ },'direct');
+ const data=await decodeResponse(response,'direct');
+ const message=data?.choices?.[0]?.message?.content;
+ const content=typeof message==='string'?message:Array.isArray(message)?message.map(x=>x.text||'').join('\n'):'';
+ if(!content.trim())throw Error('模型没有返回有效文本，请检查模型是否支持 Chat Completions。');
+ return {provider:state.provider,model:data.model||state.model,text:content,usage:data.usage||null};
+}
+async function requestModelList(){
+ if(!state.apiKey)throw Error('请先填写所选平台的 API Key');
+ const proxy=proxyEndpoint();
+ let response;
+ if(proxy){
+  response=await fetchWithExplanation(proxy,{
+   method:'POST',headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({action:'models',provider:state.provider,apiKey:state.apiKey})
+  },'proxy');
+ }else{
+  response=await fetchWithExplanation(providers[state.provider].base+'/models',{
+   method:'GET',headers:{'Authorization':'Bearer '+state.apiKey},cache:'no-store'
+  },'direct');
+ }
+ const data=await decodeResponse(response,proxy?'proxy':'direct');
+ const models=Array.isArray(data.models)?data.models:Array.isArray(data.data)?data.data.map(x=>x.id):[];
+ return models.filter(x=>typeof x==='string'&&x.length).sort();
 }
 function analyseMessages(work,question='',selected=''){
  const source=state.manualText||state.fullText;
@@ -182,17 +259,49 @@ async function runAnalysis(question='',selected=''){
  catch(err){safeSet(output,'请求失败：'+err.message+'\n\n你也可以先从这个方向思考：'+w.focus)}
  finally{$('generateAnalysis').disabled=false;$('askAI').disabled=false}
 }
+let editingProvider='ustc';
+function renderModelChoices(models){
+ const list=$('modelSuggestions');list.replaceChildren();
+ const choices=[...new Set([...(providers[editingProvider].models||[]),...(models||[])])];
+ for(const name of choices){const option=document.createElement('option');option.value=name;list.append(option)}
+}
+function updateProviderHint(){
+ const p=providers[editingProvider];
+ safeSet($('providerHint'),p.label+' · OpenAI 兼容 Chat Completions\nPOST '+p.endpoint+'\n'+p.help);
+}
 function settingsForm(){
- $('provider').value=state.provider;$('apiKey').value=state.apiKey;$('modelName').value=state.model;$('proxyUrl').value=state.proxy;$('storeKey').checked=state.remember;
- safeSet($('providerHint'),providers[state.provider].label+'\n官方接口：'+providers[state.provider].endpoint+'\n'+providers[state.provider].help);
+ editingProvider=state.provider;
+ $('provider').value=editingProvider;
+ $('apiKey').value=state.keysByProvider[editingProvider]||'';
+ $('modelName').value=state.modelsByProvider[editingProvider]||providers[editingProvider].model;
+ $('proxyUrl').value=state.proxy;
+ $('storeKey').checked=state.remember;
+ renderModelChoices();updateProviderHint();
 }
 function showSettings(){settingsForm();$('settingsOverlay').classList.remove('hidden');safeSet($('settingsStatus'),'')}
+function keepEditingCredentials(){
+ state.keysByProvider[editingProvider]=$('apiKey').value.trim();
+ state.modelsByProvider[editingProvider]=$('modelName').value.trim()||providers[editingProvider].model;
+}
+function switchProvider(){
+ keepEditingCredentials();
+ editingProvider=$('provider').value;
+ $('apiKey').value=state.keysByProvider[editingProvider]||'';
+ $('modelName').value=state.modelsByProvider[editingProvider]||providers[editingProvider].model;
+ renderModelChoices();updateProviderHint();
+ safeSet($('settingsStatus'),'已切换为 '+providers[editingProvider].label+'，Key 和模型独立配置。');
+}
 function applySettings(){
- state.provider=$('provider').value;state.apiKey=$('apiKey').value.trim();state.model=$('modelName').value.trim()||providers[state.provider].model;state.proxy=$('proxyUrl').value.trim();state.remember=$('storeKey').checked;
- const persist={provider:state.provider,model:state.model,proxy:state.proxy,remember:state.remember};
- if(state.remember)persist.apiKey=state.apiKey;
+ keepEditingCredentials();
+ state.provider=editingProvider;
+ state.apiKey=state.keysByProvider[editingProvider];
+ state.model=state.modelsByProvider[editingProvider];
+ state.proxy=$('proxyUrl').value.trim();
+ state.remember=$('storeKey').checked;
+ const persist={provider:state.provider,modelsByProvider:state.modelsByProvider,proxy:state.proxy,remember:state.remember};
+ if(state.remember)persist.keysByProvider=state.keysByProvider;
  sessionStorage.setItem('wenjian:provider',JSON.stringify(persist));
- safeSet($('settingsStatus'),'设置已应用。'+(state.remember?'密钥将仅保留在此标签页会话中。':'密钥仅在当前网页内存中使用。'))
+ safeSet($('settingsStatus'),'设置已应用。'+(state.remember?'Key 仅保存在此标签页的 sessionStorage。':'Key 只保存在当前网页内存中。'));
 }
 async function discover(){
  const btn=$('discoverBtn');btn.disabled=true;safeSet(btn,'正在生成候选书目……');const area=$('discoverResults');area.replaceChildren();
@@ -244,9 +353,25 @@ function init(){
  $('libraryNav').addEventListener('click',()=>showSection('library'));$('notesNav').addEventListener('click',()=>showSection('personal'));
  $('settingsNav').addEventListener('click',showSettings);$('settingsClose').addEventListener('click',()=>$('settingsOverlay').classList.add('hidden'));
  $('settingsOverlay').addEventListener('click',e=>{if(e.target===$('settingsOverlay'))$('settingsOverlay').classList.add('hidden')});
- $('provider').addEventListener('change',()=>{const provider=$('provider').value;$('modelName').value=providers[provider].model;safeSet($('providerHint'),providers[provider].label+'\n官方接口：'+providers[provider].endpoint+'\n'+providers[provider].help)});
+ $('provider').addEventListener('change',switchProvider);
  $('saveSettings').addEventListener('click',()=>{applySettings();$('settingsOverlay').classList.add('hidden')});
- $('testAPI').addEventListener('click',async()=>{applySettings();safeSet($('settingsStatus'),'正在测试接口……');$('testAPI').disabled=true;try{const res=await requestAI([{role:'user',content:'请只回复：连接成功'}],100);safeSet($('settingsStatus'),'已连接：'+providers[state.provider].label+' · '+res.model+' · '+res.text.slice(0,80))}catch(e){safeSet($('settingsStatus'),'测试失败：'+e.message)}finally{$('testAPI').disabled=false}});
+ $('testAPI').addEventListener('click',async()=>{
+  applySettings();safeSet($('settingsStatus'),'正在按照官方 Chat Completions 格式发送测试消息「您好」……');
+  $('testAPI').disabled=true;
+  try{const res=await requestAI([{role:'user',content:'您好'}],128);safeSet($('settingsStatus'),'连接成功 · '+providers[state.provider].label+' · '+res.model+' · 模型回复：'+res.text.slice(0,100))}
+  catch(err){safeSet($('settingsStatus'),'测试失败：'+err.message)}
+  finally{$('testAPI').disabled=false}
+ });
+ $('refreshModels').addEventListener('click',async()=>{
+  applySettings();const btn=$('refreshModels');btn.disabled=true;
+  safeSet($('settingsStatus'),'正在查询该 Key 可访问的模型列表……');
+  try{
+   const names=await requestModelList();
+   renderModelChoices(names);
+   safeSet($('settingsStatus'),names.length?'已取得 '+names.length+' 个可用模型。请从模型名称输入框的候选列表中选择；当前填写的是 '+state.model+'。':'接口已返回，但未提供可解析的模型列表。请使用平台显示的模型 ID。');
+  }catch(err){safeSet($('settingsStatus'),'查询失败：'+err.message)}
+  finally{btn.disabled=false}
+ });
  $('readerClose').addEventListener('click',closeReader);
  $('readerFav').addEventListener('click',()=>{if(state.active)toggleFavorite(state.active.id)});
  $('fontMinus').addEventListener('click',()=>adjustFont(-1));$('fontPlus').addEventListener('click',()=>adjustFont(1));

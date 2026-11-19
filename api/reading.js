@@ -28,12 +28,12 @@ async function chat(req,res,body){
   if (!['ustc','deepseek'].includes(provider)) return json(res,400,{error:'仅支持 USTC LLM 和 DeepSeek'});
   const key=String(body.apiKey||'').trim();
   if (!key||key.length>600) return json(res,400,{error:'请提供有效的 API Key'});
-  const model=String(body.model||(provider==='ustc'?'deepseek-v4-flash':'deepseek-flash')).trim();
+  const model=String(body.model||(provider==='ustc'?'qwen-chat':'deepseek-flash')).trim();
   if (!/^[\w.\-:/]{2,128}$/.test(model)) return json(res,400,{error:'模型名称无效'});
   const messages=Array.isArray(body.messages)?body.messages:[];
   if (!messages.length||messages.length>8||messages.some(m=>!['system','user','assistant'].includes(m?.role)||typeof m?.content!=='string'||m.content.length>24000)) return json(res,400,{error:'请求内容无效或过长'});
   const endpoint=provider==='ustc'?USTC_ENDPOINT:DEEPSEEK_ENDPOINT;
-  const payload={model,messages:messages.map(x=>({role:x.role,content:x.content})),stream:false,max_tokens:Math.min(3500,Math.max(200,Number(body.max_tokens)||1800)),temperature:.6};
+  const payload={model,messages:messages.map(x=>({role:x.role,content:x.content})),stream:false,max_tokens:Math.min(3500,Math.max(32,Number(body.max_tokens)||1800)),temperature:.6};
   if(provider==='deepseek'){
     payload.thinking={type:'disabled'};
     if(body.enableWebSearch===true)payload.tools=[{type:'deepseek_web_search'}];
@@ -42,13 +42,27 @@ async function chat(req,res,body){
     const response=await upstream(endpoint,{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+key},body:JSON.stringify(payload)});
     const raw=await response.text();
     let parsed;try{parsed=JSON.parse(raw)}catch{parsed={error:{message:'模型返回了非 JSON 数据'}}}
-    if(!response.ok) return json(res,response.status,{error:String(parsed?.error?.message||parsed?.message||'模型 API 请求失败').slice(0,350),provider});
+    if(!response.ok||parsed?.error) return json(res,response.ok?502:response.status,{error:String(parsed?.error?.message||parsed?.message||'模型 API 请求失败').slice(0,350),provider});
     const message=parsed?.choices?.[0]?.message?.content;
     if(typeof message!=='string'||!message.trim()) return json(res,502,{error:'模型未返回有效文字内容'});
     return json(res,200,{provider,model:parsed.model||model,text:message,usage:parsed.usage||null});
   } catch(err){
     return json(res,err.name==='AbortError'?504:502,{error:err.name==='AbortError'?'模型请求超时':'无法连接模型服务，请检查网络和代理部署'});
   }
+}
+async function models(req,res,body){
+ const provider=String(body.provider||'');
+ if(!['ustc','deepseek'].includes(provider))return json(res,400,{error:'未知平台'});
+ const key=String(body.apiKey||'').trim();
+ if(!key||key.length>600)return json(res,400,{error:'请填写有效 API Key'});
+ const url=provider==='ustc'?'https://api.llm.ustc.edu.cn/v1/models':'https://api.deepseek.com/models';
+ try{
+  const response=await upstream(url,{method:'GET',headers:{Authorization:'Bearer '+key}},20000);
+  const payload=await response.json().catch(()=>({}));
+  if(!response.ok)return json(res,response.status,{error:String(payload?.error?.message||payload?.detail||'模型列表查询失败').slice(0,250)});
+  const names=(Array.isArray(payload.data)?payload.data:[]).map(x=>x?.id).filter(x=>typeof x==='string'&&x.length);
+  return json(res,200,{provider,models:names});
+ }catch(err){return json(res,err?.name==='AbortError'?504:502,{error:err?.name==='AbortError'?'模型列表查询超时':'无法连接模型列表接口'})}
 }
 async function publish(req,res,body){
   const token=String(req.headers['x-reading-admin-token']||'');
@@ -129,6 +143,7 @@ export default async function handler(req,res){
   if(origin&&!allowedOrigin(req,origin))return json(res,403,{error:'Origin not allowed'});
   const body=req.body||{};
   if(body.action==='chat')return chat(req,res,body);
+  if(body.action==='models')return models(req,res,body);
   if(body.action==='publish')return publish(req,res,body);
   if(body.action==='save_fulltext')return saveFullText(req,res,body);
   return json(res,400,{error:'Unknown action'});

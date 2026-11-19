@@ -1,63 +1,22 @@
-# 文间 · 文学阅读与赏析馆
+# 文间 · 高中现代文阅读原文馆
 
-站点入口：[https://arce-star.github.io/reading.html](https://arce-star.github.io/reading.html)
+站点：https://arce-star.github.io/reading.html
 
-## 功能
+## 馆藏来源
 
-- **100 篇真实作品书目**：小说 50、散文 50。每篇具备作者、年代、主题、阅读引导、来源链接及版权状态提示。
-- **本地完整原文**：当前已收录 22 篇：《故乡》、《孔乙己》、《社戏》、《一件小事》、《背影》、《荷塘月色》、《春》、《匆匆》、《冬天》、《歌声》、《儿女》、《绿》、《月朦胧，鸟朦胧，帘卷海棠红》、《白水漈》、《生命的价格——七毛钱》、《祝福》、《白光》、《狂人日记》、《头发的故事》、《明天》、《鸭的喜剧》、《风波》。原文保存在 `assets/data/reading/fulltext.json`，网页直接读取 GitHub 仓库文件；其余 78 篇仍是书目/来源入口，后续继续补齐。
-- **阅读**：对于少量可能具有合法公开全文的中文原作，尝试从维基文库 API 读取；遇到来源缺失、版本不确定或跨域网络错误，显示原始来源链接与摘录输入，不生成伪造原文。
-- **阅读体验**：响应式阅读界面、夜间模式、字体大小、阅读进度、收藏和本地私人笔记。
-- **AI 赏析**：按作品主题、文本证据、另一种解读和开放问题进行文学细读；支持用户粘贴合法取得的文本片段，不默认把它们发布到 GitHub。
-- **AI 发现**：在网页上推荐真实作品候选；DeepSeek 官方接口可使用原生联网搜索工具（若模型/API 权限支持），USTC LLM 不假定具有联网能力。候选仅供验证，不直接变成正式全文。
-- **批量下载**：GitHub Actions 会从维基文库逐篇抓取目录中的候选作品，只导入来源页面标注公有领域、作者和标题可核验、正文完整的作品，随后自动提交到 `fulltext.json` 和 `catalog.json`。可在 [Actions 运行记录](https://github.com/arce-star/arce-star.github.io/actions/workflows/import-wikisource.yml) 查看进度；无需 Vercel，也不需要在网页输入密钥。
-- **GitHub 入库**：管理员完成书目和来源核验后，凭服务端设置的发布口令，将新书目信息写回 `assets/data/reading/catalog.json`。发布流程**不上传未经授权的全文**。
+2026-11-19 从用户上传的三本《一本·现代文阅读技能训练100篇》PDF 扫描件中按目录抽取**文学类阅读原文 79 篇**，分别为：
 
-## API 提供方
+- 高一：31 篇（小说 16、散文 15）
+- 高二：25 篇（小说 14、散文 11）
+- 高考：23 篇（小说 12、散文 11）
 
-页面右上角打开“API 设置”：
+已完全替换原来自选的 100 篇书目及其 22 篇维基文库原文。其余论述类、实用类训练文章尚未纳入当前文学馆。
 
-| 提供方 | 对话接口 | 初始模型 |
-| --- | --- | --- |
-| USTC LLM | `https://api.llm.ustc.edu.cn/v1/chat/completions` | `deepseek-v4-flash` |
-| DeepSeek 官方 | `https://api.deepseek.com/chat/completions` | `deepseek-flash` |
+## 数据
 
-两者使用 **Bearer API Key + Chat Completions** 格式。模型名允许修改，以平台当前权限为准。DeepSeek 官方在 2026 年更新了模型 ID：旧的 `deepseek-chat` 不应作为新项目默认值。
+- `assets/data/reading/catalog.json`：79 篇目录、所属年级、体裁、书内页码及扫描来源
+- `assets/data/reading/fulltext.json`：79 篇 OCR 正文，尽可能剔除题目、答案及解析
 
-学校官方文档：https://llm.ustc.edu.cn/guide/api-usage/
+三本 PDF 均为图片扫描版，**OCR 文本未经逐字校对**，可能存在错字、漏字、标点和换行错误。馆藏以 `ocrStatus: needs_review` 标记，并保留原书页码、PDF 页码供回查。版权归相应权利人所有。
 
-DeepSeek 官方文档：https://api-docs.deepseek.com/api/create-chat-completion/
-
-### 部署关系：GitHub Pages + Vercel
-
-`reading.html` 在 GitHub Pages 静态托管，**不能直接执行** `api/reading.js`。模型调用与 GitHub 写入逻辑需要把当前仓库部署到 **Vercel**（或兼容 Node.js Serverless Functions 的平台）。这和仓库现有的 `api/video.js` 架构一致。
-
-1. 将 `arce-star/arce-star.github.io` 连接到 Vercel 项目并部署；Vercel 会将 `api/reading.js` 作为 POST `/api/reading` 处理。
-2. 在网页的“服务端代理地址”填写真实的 `https://<你的-vercel-部署域名>/api/reading`。
-3. 选择 USTC 或 DeepSeek，填写该提供方 API Key 和有权访问的模型名称。
-4. 点击“测试连接”；成功后即可对文章进行 AI 赏析或发现新候选。
-5. 如果要启用管理员写入 GitHub，在 Vercel 项目环境变量中设置：
-   - `READING_ADMIN_TOKEN`：独立管理员发布口令，随机生成，**不要**使用 API Key。
-   - `READING_GITHUB_TOKEN`：GitHub fine-grained token，**只授权目标仓库的 Contents: Read and write**。此令牌只能存在于 Vercel 环境变量，绝不能写进网页或公开仓库。
-   - `READING_ALLOWED_ORIGINS`：可选，逗号分隔的额外被许可网页来源，例如你自己的域名。预置允许 `https://arce-star.github.io`、同域 Vercel 页面及部分 localhost 调试地址。
-
-不安装或部署 Vercel 后端，**书目、收藏、阅读及个人笔记仍可使用，但在线 AI 调用和自动 GitHub 发布不可用**。
-
-### Key 处理方式
-
-默认仅在网页 JS 内存中保存用户输入的 Key；选择“在此标签页内记住”后，才保存到当前标签页的 `sessionStorage`，关掉标签页会删除。每次模型请求会通过 HTTPS 将密钥发送到用户配置的 Vercel 代理，代理再将其转发到所选官方 API，不在 GitHub 和 Vercel 环境变量中存储访客 Key。
-
-请只在自己信任的页面使用此功能；共享计算机建议不勾选记住 Key。学校平台可能对个人凭据、项目额度和公网调用有额外使用规定，使用前需遵守。
-
-## 目录
-
-- `reading.html`：阅读空间页面
-- `assets/css/reading.css`：响应式阅读样式
-- `assets/js/reading.js`：书目展示、交互、发现与赏析
-- `assets/data/reading/catalog.json`：100 篇精选书目（小说 50、散文 50）
-- `assets/data/reading/fulltext.json`：已实际收录并随站点发布的完整原文，目前 15 篇；每篇附来源、署名与许可信息。其余书目暂为作品索引，不冒充已收录全文
-- `api/reading.js`：USTC/DeepSeek 请求转发及受保护的 GitHub 书目发布
-
-## 内容治理
-
-推荐文章和真实书目并不自动证明全文的复制/公开展示权利。现代作家作品、中文译作、节选及版本差异尤其需要单独核对。本站把未验证全文的作品保持为“来源入口/书目”，避免将模型生成的文字冒充原文。
+保留小说/散文/年级筛选、收藏、阅读笔记、字号与夜间模式，以及 USTC LLM / DeepSeek 的 API Key 设置和 AI 文学赏析。旧的维基文库自动下载工作流已移除，避免外部作品再次混入当前馆藏。

@@ -23,8 +23,8 @@ function setStatus(text){safeSet($('catalogStatus'),text)}
 async function loadCatalog(){
  try{
  const [res,textRes]=await Promise.all([
-  fetch('assets/data/reading/catalog.json?v=2',{cache:'no-cache'}),
-  fetch('assets/data/reading/fulltext.json?v=7',{cache:'no-cache'})
+  fetch('assets/data/reading/catalog.json?v=3',{cache:'no-cache'}),
+  fetch('assets/data/reading/fulltext.json?v=8',{cache:'no-cache'})
  ]);
  if(!res.ok)throw Error('HTTP '+res.status);
  const data=await res.json();
@@ -54,21 +54,21 @@ function renderCards(){
  if(state.genre==='收藏'){if(!state.favs.has(w.id))return false}
  else if(state.genre!=='全部'&&w.genre!==state.genre)return false;
  if(state.topic&&!(w.tags||[]).includes(state.topic))return false;
- if(state.region&&(state.region==='other'?w.region==='中国':w.region!==state.region))return false;
+ if(state.region&&w.region!==state.region)return false;
  return !query||[w.title,w.author,w.region,...(w.tags||[])].some(s=>String(s||'').toLowerCase().includes(query))
  });
  const area=$('cards');area.replaceChildren();
  state.filtered.slice(0,state.visible).forEach((w,index)=>{
  const card=document.createElement('article');card.className='workcard';card.tabIndex=0;card.setAttribute('role','button');card.setAttribute('aria-label','阅读 '+w.title);
- const genre=textEl('div',w.genre+' · '+w.region,'genre');const title=textEl('h3',w.title);const byline=textEl('div',w.author+' · '+w.year,'byline');
+ const genre=textEl('div',w.genre+' · '+w.region,'genre');const title=textEl('h3',w.title);const byline=textEl('div',(w.sourceBookPage?w.region+' · 第'+w.sourceBookPage+'页':w.author+' · '+w.year),'byline');
  const focus=textEl('p',w.focus,'focus');const bottom=document.createElement('div');bottom.className='bottom';
- bottom.append(textEl('span',state.fulltexts[w.id]?'全文已收录':'来源阅读 / 赏析参考'));
+ bottom.append(textEl('span',state.fulltexts[w.id]?'扫描原文 · OCR 待校对':'正文待入库'));
  const fav=createBtn(state.favs.has(w.id)?'♥':'♡','favbtn',e=>{e.stopPropagation();toggleFavorite(w.id);renderCards()});fav.title='收藏';fav.setAttribute('aria-label','收藏 '+w.title);bottom.append(fav);
  card.append(genre,title,byline,focus,bottom);
  card.addEventListener('click',()=>openWork(w));card.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();openWork(w)}});area.append(card);
  });
  $('loadMore').classList.toggle('hidden',state.filtered.length<=state.visible);
- setStatus('显示 '+Math.min(state.visible,state.filtered.length)+' / '+state.filtered.length+' 篇 · 全馆 '+state.works.length+' 篇 · 本地全文 '+Object.keys(state.fulltexts).length+' 篇 · 其余作品保留来源入口');
+ setStatus('显示 '+Math.min(state.visible,state.filtered.length)+' / '+state.filtered.length+' 篇 · 三册共 '+state.works.length+' 篇 · OCR 正文 '+Object.keys(state.fulltexts).length+' 篇 · 识别文字待校对');
 }
 function toggleFavorite(id){state.favs.has(id)?state.favs.delete(id):state.favs.add(id);saveJSON(keys.favs,[...state.favs]);if(state.active?.id===id)safeSet($('readerFav'),state.favs.has(id)?'♥ 已收藏':'♡ 收藏')}
 function showSection(which){
@@ -87,12 +87,12 @@ function closeReader(){
 }
 async function openWork(w){
  state.active=w;state.fullText='';state.manualText='';state.analysis='';
- safeSet($('readerTitle'),w.title);safeSet($('readerMeta'),w.author+' · '+w.year+' · '+w.genre+' · '+w.region);
+ safeSet($('readerTitle'),w.title);safeSet($('readerMeta'),(w.region||'')+' · '+w.genre+(w.sourceBookPage?' · 原书第'+w.sourceBookPage+'页':'')+(w.ocrStatus==='needs_review'?' · OCR 待校对':''));
  const tags=$('readerTags');tags.replaceChildren();(w.tags||[]).slice(0,4).forEach(t=>tags.append(textEl('span',t)));
  safeSet($('readerFav'),state.favs.has(w.id)?'♥ 已收藏':'♡ 收藏');safeSet($('noteText'),state.notes[w.id]||'');safeSet($('noteStatus'),'');
  const source=$('sourceFoot');source.replaceChildren();
- source.append(textEl('p','收录说明：'+(w.rightsStatus||'待核验')+'。本馆不将外部来源或模型生成文本冒充为原著。'));
- const src=document.createElement('a');src.href=safeLink(w.sourceUrl);src.target='_blank';src.rel='noopener noreferrer';safeSet(src,'查阅原始来源 / 检索版本 ↗');source.append(src);
+ source.append(textEl('p','收录说明：'+(w.rightsStatus||'OCR 文字待人工校对')+'。若发现识别错误，请以原书扫描页为准。'));
+ if(w.sourceUrl){const src=document.createElement('a');src.href=safeLink(w.sourceUrl);src.target='_blank';src.rel='noopener noreferrer';safeSet(src,'查阅原始来源 ↗');source.append(src)}
  $('readerOverlay').classList.remove('hidden');$('analysisPanel').classList.add('hidden');document.body.style.overflow='hidden';document.title=w.title+' · 文间';
  const body=$('readerContent');body.replaceChildren();body.append(textEl('p','正在核验公开文本来源……','muted'));
  safeSet($('analysisBody'),'赏析方向：\n\n'+w.focus+'\n\n可从原文细节出发，结合叙事视角、语言、人物关系与时代语境进行多种解读。');
@@ -100,7 +100,8 @@ async function openWork(w){
  const localText=state.fulltexts[w.id];
  if(localText){
   body.replaceChildren();
-  localText.content.split(/\\n\\s*\\n/).map(p=>p.trim()).filter(Boolean).forEach(p=>body.append(textEl('p',p)));
+  body.append(textEl('p','本篇为扫描件 OCR 转录稿，字词与标点可能有误。','muted'));
+  localText.content.split(/\n+/).map(p=>p.trim()).filter(Boolean).forEach(p=>body.append(textEl('p',p)));
   state.fullText=localText.content;
   source.append(textEl('p','全文已随网站数据保存在 GitHub 仓库中，可直接阅读，不依赖来源网站在线。'));
   source.append(textEl('p',localText.attribution||('作者：'+localText.author+'；作品：'+localText.title+'；来源：维基文库。')));
